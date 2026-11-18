@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>POKETA – Pokémon Card Hub</title>
+<meta name="theme-color" content="#070b14">
+<meta name="description" content="Deine Pokémon-Sammlung mit Live-Preisen und Preisverlauf von Cardmarket.">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="POKETA">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script src="config.js"></script>
 <style>
 :root{
@@ -2651,6 +2660,10 @@ async function init(){
 
 init();
 })();
+/* App-Modus: Service Worker für Installation & Offline-Start */
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => {}); });
+}
 </script>
 </body>
 </html>
