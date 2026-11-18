@@ -353,6 +353,15 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .variant-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
 .variant-row label{font-size:12px;color:var(--muted);font-weight:700}
 .variant-row select{flex:1;min-width:180px}
+.lang-row{display:flex;gap:4px;margin-top:10px;padding:4px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;width:max-content;max-width:100%}
+.lang-row button{background:transparent;color:var(--muted);padding:7px 11px;font-size:13px;border-radius:9px;box-shadow:none;white-space:nowrap}
+.lang-row button:hover{transform:none;box-shadow:none;color:#fff}
+.lang-row button.on{background:rgba(139,111,255,.32);color:#fff}
+.lang-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px}
+.lang-pick .lp{background:#0a1220;border:1px solid var(--line);border-radius:10px;padding:6px;cursor:pointer;text-align:center;font-size:11px}
+.lang-pick .lp:hover{border-color:rgba(139,111,255,.5)}
+.lang-pick img{width:100%;aspect-ratio:63/88;object-fit:contain;border-radius:6px;background:#070b14}
+.flag{font-size:12px;margin-right:4px}
 
 /* Graph */
 .chart-box{margin:18px 0 4px;padding:20px 22px 16px;background:#0b1121;border:1px solid var(--line);border-radius:18px}
@@ -1384,6 +1393,20 @@ async function search(){
   searchBtn.disabled=true; searchStatus.textContent='Suche läuft…'; detail.classList.add('hidden'); results.innerHTML='';
   try{
     // 1) Name-Suche über API-Filter (leicht)
+    if(lang === 'ja' && !/[\u3040-\u30ff\u4e00-\u9fff]/.test(q) && !/^[A-Z0-9]+-\d+/i.test(q)){
+      // „Glurak“ → Pokédex-Nr. über deutsche/englische Suche → japanische Karten
+      let base = await getJSON(`${TCG}/de/cards?name=${encodeURIComponent(q)}`);
+      if(!Array.isArray(base) || !base.length) base = await getJSON(`${TCG}/en/cards?name=${encodeURIComponent(q)}`);
+      const first = Array.isArray(base) && base.length ? await tcgCard(base[0].id, 'de') : null;
+      const dex = first && (first.dexId || [])[0];
+      const jp = dex ? await getJSON(`${TCG}/ja/cards?dexId=eq:${dex}`) : null;
+      if(Array.isArray(jp) && jp.length){
+        current = jp.slice(-40).reverse();
+        renderResults(current, lang);
+        searchStatus.textContent = `${jp.length} japanische Karten zu „${q}“ · neueste zuerst`;
+        return;
+      }
+    }
     let r = await fetch(`https://api.tcgdex.net/v2/${lang}/cards?name=${encodeURIComponent(q)}`);
     let matches = [];
     if(r.ok){
@@ -1736,6 +1759,8 @@ async function openCard(id, lang, fresh){
           <select id="variantSel" class="field" onchange="onVariantChange(this.value)">
             ${pendingVariants.map((v, i) => `<option value="${i}">${safe(v.label)}${pos(cmMain(v.cm)) ? ' – ' + fmtEUR(cmMain(v.cm)) : ''}</option>`).join('')}
           </select></div>` : ''}
+        <div class="lang-row" role="group" aria-label="Sprache der Karte">${Object.keys(LANGS).map(l => `<button type="button" data-l="${l}"${l === lang ? ' class="on"' : ''} onclick="switchCardLang('${l}')">${LANGS[l].flag} ${LANGS[l].name}</button>`).join('')}</div>
+        <div id="langHint"></div>
         <div style="margin-top:12px"><a id="cmBtn" class="cm-btn" target="_blank" rel="noopener">Diese Karte auf Cardmarket ↗</a></div>
       </div>
     </div>
@@ -1802,7 +1827,7 @@ function marketMarkup(cm, v){
     <span class="row" style="gap:8px">${chgHTML(cmChange(cm))}<button type="button" class="secondary" style="padding:6px 10px;font-size:12px" onclick="refreshDetailPrices()">↻ Neu laden</button></span>
   </div>
   <div class="price-grid">${rows.map(r => `<div class="price-box${r.main ? ' main' : ''}"><span>${r.l}</span><b>${fmtEUR(r.x)}</b></div>`).join('')}</div>
-  <p class="muted" style="font-size:11px">Offizieller Cardmarket-Price-Guide (über TCGdex) · Stand ${updated}${v && v.idProduct ? ' · Produkt-ID ' + v.idProduct : ''}. Trend = Markttendenz, Ab = günstigstes Angebot. Keine Verkaufsgarantie.</p>`;
+  <p class="muted" style="font-size:11px">${pendingLang === 'ja' ? '🇯🇵 Japanische Ausgabe – eigenes Cardmarket-Produkt mit eigenem Preis. ' : 'Cardmarket führt deutsche, englische und weitere westliche Karten dieser Ausgabe als ein Produkt – der Preis gilt für alle diese Sprachen. '}Offizieller Cardmarket-Price-Guide (über TCGdex) · Stand ${updated}${v && v.idProduct ? ' · Produkt-ID ' + v.idProduct : ''}. Trend = Markttendenz, Ab = günstigstes Angebot. Keine Verkaufsgarantie.</p>`;
 }
 
 async function refreshDetailPrices(){
@@ -1810,6 +1835,43 @@ async function refreshDetailPrices(){
   const idx = pendingVariants.indexOf(pendingVar);
   await openCard(pendingCard.id, pendingLang, true);
   if(idx > 0 && pendingVariants[idx]){ const s = document.getElementById('variantSel'); if(s){ s.value = idx; onVariantChange(idx); } }
+}
+
+/* ── Sprache einer Karte (DE / EN / JP) ── */
+const LANGS = {de: {flag: '🇩🇪', name: 'Deutsch'}, en: {flag: '🇬🇧', name: 'Englisch'}, ja: {flag: '🇯🇵', name: 'Japanisch'}};
+
+/* Gleiche Karte in anderer Sprachfamilie finden: gleiche Pokédex-Nr. + gleicher Illustrator, bei mehreren Treffern KP/Stufe vergleichen */
+async function findCounterparts(c, lang){
+  const dex = (c.dexId || [])[0];
+  if(!dex) return {exact: false, list: []};
+  const ill = c.illustrator;
+  let list = ill ? await getJSON(`${TCG}/${lang}/cards?dexId=eq:${dex}&illustrator=eq:${encodeURIComponent(ill)}`) : null;
+  if(Array.isArray(list) && list.length === 1) return {exact: true, list};
+  if(Array.isArray(list) && list.length > 1){
+    const det = await pool(list.slice(0, 8), 4, x => tcgCard(x.id, lang));
+    const score = d => !d ? 0 : (d.hp && d.hp === c.hp ? 2 : 0) + (d.stage && d.stage === c.stage ? 1 : 0) + (String(d.suffix || '') === String(c.suffix || '') ? 1 : 0);
+    const ranked = list.slice(0, 8).map((x, i) => ({x, s: score(det[i])})).sort((a, b) => b.s - a.s);
+    if(ranked[0].s >= 3 && (!ranked[1] || ranked[1].s < ranked[0].s)) return {exact: true, list: [ranked[0].x]};
+    return {exact: false, list: ranked.map(r => r.x)};
+  }
+  const all = await getJSON(`${TCG}/${lang}/cards?dexId=eq:${dex}`);
+  return {exact: false, list: Array.isArray(all) ? all.slice(-24).reverse() : []};
+}
+
+async function switchCardLang(target){
+  const c = pendingCard; if(!c || target === pendingLang) return;
+  const hint = document.getElementById('langHint');
+  const western = l => l === 'de' || l === 'en';
+  if(western(pendingLang) && western(target)) return openCard(c.id, target);
+  hint.innerHTML = `<p class="muted" style="font-size:12px;margin-top:8px">Suche ${LANGS[target].name.toLowerCase()}e Ausgabe …</p>`;
+  const r = await findCounterparts(c, target === 'ja' ? 'ja' : 'en');
+  if(pendingCard !== c) return;
+  if(r.exact) return openCard(r.list[0].id, target);
+  if(!r.list.length){ hint.innerHTML = `<div class="notice">Keine ${LANGS[target].name.toLowerCase()}e Ausgabe dieser Karte gefunden.</div>`; return; }
+  hint.innerHTML = `<div class="notice" style="margin-top:10px">Keine eindeutige ${LANGS[target].name.toLowerCase()}e Ausgabe gefunden – wähle die passende Karte:</div>
+    <div class="lang-pick">${r.list.map(x => `<div class="lp" onclick="openCard('${safe(x.id)}','${target}')">
+      <img src="${safe(x.image ? x.image + '/low.webp' : guessImg(x.id, target === 'ja' ? 'ja' : 'en'))}" onerror="imgFallback(this)" loading="lazy" alt="">
+      <div>${safe(x.name)}</div><div class="muted">${safe(x.id)}</div></div>`).join('')}</div>`;
 }
 
 function addPendingCard(){
@@ -1838,7 +1900,7 @@ function renderCollection(){
       <div class="item">
         <img src="${safe(c.image)}" onerror="imgFallback(this)" style="cursor:pointer" onclick="openCard('${safe(c.id)}','${safe(c.lang || 'de')}')">
         <div class="grow" style="cursor:pointer" onclick="openCard('${safe(c.id)}','${safe(c.lang || 'de')}')">
-          <b>${safe(c.name)}</b>${c.variant ? ` <span class="muted" style="font-size:11px">· ${safe(c.variant)}</span>` : ''}<br>
+          <span class="flag" title="${safe((LANGS[c.lang || 'de'] || {}).name || '')}">${(LANGS[c.lang || 'de'] || {}).flag || ''}</span><b>${safe(c.name)}</b>${c.variant ? ` <span class="muted" style="font-size:11px">· ${safe(c.variant)}</span>` : ''}<br>
           <small>${safe(c.set)} · ${safe(c.condition || '')} · ${money(c.buy)} → ${money(c.value)}</small>
         </div>
         <a class="cm-mini" href="${cmLink(c.idProduct, c)}" target="_blank" rel="noopener">CM ↗</a>
