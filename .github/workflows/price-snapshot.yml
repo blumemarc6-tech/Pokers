@@ -1,0 +1,27 @@
+# Speichert täglich die Cardmarket-Preise aller vorgemerkten Karten in Supabase.
+# Benötigte Repository-Secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+name: Preis-Snapshot
+
+on:
+  schedule:
+    - cron: '17 5 * * *'   # täglich 05:17 UTC – nach der nächtlichen Erstellung des Price-Guides
+  workflow_dispatch: {}     # manuell starten: Actions → Preis-Snapshot → Run workflow
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Price-Guide laden und speichern
+        run: node scripts/price-snapshot.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

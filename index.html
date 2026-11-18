@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>POKETA – Pokémon Card Hub</title>
+<script src="config.js"></script>
 <style>
 :root{
   --bg:#070b14;
@@ -425,6 +426,11 @@ body.auth-open .auth{display:grid}
 }
 .g-btn:hover{box-shadow:0 6px 20px rgba(255,255,255,.18)}
 .g-btn svg{width:18px;height:18px}
+.a-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:#000;color:#fff;border:1px solid rgba(255,255,255,.25);box-shadow:none;padding:12px;margin:-4px 0 14px;
+}
+.a-btn svg{width:17px;height:17px;fill:#fff}
 .auth-or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px;margin:2px 0 14px}
 .auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--line)}
 .auth-msg{padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px;border:1px solid var(--line);background:rgba(20,30,55,.7);color:#c8d4ee}
@@ -846,6 +852,10 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
       <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.5 28.6a14.5 14.5 0 0 1 0-9.2l-7.9-6.1a24 24 0 0 0 0 21.4l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.1 1.4-4.9 2.3-8.2 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
       Mit Google fortfahren
     </button>
+    <button type="button" class="a-btn hidden" id="authApple">
+      <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+      Mit Apple fortfahren
+    </button>
     <div class="auth-or" id="authOr"><span>oder mit E-Mail</span></div>
 
     <form id="authForm" novalidate>
@@ -1062,6 +1072,15 @@ function cmLink(idProduct, card){
 /* ── Preisverlauf (Server: täglich gespeicherter Cardmarket-Price-Guide) ── */
 const PriceHist = {
   mem: {}, KEY: 'poketa_tracked',
+  cfg(){
+    const c = window.POKETA_CONFIG || {}, u = String(c.supabaseUrl || '').trim().replace(/\/$/, ''), k = String(c.supabaseAnonKey || '').trim();
+    return /^https:\/\//.test(u) && k.length > 20 ? {u, k} : null;
+  },
+  async rpc(fn, body){
+    const c = this.cfg(); if(!c) return null;
+    const r = await fetch(`${c.u}/rest/v1/rpc/${fn}`, {method:'POST', headers:{apikey: c.k, 'Content-Type':'application/json'}, body: JSON.stringify(body)});
+    return r.ok ? r.json() : null;
+  },
   async load(ids){
     ids = [...new Set((ids || []).filter(Boolean).map(Number))];
     const need = ids.filter(id => !(id in this.mem));
@@ -1069,12 +1088,14 @@ const PriceHist = {
       let tracked = {};
       try{ tracked = JSON.parse(localStorage.getItem(this.KEY) || '{}'); }catch(e){}
       for(let i = 0; i < need.length; i += 40){
-        const chunk = need.slice(i, i + 40);
+        const chunk = need.slice(i, i + 40), track = chunk.filter(id => !tracked[id]);
         try{
-          const r = await fetch('/api/prices', {method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ids: chunk, track: chunk.filter(id => !tracked[id])})});
-          const j = r.ok ? await r.json() : null;
-          chunk.forEach(id => { this.mem[id] = (j && j.history && j.history[id]) || []; if(j) tracked[id] = 1; });
+          const [h, t] = await Promise.all([
+            this.rpc('get_price_history', {p_ids: chunk}),
+            track.length ? this.rpc('track_products', {p_ids: track}).catch(() => null) : Promise.resolve(0)
+          ]);
+          chunk.forEach(id => { this.mem[id] = (h && h[id]) || []; });
+          if(t !== null) track.forEach(id => tracked[id] = 1);
         }catch(e){ chunk.forEach(id => this.mem[id] = []); }
       }
       try{ localStorage.setItem(this.KEY, JSON.stringify(tracked)); }catch(e){}
@@ -1927,7 +1948,8 @@ renderHome(); update(); renderCollection(); renderWishes();
 <script>
 /* ═══════════════════════════════════════════════════════════════
    POKETA – Konto, Anmeldung & Sync
-   Netlify Identity (GoTrue) wird direkt per fetch angesprochen – keine Bibliothek nötig.
+   Supabase Auth (GoTrue) und Supabase-Datenbank werden direkt per fetch
+   angesprochen – keine Bibliothek nötig. Zugangsdaten stehen in config.js.
    ═══════════════════════════════════════════════════════════════ */
 (function(){
 'use strict';
@@ -1935,8 +1957,13 @@ renderHome(); update(); renderCollection(); renderWishes();
 /* true = Anmeldung beim Öffnen nötig (false = App wie früher ohne Konto nutzbar) */
 const AUTH_REQUIRED = true;
 
-const ID = '/.netlify/identity';
-const SYNC_URL = '/.netlify/functions/sync';
+const CFG = window.POKETA_CONFIG || {};
+const SB = String(CFG.supabaseUrl || '').trim().replace(/\/$/, '');
+const ANON = String(CFG.supabaseAnonKey || '').trim();
+const CONFIGURED = /^https:\/\/\S+$/.test(SB) && ANON.length > 20;
+const ID = SB + '/auth/v1';
+const REST = SB + '/rest/v1';
+const SITE = location.origin + location.pathname;
 const K = {auth:'poketa_auth', owner:'poketa_owner', dirty:'poketa_dirty', base:'poketa_sync_base', last:'poketa_sync_last'};
 const JSON_H = {'Content-Type':'application/json'};
 const $ = id => document.getElementById(id);
@@ -1975,7 +2002,7 @@ function deText(j, status){
 
 async function idFetch(path, opt, token){
   opt = opt || {};
-  const headers = Object.assign({}, opt.headers || {});
+  const headers = Object.assign({apikey: ANON}, opt.headers || {});
   if(token) headers.Authorization = 'Bearer ' + token;
   let r;
   try{ r = await fetch(ID + path, Object.assign({}, opt, {headers})); }
@@ -2024,10 +2051,8 @@ function toSession(t, user){
     user: user || (session && session.user) || null
   };
 }
-const tokenReq = params => idFetch('/token', {
-  method: 'POST',
-  headers: {'Content-Type':'application/x-www-form-urlencoded'},
-  body: new URLSearchParams(params).toString()
+const tokenReq = (grant, body) => idFetch('/token?grant_type=' + grant, {
+  method: 'POST', headers: JSON_H, body: JSON.stringify(body)
 });
 
 /* Gültiges Token (bei Bedarf erneuert). null = Sitzung abgelaufen, wirft bei fehlender Verbindung. */
@@ -2035,7 +2060,7 @@ async function accessToken(){
   if(!session) return null;
   if(Date.now() < session.expires_at - 60000) return session.access_token;
   try{
-    const t = await tokenReq({grant_type:'refresh_token', refresh_token: session.refresh_token});
+    const t = await tokenReq('refresh_token', {refresh_token: session.refresh_token});
     session = toSession(t); saveSession();
     return session.access_token;
   }catch(e){
@@ -2051,7 +2076,7 @@ async function fromTokens(t){
   return user;
 }
 async function login(email, pw){
-  const t = await tokenReq({grant_type:'password', username: email, password: pw});
+  const t = await tokenReq('password', {email, password: pw});
   return fromTokens(t);
 }
 function sessionLost(){
@@ -2079,15 +2104,31 @@ function mergeData(local, remote){
   };
 }
 
-async function callSync(method, token, body){
-  const r = await fetch(SYNC_URL, {
-    method,
-    headers: Object.assign({Authorization: 'Bearer ' + token}, body ? JSON_H : {}),
-    body: body ? JSON.stringify(body) : undefined
+async function rpc(fn, token, body){
+  const r = await fetch(`${REST}/rpc/${fn}`, {
+    method: 'POST',
+    headers: Object.assign({apikey: ANON, 'Content-Type': 'application/json'}, token ? {Authorization: 'Bearer ' + token} : {}),
+    body: JSON.stringify(body || {})
   });
   let j = null;
   try{ j = await r.json(); }catch(e){}
-  return {status: r.status, j};
+  return {status: r.status === 403 && token ? 401 : r.status, j};
+}
+/* Übersetzt auf das Sync-Protokoll: GET → {data}, PUT → {updatedAt} | 409 {data}, DELETE */
+async function callSync(method, token, body){
+  if(method === 'GET'){
+    const {status, j} = await rpc('get_user_data', token);
+    return status === 200 ? {status, j: {data: j || null}} : {status, j};
+  }
+  if(method === 'PUT'){
+    const {status, j} = await rpc('save_user_data', token, {
+      p_cards: body.cards, p_wishes: body.wishes, p_notes: body.notes || '', p_base: body.baseUpdatedAt || null});
+    if(status === 200 && j && j.ok) return {status: 200, j: {updatedAt: j.updatedAt}};
+    if(status === 200 && j) return {status: 409, j: {data: j.data}};
+    return {status, j: {error: j && (j.message || j.msg)}};
+  }
+  const {status, j} = await rpc('delete_user_data', token);
+  return {status, j};
 }
 
 const Sync = {
@@ -2271,6 +2312,7 @@ window.Sync = Sync;
 let mode = 'login';
 let busy = false;
 const googleOn = () => !!(settings && settings.external && settings.external.google);
+const appleOn = () => !!(settings && settings.external && settings.external.apple);
 
 function setMsg(text, type){
   const m = $('authMsg');
@@ -2282,12 +2324,13 @@ function setBusy(b){
   busy = b;
   $('authSubmit').disabled = b;
   $('authGoogle').disabled = b;
+  $('authApple').disabled = b;
 }
 
 function setMode(m){
   mode = m;
   const reg = m === 'register', log = m === 'login', forg = m === 'forgot', reset = m === 'reset';
-  const social = (log || reg) && googleOn();
+  const social = (log || reg) && (googleOn() || appleOn());
   document.querySelectorAll('#authTabs button').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
   $('authTabs').classList.toggle('hidden', forg || reset);
   document.querySelector('#authTabs [data-mode=register]').classList.toggle('hidden', !!(settings && settings.disable_signup));
@@ -2296,7 +2339,8 @@ function setMode(m){
     : forg ? 'Wir senden dir einen Link zum Zurücksetzen per E-Mail.'
     : reset ? 'Wähle ein neues Passwort für dein Konto.'
     : 'Melde dich an, um deine Sammlung auf jedem Gerät zu nutzen.';
-  $('authGoogle').classList.toggle('hidden', !social);
+  $('authGoogle').classList.toggle('hidden', !((log || reg) && googleOn()));
+  $('authApple').classList.toggle('hidden', !((log || reg) && appleOn()));
   $('authOr').classList.toggle('hidden', !social);
   $('authNameWrap').classList.toggle('hidden', !reg);
   $('authMailWrap').classList.toggle('hidden', reset);
@@ -2317,7 +2361,7 @@ function showAuth(m, notice){
   setMode(m || 'login');
   if(notice) setMsg(notice.m, notice.t);
   $('authLocalWrap').classList.toggle('hidden', !!settings);
-  if(!settings && !notice) setMsg('Der Anmeldedienst ist gerade nicht erreichbar. Läuft die Seite auf Netlify mit aktiviertem Identity?', 'err');
+  if(!settings && !notice) setMsg('Der Anmeldedienst ist gerade nicht erreichbar. Bitte später erneut versuchen – oder vorerst lokal ohne Konto weitermachen.', 'err');
   if(window.matchMedia && matchMedia('(pointer:fine)').matches){
     setTimeout(()=>{ const f = mode === 'reset' ? $('authPw') : $('authEmail'); if(f) f.focus(); }, 60);
   }
@@ -2333,7 +2377,7 @@ function initials(n){
 }
 function providerName(u){
   const p = u && u.app_metadata && u.app_metadata.provider;
-  return p === 'google' ? 'Google' : (p && p !== 'email' ? p : 'E-Mail & Passwort');
+  return p === 'google' ? 'Google' : p === 'apple' ? 'Apple' : (p && p !== 'email' ? p : 'E-Mail & Passwort');
 }
 function setUserUi(u){
   const n = userName(u);
@@ -2351,7 +2395,7 @@ function updateAccountUi(){
   $('acSyncState').textContent = Sync.stateText || '–';
   $('acSyncTime').textContent = Sync.last ? Sync.last.toLocaleString('de-DE', {dateStyle:'medium', timeStyle:'short'}) : '–';
   $('acSyncCount').textContent = Sync.counts ? `${Sync.counts.cards} Karten · ${Sync.counts.wishes} Wünsche` : '–';
-  $('acPwPanel').classList.toggle('hidden', providerName(u) === 'Google');
+  $('acPwPanel').classList.toggle('hidden', ['Google', 'Apple'].includes(providerName(u)));
 }
 
 async function enter(notice){
@@ -2388,7 +2432,9 @@ function wire(){
     $('authPw').type = show ? 'text' : 'password';
     $('authPwToggle').textContent = show ? 'Verbergen' : 'Zeigen';
   });
-  $('authGoogle').addEventListener('click', ()=>{ location.href = ID + '/authorize?provider=google'; });
+  const oauth = provider => { location.href = ID + '/authorize?provider=' + provider + '&redirect_to=' + encodeURIComponent(SITE); };
+  $('authGoogle').addEventListener('click', ()=>oauth('google'));
+  $('authApple').addEventListener('click', ()=>oauth('apple'));
   $('authLocal').addEventListener('click', ()=>{
     document.body.classList.remove('locked', 'auth-open');
   });
@@ -2409,16 +2455,19 @@ function wire(){
         await login(email, pw);
         await enter();
       }else if(mode === 'register'){
-        const res = await idFetch('/signup', {method:'POST', headers:JSON_H,
+        const res = await idFetch('/signup?redirect_to=' + encodeURIComponent(SITE), {method:'POST', headers:JSON_H,
           body: JSON.stringify({email, password: pw, data: name ? {full_name: name} : {}})});
-        if(res && res.confirmed_at){ await login(email, pw); await enter(); }
-        else{
+        if(res && res.access_token){ await fromTokens(res); await enter(); }
+        else if(res && Array.isArray(res.identities) && !res.identities.length){
+          setMode('login'); $('authEmail').value = email; $('authPw').value = '';
+          setMsg('Mit dieser E-Mail gibt es schon ein Konto. Melde dich an oder setze dein Passwort zurück.', 'err');
+        }else{
           setMode('login');
           $('authEmail').value = email; $('authPw').value = '';
           setMsg('Fast geschafft: Wir haben dir eine Bestätigungs-Mail an ' + email + ' geschickt. Klicke auf den Link darin und melde dich danach an.', 'ok');
         }
       }else if(mode === 'forgot'){
-        await idFetch('/recover', {method:'POST', headers:JSON_H, body: JSON.stringify({email})});
+        await idFetch('/recover?redirect_to=' + encodeURIComponent(SITE), {method:'POST', headers:JSON_H, body: JSON.stringify({email})});
         setMode('login');
         $('authEmail').value = email;
         setMsg('Falls es ein Konto mit ' + email + ' gibt, ist eine E-Mail zum Zurücksetzen unterwegs.', 'ok');
@@ -2495,11 +2544,15 @@ function parseHash(){
   if(!h || h.indexOf('=') < 0) return null;
   const o = {};
   new URLSearchParams(h).forEach((v, k) => { o[k] = v; });
-  return (o.access_token || o.confirmation_token || o.recovery_token || o.email_change_token || o.invite_token || o.error) ? o : null;
+  return (o.access_token || o.error || o.error_code) ? o : null;
 }
 
 async function init(){
   wire();
+  if(!CONFIGURED){   // config.js noch nicht ausgefüllt: App wie bisher ohne Konto
+    document.body.classList.remove('locked', 'auth-open');
+    return;
+  }
   try{ settings = await idFetch('/settings'); }catch(e){ settings = null; }
 
   const h = parseHash();
@@ -2508,21 +2561,13 @@ async function init(){
 
   let notice = null, reset = false;
   try{
-    if(h && h.error){
-      notice = {t:'err', m: h.error_description || h.error};
+    if(h && (h.error || h.error_code)){
+      notice = {t:'err', m: deText({error_description: (h.error_description || h.error || '').replace(/\+/g, ' ')}, 400)};
     }else if(h && h.access_token){
       await fromTokens({access_token: h.access_token, refresh_token: h.refresh_token, expires_in: h.expires_in});
-    }else if(h && h.confirmation_token){
-      await fromTokens(await idFetch('/verify', {method:'POST', headers:JSON_H, body: JSON.stringify({token: h.confirmation_token, type:'signup'})}));
-      notice = {t:'ok', m:'E-Mail bestätigt – willkommen bei POKETA!'};
-    }else if(h && h.recovery_token){
-      await fromTokens(await idFetch('/verify', {method:'POST', headers:JSON_H, body: JSON.stringify({token: h.recovery_token, type:'recovery'})}));
-      reset = true;
-    }else if(h && h.email_change_token){
-      await fromTokens(await idFetch('/verify', {method:'POST', headers:JSON_H, body: JSON.stringify({token: h.email_change_token, type:'email_change'})}));
-      notice = {t:'ok', m:'Neue E-Mail-Adresse bestätigt.'};
-    }else if(h && h.invite_token){
-      notice = {t:'err', m:'Einladungen werden hier nicht unterstützt. Bitte registriere dich normal.'};
+      if(h.type === 'recovery') reset = true;
+      else if(h.type === 'signup') notice = {t:'ok', m:'E-Mail bestätigt – willkommen bei POKETA!'};
+      else if(h.type === 'email_change') notice = {t:'ok', m:'Neue E-Mail-Adresse bestätigt.'};
     }
   }catch(e){
     notice = {t:'err', m: e.message};
