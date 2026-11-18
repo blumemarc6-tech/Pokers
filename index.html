@@ -1023,13 +1023,18 @@ function imgFallback(el){
 
 /* ── Varianten (je Cardmarket-Produkt eine Auswahl) ── */
 const V_SUB = {unlimited:'Unbegrenzt', shadowless:'Shadowless', 'shadowless-red-cheek':'Shadowless (rote Wangen)', '1999-2000-copyright':'©1999–2000'};
+/* TCGdex liefert die Untertypen auf Deutsch übersetzt – Sammler sagen „Shadowless“ */
+const V_SUB_DE = {'schattenlos':'Shadowless', 'unbegrenzt':'Unbegrenzt', 'schattenlose rote wange':'Shadowless (rote Wangen)', 'copyright 1999-2000':'©1999–2000'};
 const V_STAMP = {'1st-edition':'1. Auflage', 'player-rewards-program':'Prize-Pack-Stempel', 'pokemon-center':'Pokémon-Center-Stempel',
   'pre-release':'Prerelease', 'set-promo':'Set-Stempel', staff:'Staff', 'w-promo':'W-Promo', pikachu:'Pikachu-Stempel', 'poketour-99':'PokéTour 99',
   gamestop:'GameStop-Stempel', 'eb-games':'EB-Games-Stempel', snowflake:'Schneeflocken-Stempel', 'trick-or-trade':'Trick-or-Trade-Stempel'};
 const V_TYPE = {normal:'Normal', holo:'Holo', reverse:'Reverse Holo'};
 function variantLabel(v){
   const parts = [];
-  if(v.subtype) parts.push(V_SUB[v.subtype] || v.subtype);
+  if(v.subtype){
+    const st = String(v.subtype).toLowerCase();
+    parts.push(V_SUB[st] || V_SUB_DE[st] || v.subtype);
+  }
   (v.stamp || []).forEach(s => parts.push(V_STAMP[s] || s));
   if(!parts.length && v.type) parts.push(V_TYPE[v.type] || v.type);
   if(v.size === 'jumbo') parts.push('Jumbo');
