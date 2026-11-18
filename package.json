@@ -1,9 +1,9 @@
 {
   "name": "poketa",
   "private": true,
-  "description": "POKETA – Card Hub mit Konto-Sync (Netlify Identity + Blobs)",
+  "description": "POKETA – Card Hub: Konto-Sync, Cardmarket-Preise und Preisverlauf (Netlify Identity + Blobs)",
   "scripts": {
-    "test": "node test/sync.test.js"
+    "test": "node test/sync.test.js && node test/prices.test.js"
   },
   "dependencies": {
     "@netlify/blobs": "^10.7.13"

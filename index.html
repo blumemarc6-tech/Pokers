@@ -244,6 +244,126 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   .grade-scores{grid-template-columns:repeat(2,1fr)}
 }
 
+/* ═══════ Startseite: Hero ═══════ */
+.hero{
+  position:relative;overflow:hidden;border-radius:24px;padding:22px 20px;margin:4px 0 12px;
+  display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:center;
+  background:
+    radial-gradient(ellipse 70% 90% at 85% 40%, rgba(139,111,255,.35), transparent 60%),
+    radial-gradient(ellipse 60% 70% at 10% 100%, rgba(61,217,245,.18), transparent 60%),
+    linear-gradient(160deg,#121b33,#0b1122);
+  border:1px solid rgba(139,111,255,.3);
+}
+.hero>div{min-width:0}
+.hero h1{font-size:28px;line-height:1.1;font-weight:900;letter-spacing:-.5px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#c4b5ff,var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{color:#b5c2dc;font-size:13px;margin:8px 0 14px;max-width:420px}
+.hero-search{display:flex;gap:6px;background:rgba(7,11,20,.7);border:1px solid var(--line);border-radius:14px;padding:5px}
+.hero-search input{flex:1;min-width:0;background:transparent;border:0;color:var(--txt);padding:8px 10px;font-size:16px}
+.hero-search input:focus{outline:none}
+.hero-search button{padding:9px 14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{background:rgba(255,255,255,.06);border:1px solid var(--line);color:#cdd7ee;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600;box-shadow:none}
+.chip:hover{background:rgba(139,111,255,.22);box-shadow:none}
+.hero-stage{position:relative;height:230px;perspective:900px}
+.holo{
+  position:absolute;top:50%;left:50%;width:128px;aspect-ratio:63/88;border-radius:9px;overflow:hidden;cursor:pointer;
+  background:#0a1220;box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);
+  transform-style:preserve-3d;transition:box-shadow .3s;
+  animation:floaty 6s ease-in-out infinite;
+}
+.holo img{width:100%;height:100%;object-fit:cover;display:block}
+.holo::after{
+  content:'';position:absolute;inset:0;pointer-events:none;mix-blend-mode:color-dodge;opacity:.55;
+  background:
+    linear-gradient(115deg,transparent 20%,rgba(255,120,220,.55) 36%,rgba(120,220,255,.55) 46%,rgba(140,255,170,.5) 56%,rgba(255,240,120,.45) 64%,transparent 80%);
+  background-size:250% 250%;animation:shine 5s linear infinite;
+}
+.holo::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at var(--mx,50%) var(--my,30%),rgba(255,255,255,.35),transparent 45%);mix-blend-mode:overlay}
+.holo.h1{--r:-14deg;--x:-118%;z-index:1;animation-delay:-1.5s}
+.holo.h2{--r:0deg;--x:-50%;z-index:3;width:146px}
+.holo.h3{--r:14deg;--x:18%;z-index:2;animation-delay:-3s}
+.holo{transform:translate(var(--x),-50%) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
+.holo:hover{box-shadow:0 22px 50px rgba(139,111,255,.45),0 0 0 1px rgba(255,255,255,.18)}
+@keyframes floaty{
+  0%,100%{transform:translate(var(--x),-50%) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
+  50%{transform:translate(var(--x),calc(-50% - 10px)) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
+}
+@keyframes shine{0%{background-position:0% 0%}100%{background-position:250% 250%}}
+
+/* Ticker */
+.ticker{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:rgba(10,16,32,.8);margin:0 0 6px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.ticker-track{display:flex;gap:26px;width:max-content;padding:10px 0;animation:tick 60s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.tk{display:flex;gap:7px;align-items:baseline;white-space:nowrap;font-size:12px;cursor:pointer}
+.tk b{font-weight:700;color:#dbe4f7}
+.tk .p{color:var(--b);font-weight:800}
+.tk .up{color:var(--green);font-weight:700}.tk .down{color:var(--red);font-weight:700}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.6s ease-in-out infinite}
+@keyframes tick{to{transform:translateX(-50%)}}
+@keyframes pulse{50%{opacity:.35}}
+
+/* Karte des Tages */
+.daily{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:16px;border-radius:20px;margin:14px 0 6px;
+  background:linear-gradient(135deg,rgba(255,201,74,.12),rgba(139,111,255,.12) 50%,rgba(61,217,245,.06));border:1px solid rgba(255,201,74,.28)}
+.daily .holo{position:relative;top:auto;left:auto;transform:none;animation:none;width:150px}
+.daily .label{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--gold)}
+.daily h3{font-size:20px;font-weight:900;margin-top:2px}
+.daily .set{font-size:12px;color:var(--muted)}
+.daily .big{font-size:26px;font-weight:900;color:var(--b);margin-top:6px}
+.daily-info{min-width:0}
+
+/* Preis-Elemente */
+.chg{font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap}
+.chg.up{background:rgba(61,255,168,.15);color:var(--green)}
+.chg.down{background:rgba(255,92,122,.15);color:var(--red)}
+.chg.flat{background:rgba(139,155,184,.12);color:var(--muted)}
+.cm-btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:800;font-size:13px;color:#06101e;
+  background:linear-gradient(125deg,#5ee6ff,#3dd9f5);padding:10px 14px;border-radius:12px}
+.cm-btn:hover{filter:brightness(1.08)}
+.cm-mini{font-size:11px;font-weight:800;color:var(--b);text-decoration:none;padding:2px 6px;border:1px solid rgba(61,217,245,.35);border-radius:6px;white-space:nowrap}
+.cm-mini:hover{background:rgba(61,217,245,.12)}
+.tile .spark{display:block;width:100%;height:26px;margin-top:6px}
+.tile .bottom{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin:10px 0}
+.price-box{background:#0a1220;border:1px solid var(--line);border-radius:10px;padding:9px 10px;text-align:center}
+.price-box span{display:block;font-size:10px;color:var(--muted)}
+.price-box b{font-size:15px;font-weight:800;color:var(--b)}
+.price-box.main{border-color:rgba(61,217,245,.45);background:rgba(61,217,245,.07)}
+.variant-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.variant-row label{font-size:12px;color:var(--muted);font-weight:700}
+.variant-row select{flex:1;min-width:180px}
+
+/* Graph */
+.chart-box{margin:12px 0;padding:12px;background:#0a1220;border:1px solid var(--line);border-radius:14px}
+.chart-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.chart-head b{font-size:13px}
+.ranges{display:flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:3px}
+.ranges button{background:transparent;color:var(--muted);padding:5px 9px;font-size:12px;border-radius:7px;box-shadow:none}
+.ranges button:hover{box-shadow:none;transform:none}
+.ranges button.on{background:rgba(139,111,255,.3);color:#fff}
+.chart{position:relative;height:180px;touch-action:pan-y}
+.chart svg{display:block;width:100%;height:100%;overflow:visible}
+.chart .tip{position:absolute;top:0;pointer-events:none;background:rgba(12,18,36,.95);border:1px solid var(--line);border-radius:9px;padding:6px 8px;font-size:11px;white-space:nowrap;transform:translateX(-50%);opacity:0;transition:opacity .12s}
+.chart .tip b{display:block;font-size:13px;color:var(--b)}
+.chart-foot{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:6px}
+.chart-foot i{display:inline-block;width:16px;height:0;border-top:2px solid var(--b);vertical-align:middle;margin-right:4px}
+.chart-foot i.est{border-top-style:dashed;border-color:#8b9bb8}
+
+@media(max-width:640px){
+  .hero{grid-template-columns:1fr;padding:18px 16px}
+  .hero h1{font-size:24px}
+  .hero-stage{height:200px;order:-1}
+  .holo{width:108px}.holo.h2{width:124px}
+  .daily{grid-template-columns:1fr}
+  .daily .holo{width:130px;margin:0 auto}
+}
+@media(prefers-reduced-motion:reduce){
+  .holo,.holo::after,.ticker-track,.live-dot{animation:none!important}
+  .ticker{overflow-x:auto}
+}
+
 /* ═══════ Konto / Anmeldung ═══════ */
 body.locked{overflow:hidden}
 body.locked .wrap{display:none}
@@ -378,6 +498,23 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
 <!-- ═══════ START / DASHBOARD ═══════ -->
 <section class="view active" id="dashboard">
 
+  <!-- Hero -->
+  <div class="hero">
+    <div>
+      <h1>Deine Karten.<br><em>Live-Preise von Cardmarket.</em></h1>
+      <p class="lead">Offizieller Cardmarket-Price-Guide, Preisverlauf für jede Karte und direkte Links zum Produkt.</p>
+      <form class="hero-search" id="heroSearch">
+        <input id="heroQ" placeholder="Karte suchen, z. B. Glurak" autocomplete="off" enterkeyhint="search" aria-label="Karte suchen">
+        <button type="submit">Suchen</button>
+      </form>
+      <div class="chips" id="heroChips"></div>
+    </div>
+    <div class="hero-stage" id="heroStage"></div>
+  </div>
+
+  <!-- Ticker -->
+  <div class="ticker" id="ticker" aria-label="Live-Preise"><div class="ticker-track" id="tickerTrack"><span class="tk"><span class="live-dot"></span><b>Live-Preise werden geladen …</b></span></div></div>
+
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat"><span>Sammlung</span><strong id="statCount">0</strong></div>
@@ -386,46 +523,17 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
     <div class="stat"><span>G/V</span><strong id="statProfit">0 €</strong></div>
   </div>
 
-  <!-- Featured -->
-  <div class="hero-card" onclick="searchPopular('Glurak ex')">
-    <img src="https://images.pokemontcg.io/sv3/125_hires.png"
-         onerror="this.src='https://images.pokemontcg.io/sv3/125.png'"
-         alt="Glurak ex">
-    <div class="info">
-      <div class="label">★ KARTEN DES TAGES</div>
-      <h3>Glurak ex</h3>
-      <div class="set">Obsidianflammen · SIR</div>
-      <div class="price">lädt…</div>
-      <div class="change">Cardmarket Live</div>
-    </div>
-  </div>
+  <!-- Karte des Tages -->
+  <div class="daily" id="daily"><div class="muted">Karte des Tages wird geladen …</div></div>
 
-  <!-- Beliebteste Karten -->
-  <div class="sec-head">
-    <h2>🔥 Beliebteste Karten</h2>
-    <span class="more" onclick="show('search')">Alle →</span>
-  </div>
-  <div class="h-scroll" id="popularScroll"></div>
+  <div class="sec-head"><h2>⚡ Größte Bewegungen</h2><span class="muted" style="font-size:11px">Trend vs. 30-Tage-Ø</span></div>
+  <div class="h-scroll" id="moversScroll"></div>
 
-  <!-- Preissteigerungen -->
-  <div class="sec-head">
-    <h2>📈 Preissteigerungen</h2>
-    <span class="more" onclick="show('search')">Mehr →</span>
-  </div>
-  <div class="h-scroll" id="risersScroll"></div>
+  <div class="sec-head"><h2>✨ Neu: Mega-Entwicklung</h2><span class="more" onclick="searchPopular('Mega')">Mehr →</span></div>
+  <div class="h-scroll" id="megaScroll"></div>
 
-  <!-- Neuerscheinungen -->
-  <div class="sec-head">
-    <h2>✨ Neu erschienene Karten</h2>
-    <span class="more" onclick="show('search')">Mehr →</span>
-  </div>
-  <div class="h-scroll" id="newScroll"></div>
-
-  <!-- Meistgesucht -->
-  <div class="sec-head">
-    <h2>🔍 Meistgesuchte Karten</h2>
-  </div>
-  <div class="h-scroll" id="searchedScroll"></div>
+  <div class="sec-head"><h2>🏆 Klassiker</h2><span class="more" onclick="searchPopular('Glurak')">Mehr →</span></div>
+  <div class="h-scroll" id="classicScroll"></div>
 
   <!-- Zuletzt -->
   <div class="sec-head">
@@ -740,42 +848,12 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
 <script>
-/* ── Design-Beispiel-Daten (keine Live-Rankings) ── */
-/* Home cards – IDs matched to TCGdex (live prices on load) */
-const homeCards = {
-  popular: [
-    {id:'sv03-125', name:'Glurak ex', set:'Obsidianflammen', img:'https://images.pokemontcg.io/sv3/125_hires.png', rank:1},
-    {id:'sv08-247', name:'Pikachu ex', set:'Stürmische Funken', img:'https://images.pokemontcg.io/sv8/247_hires.png', rank:2},
-    {id:'swsh7-215', name:'Nachtara VMAX', set:'Evolving Skies', img:'https://images.pokemontcg.io/swsh7/215_hires.png', rank:3},
-    {id:'base1-4', name:'Glurak', set:'Base Set', img:'https://images.pokemontcg.io/base1/4_hires.png', rank:4},
-    {id:'sv03.5-151', name:'Mew ex', set:'151', img:'https://images.pokemontcg.io/sv3pt5/151_hires.png', rank:5}
-  ],
-  risers: [
-    {id:'sv03.5-151', name:'Mew ex', set:'151', img:'https://images.pokemontcg.io/sv3pt5/151_hires.png'},
-    {id:'sv08-247', name:'Pikachu ex', set:'Stürmische Funken', img:'https://images.pokemontcg.io/sv8/247_hires.png'},
-    {id:'sv03-125', name:'Glurak ex', set:'Obsidianflammen', img:'https://images.pokemontcg.io/sv3/125_hires.png'},
-    {id:'swsh7-215', name:'Nachtara VMAX', set:'Evolving Skies', img:'https://images.pokemontcg.io/swsh7/215_hires.png'}
-  ],
-  news: [
-    {id:'sv08-247', name:'Pikachu ex', set:'Stürmische Funken', img:'https://images.pokemontcg.io/sv8/247_hires.png'},
-    {id:'sv03-125', name:'Glurak ex', set:'Obsidianflammen', img:'https://images.pokemontcg.io/sv3/125_hires.png'},
-    {id:'sv03.5-151', name:'Mew ex', set:'151', img:'https://images.pokemontcg.io/sv3pt5/151_hires.png'},
-    {id:'swsh7-215', name:'Nachtara VMAX', set:'Evolving Skies', img:'https://images.pokemontcg.io/swsh7/215_hires.png'}
-  ],
-  searched: [
-    {id:'base1-4', name:'Glurak', set:'Base Set', img:'https://images.pokemontcg.io/base1/4_hires.png'},
-    {id:'base1-58', name:'Pikachu', set:'Base Set', img:'https://images.pokemontcg.io/base1/58_hires.png'},
-    {id:'base1-10', name:'Mewtu', set:'Base Set', img:'https://images.pokemontcg.io/base1/10_hires.png'},
-    {id:'base1-44', name:'Bisasam', set:'Base Set', img:'https://images.pokemontcg.io/base1/44_hires.png'}
-  ]
-};
-
 const demo = [
-  {id:'sv3-125',name:'Glurak ex',localId:'125',set:{name:'Obsidianflammen'},image:'https://assets.tcgdex.net/de/sv/sv3/125'},
+  {id:'sv03-125',name:'Glurak-ex',localId:'125',set:{name:'Obsidian Flammen'},image:'https://assets.tcgdex.net/de/sv/sv03/125'},
   {id:'swsh3-136',name:'Glurak',localId:'136',set:{name:'Flammende Finsternis'},image:'https://assets.tcgdex.net/de/swsh/swsh3/136'},
   {id:'sv2-203',name:'Nachtara ex',localId:'203',set:{name:'Entwicklungen in Paldea'},image:'https://assets.tcgdex.net/de/sv/sv2/203'},
   {id:'swsh7-215',name:'Nachtara VMAX',localId:'215',set:{name:'Evolving Skies'},image:'https://assets.tcgdex.net/en/swsh/swsh7/215'},
-  {id:'sv08-247',name:'Pikachu ex',localId:'247',set:{name:'Surging Sparks'},image:'https://images.pokemontcg.io/sv8/247_hires.png'}
+  {id:'sv08-247',name:'Pikachu ex',localId:'247',set:{name:'Surging Sparks'},image:'https://assets.tcgdex.net/en/sv/sv08/247'}
 ];
 
 let cards=JSON.parse(localStorage.getItem('poketa_cards')||'[]');
@@ -817,116 +895,405 @@ function update(){
   statProfit.style.color=val-buy>=0?'var(--green)':'var(--red)';
   recent.innerHTML=cards.length
     ? `<div class="h-scroll">${cards.slice(-5).reverse().map(c=>`
-        <div class="tile" onclick="show('collection')">
-          <img src="${safe(c.image)}" onerror="this.style.opacity=.3">
+        <div class="tile" onclick="openCard('${safe(c.id)}','${safe(c.lang||'de')}')">
+          <img src="${safe(c.image)}" onerror="imgFallback(this)">
           <div class="meta"><div class="name">${safe(c.name)}</div><div class="set">${safe(c.set||'')}</div>
           <div class="price-row"><span class="price">${money(c.value)}</span></div></div>
         </div>`).join('')}</div>`
     : '<div class="empty">Noch keine Karten in deiner Sammlung.</div>';
 }
 
-/* Render horizontal tile rows */
 function fmtEUR(v){
   if(v==null || isNaN(v) || v<=0) return '—';
   return Number(v).toLocaleString('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2});
 }
 
-function tileHTML(c, ranked){
-  const rankCls = ranked && c.rank ? ` r${c.rank}` : '';
-  const rankBadge = ranked && c.rank ? `<div class="rank-badge">${c.rank}</div>` : '';
-  const price = c.livePrice != null ? fmtEUR(c.livePrice) : 'lädt…';
-  const lowLine = c.liveLow != null ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">ab ${fmtEUR(c.liveLow)}</div>` : '';
-  const change = c.liveChange != null
-    ? `<span class="change ${c.liveChange>=0?'up':'down'}">${c.liveChange>=0?'+':''}${c.liveChange}%</span>`
-    : `<span class="change" style="color:var(--muted);background:transparent">CM</span>`;
-  return `<div class="tile${rankCls}" onclick="searchPopular('${safe(c.name)}')">
-    ${rankBadge}
-    <img src="${safe(c.img)}" onerror="this.style.opacity=.35" alt="${safe(c.name)}" loading="eager">
+/* ═══════════════════════════════════════════════════════════════
+   Preise · Varianten · Cardmarket-Links · Preisverlauf
+   Quelle: offizieller Cardmarket-Price-Guide über TCGdex (ohne API-Key)
+   ═══════════════════════════════════════════════════════════════ */
+const TCG = 'https://api.tcgdex.net/v2';
+const DAY = 864e5;
+const _cardCache = new Map();
+
+async function getJSON(url, tries){
+  tries = tries || 3;
+  for(let i = 0; i < tries; i++){
+    try{
+      const r = await fetch(url);
+      if(r.ok) return await r.json();
+      if(r.status === 404) return null;
+    }catch(e){}
+    await new Promise(res => setTimeout(res, 350 * (i + 1)));
+  }
+  return null;
+}
+
+/* Karte mit Preisen laden (deutsch, fehlende Teile aus EN ergänzt) */
+async function tcgCard(id, lang, fresh){
+  lang = lang || 'de';
+  const k = lang + ':' + id, hit = _cardCache.get(k);
+  if(!fresh && hit && Date.now() - hit.t < 10 * 60e3) return hit.c;
+  let c = await getJSON(`${TCG}/${lang}/cards/${encodeURIComponent(id)}`);
+  if(lang !== 'en' && (!c || !c.pricing?.cardmarket || !c.image)){
+    const en = await getJSON(`${TCG}/en/cards/${encodeURIComponent(id)}`);
+    if(en){
+      if(!c) c = en;
+      else{
+        if(!c.pricing?.cardmarket){ c.pricing = en.pricing; c.variants_detailed = en.variants_detailed; }
+        if(!c.image) c.image = en.image;
+      }
+      c.enName = en.name;
+    }
+  }
+  if(c) _cardCache.set(k, {t: Date.now(), c});
+  return c;
+}
+
+/* Bild-URL ohne API-Aufruf (für sofortiges Rendern), EN als Ausweich */
+function guessImg(id, lang){
+  const i = String(id).lastIndexOf('-'), set = String(id).slice(0, i), no = String(id).slice(i + 1);
+  const series = (set.match(/^[a-z]+/i) || [''])[0];
+  return `https://assets.tcgdex.net/${lang || 'de'}/${series}/${set}/${no}/high.webp`;
+}
+function imgFallback(el){
+  if(el.dataset.fb){ el.style.opacity = .3; return; }
+  el.dataset.fb = 1;
+  el.src = el.src.replace(/assets\.tcgdex\.net\/(de|ja|fr|it|es|pt)\//, 'assets.tcgdex.net/en/');
+}
+
+/* ── Varianten (je Cardmarket-Produkt eine Auswahl) ── */
+const V_SUB = {unlimited:'Unbegrenzt', shadowless:'Shadowless', 'shadowless-red-cheek':'Shadowless (rote Wangen)', '1999-2000-copyright':'©1999–2000'};
+const V_STAMP = {'1st-edition':'1. Auflage', 'player-rewards-program':'Prize-Pack-Stempel', 'pokemon-center':'Pokémon-Center-Stempel',
+  'pre-release':'Prerelease', 'set-promo':'Set-Stempel', staff:'Staff', 'w-promo':'W-Promo', pikachu:'Pikachu-Stempel', 'poketour-99':'PokéTour 99',
+  gamestop:'GameStop-Stempel', 'eb-games':'EB-Games-Stempel', snowflake:'Schneeflocken-Stempel', 'trick-or-trade':'Trick-or-Trade-Stempel'};
+const V_TYPE = {normal:'Normal', holo:'Holo', reverse:'Reverse Holo'};
+function variantLabel(v){
+  const parts = [];
+  if(v.subtype) parts.push(V_SUB[v.subtype] || v.subtype);
+  (v.stamp || []).forEach(s => parts.push(V_STAMP[s] || s));
+  if(!parts.length && v.type) parts.push(V_TYPE[v.type] || v.type);
+  if(v.size === 'jumbo') parts.push('Jumbo');
+  const l = parts.join(' · ') || 'Standard';
+  return l.charAt(0).toUpperCase() + l.slice(1);
+}
+function cmVariants(c){
+  const map = new Map(), main = c?.pricing?.cardmarket;
+  (c?.variants_detailed || []).forEach(v => {
+    const id = v?.thirdParty?.cardmarket; if(!id) return;
+    const pr = v.pricing?.cardmarket || null, lab = variantLabel(v), o = map.get(id);
+    if(!o) map.set(id, {idProduct:id, labels:[lab], cm:pr});
+    else{ if(!o.labels.includes(lab)) o.labels.push(lab); if(!o.cm && pr) o.cm = pr; }
+  });
+  if(main?.idProduct){
+    const o = map.get(main.idProduct);
+    if(o){ if(!o.cm) o.cm = main; }
+    else map.set(main.idProduct, {idProduct:main.idProduct, labels:['Standard'], cm:main});
+  }
+  let list = [...map.values()];
+  if(main?.idProduct) list.sort((a, b) => (b.idProduct === main.idProduct) - (a.idProduct === main.idProduct));
+  list.forEach(v => {                     // „Shadowless“ + „Shadowless · 1. Auflage“ → „Shadowless (inkl. 1. Auflage)“
+    const ls = v.labels.slice().sort((a, b) => a.length - b.length), base = ls[0];
+    const extra = ls.slice(1).map(l => l.startsWith(base + ' · ') ? l.slice(base.length + 3) : l);
+    v.label = extra.length ? (ls.slice(1).every(l => l.startsWith(base + ' · ')) ? `${base} (inkl. ${extra.join(', ')})` : [base, ...extra].join(' / ')) : base;
+  });
+  const cnt = {}, n = {};
+  list.forEach(v => cnt[v.label] = (cnt[v.label] || 0) + 1);
+  list.forEach(v => { if(cnt[v.label] > 1){ n[v.label] = (n[v.label] || 0) + 1; v.label += ' · Version ' + n[v.label]; } });
+  if(!list.length && main) list = [{idProduct:null, label:'Standard', labels:[], cm:main}];
+  return list;
+}
+
+/* ── Preis-Kennzahlen ── */
+const pos = v => typeof v === 'number' && v > 0;
+function cmHolo(cm){ return !!cm && !(pos(cm.trend) || pos(cm.avg30) || pos(cm.avg7) || pos(cm.low)); }
+function cmVal(cm, k){ return cm ? cm[cmHolo(cm) ? k + '-holo' : k] : null; }
+function cmMain(cm){
+  if(!cm) return null;
+  return ['trend','avg7','avg30','avg','low'].map(k => cmVal(cm, k)).find(pos) || null;
+}
+function cmChange(cm){
+  const t = cmVal(cm, 'trend'), a = cmVal(cm, 'avg30');
+  return pos(t) && pos(a) ? Math.round((t - a) / a * 1000) / 10 : null;
+}
+function chgHTML(p){
+  if(p == null) return '<span class="chg flat">–</span>';
+  const c = p > 0.05 ? 'up' : p < -0.05 ? 'down' : 'flat';
+  return `<span class="chg ${c}">${p > 0 ? '▲ +' : p < 0 ? '▼ ' : ''}${p.toLocaleString('de-DE', {maximumFractionDigits:1})} %</span>`;
+}
+
+/* ── Cardmarket-Links: direkt per Produkt-ID, sonst Suche ── */
+const CM_BASE = 'https://www.cardmarket.com/de/Pokemon';
+function cmLink(idProduct, card){
+  if(idProduct) return `${CM_BASE}/Products?idProduct=${encodeURIComponent(idProduct)}`;
+  return `${CM_BASE}/Products/Search?searchString=${encodeURIComponent(cmSearchQuery(card || {}))}`;
+}
+
+/* ── Preisverlauf (Server: täglich gespeicherter Cardmarket-Price-Guide) ── */
+const PriceHist = {
+  mem: {}, KEY: 'poketa_tracked',
+  async load(ids){
+    ids = [...new Set((ids || []).filter(Boolean).map(Number))];
+    const need = ids.filter(id => !(id in this.mem));
+    if(need.length){
+      let tracked = {};
+      try{ tracked = JSON.parse(localStorage.getItem(this.KEY) || '{}'); }catch(e){}
+      for(let i = 0; i < need.length; i += 40){
+        const chunk = need.slice(i, i + 40);
+        try{
+          const r = await fetch('/api/prices', {method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ids: chunk, track: chunk.filter(id => !tracked[id])})});
+          const j = r.ok ? await r.json() : null;
+          chunk.forEach(id => { this.mem[id] = (j && j.history && j.history[id]) || []; if(j) tracked[id] = 1; });
+        }catch(e){ chunk.forEach(id => this.mem[id] = []); }
+      }
+      try{ localStorage.setItem(this.KEY, JSON.stringify(tracked)); }catch(e){}
+    }
+    const out = {}; ids.forEach(id => out[id] = this.mem[id] || []); return out;
+  }
+};
+
+/* Serie für den Graphen: echte Tageswerte + (gestrichelt) Schätzung aus Ø 30/7/1 Tage */
+function priceSeries(cm, hist){
+  const real = (hist || []).map(p => ({t: Date.parse(p[0] + 'T12:00:00Z'), v: p[1] || p[3] || p[4] || p[2] || p[5]})).filter(p => pos(p.v));
+  const cur = cmMain(cm);
+  if(cur){
+    let t = cm.updated ? Date.parse(cm.updated) : Date.now();
+    if(!(t > 0)) t = Date.now();
+    const d = new Date(t).toISOString().slice(0, 10), last = real[real.length - 1];
+    if(last && new Date(last.t).toISOString().slice(0, 10) === d) last.v = cur;
+    else if(!last || t > last.t) real.push({t, v: cur});
+  }
+  real.sort((a, b) => a.t - b.t);
+  const est = [];
+  const end = real.length ? real[real.length - 1].t : Date.now();
+  const first = real.length ? real[0].t : end;
+  [[30, cmVal(cm, 'avg30')], [7, cmVal(cm, 'avg7')], [1, cmVal(cm, 'avg1')]].forEach(([d, v]) => {
+    const t = end - d * DAY;
+    if(pos(v) && t < first - DAY / 2) est.push({t, v, e: true});
+  });
+  if(est.length && real.length) est.push({...real[0], e: true});
+  return {real, est, since: hist && hist.length ? hist[0][0] : null};
+}
+
+/* ── Interaktiver Graph ── */
+const RANGES = {'1M':30, '3M':91, '6M':182, '1J':365};
+let _chartN = 0;
+function chartHTML(title){
+  return `<div class="chart-box">
+    <div class="chart-head"><b>${safe(title || 'Preisverlauf')}</b>
+      <div class="ranges">${Object.keys(RANGES).map(r => `<button type="button" data-r="${r}"${r === '1M' ? ' class="on"' : ''}>${r}</button>`).join('')}</div>
+    </div>
+    <div class="chart"></div><div class="chart-foot"></div></div>`;
+}
+function mountChart(box, series){
+  if(!box) return;
+  box._series = series; box._range = box._range || '1M';
+  box.querySelectorAll('.ranges button').forEach(b => {
+    b.onclick = e => { e.stopPropagation(); box._range = b.dataset.r; box.querySelectorAll('.ranges button').forEach(x => x.classList.toggle('on', x === b)); drawChart(box); };
+  });
+  drawChart(box);
+}
+const fmtAxis = v => v >= 1000 ? Math.round(v).toLocaleString('de-DE') + ' €' : v.toLocaleString('de-DE', {minimumFractionDigits: v < 10 ? 2 : 0, maximumFractionDigits: v < 10 ? 2 : 0}) + ' €';
+const fmtDate = t => new Date(t).toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'2-digit'});
+function drawChart(box){
+  const s = box._series, el = box.querySelector('.chart'), foot = box.querySelector('.chart-foot');
+  if(!s || !el) return;
+  const all = [...s.est, ...s.real].sort((a, b) => a.t - b.t);
+  const tEnd = all.length ? all[all.length - 1].t : Date.now();
+  const from = tEnd - RANGES[box._range] * DAY;
+  const pts = all.filter(p => p.t >= from - DAY / 2);
+  const hasEst = pts.some(p => p.e);
+  foot.innerHTML = `<span><i></i>Cardmarket-Trend (täglich gespeichert)</span>`
+    + (hasEst ? `<span><i class="est"></i>Schätzung aus Ø 30/7/1 Tage</span>` : '')
+    + `<span>${s.since ? 'Aufzeichnung seit ' + new Date(s.since).toLocaleDateString('de-DE') : 'Aufzeichnung startet heute'}</span>`;
+  if(pts.length < 2){ el.innerHTML = '<div class="empty" style="padding:40px 10px;font-size:12px">Noch zu wenig Daten für diesen Zeitraum.</div>'; return; }
+  const W = el.clientWidth || 320, H = el.clientHeight || 180, pl = 48, pr = 10, pt = 12, pb = 22;
+  const t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+  let lo = Math.min(...pts.map(p => p.v)), hi = Math.max(...pts.map(p => p.v));
+  if(hi - lo < hi * 0.04){ lo -= hi * 0.03; hi += hi * 0.03; }
+  const padv = (hi - lo) * 0.1; lo = Math.max(0, lo - padv); hi += padv;
+  const X = t => pl + (t - t0) / ((t1 - t0) || 1) * (W - pl - pr);
+  const Y = v => pt + (1 - (v - lo) / ((hi - lo) || 1)) * (H - pt - pb);
+  const path = arr => arr.map((p, i) => (i ? 'L' : 'M') + X(p.t).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
+  const estPts = pts.filter(p => p.e);
+  const realPts = pts.filter(p => !p.e);
+  const up = pts[pts.length - 1].v >= pts[0].v, col = up ? '#3dffa8' : '#ff5c7a', gid = 'g' + (++_chartN);
+  const grid = [0, .5, 1].map(f => { const v = lo + (hi - lo) * (1 - f), y = pt + f * (H - pt - pb);
+    return `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="rgba(139,155,184,.13)"/><text x="${pl - 6}" y="${y + 3}" text-anchor="end" font-size="10" fill="#8b9bb8">${fmtAxis(v)}</text>`; }).join('');
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Preisverlauf">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".28"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    ${grid}
+    ${realPts.length > 1 ? `<path d="${path(realPts)} L${X(realPts[realPts.length - 1].t)} ${H - pb} L${X(realPts[0].t)} ${H - pb} Z" fill="url(#${gid})"/>` : ''}
+    ${estPts.length > 1 ? `<path d="${path(estPts)}" fill="none" stroke="#8b9bb8" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round"/>` : ''}
+    ${realPts.length > 1 ? `<path d="${path(realPts)}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
+    ${realPts.length === 1 ? `<circle cx="${X(realPts[0].t)}" cy="${Y(realPts[0].v)}" r="3.5" fill="${col}"/>` : ''}
+    <text x="${pl}" y="${H - 5}" font-size="10" fill="#8b9bb8">${fmtDate(t0)}</text>
+    <text x="${W - pr}" y="${H - 5}" font-size="10" fill="#8b9bb8" text-anchor="end">${fmtDate(t1)}</text>
+    <line class="cx" y1="${pt}" y2="${H - pb}" stroke="rgba(255,255,255,.25)" stroke-dasharray="3 3" visibility="hidden"/>
+    <circle class="cd" r="4.5" fill="${col}" stroke="#070b14" stroke-width="2" visibility="hidden"/>
+  </svg><div class="tip"></div>`;
+  const svg = el.querySelector('svg'), tip = el.querySelector('.tip'), cx = svg.querySelector('.cx'), cd = svg.querySelector('.cd');
+  const uniq = pts.filter((p, i) => !(p.e && pts.some((q, j) => j !== i && !q.e && q.t === p.t)));
+  const move = e => {
+    const r = el.getBoundingClientRect(), mx = (e.clientX - r.left) * (W / r.width);
+    let best = uniq[0]; uniq.forEach(p => { if(Math.abs(X(p.t) - mx) < Math.abs(X(best.t) - mx)) best = p; });
+    const x = X(best.t), y = Y(best.v);
+    cx.setAttribute('x1', x); cx.setAttribute('x2', x); cx.setAttribute('visibility', 'visible');
+    cd.setAttribute('cx', x); cd.setAttribute('cy', y); cd.setAttribute('visibility', 'visible');
+    cd.setAttribute('fill', best.e ? '#8b9bb8' : col);
+    tip.innerHTML = `<b>${fmtEUR(best.v)}</b>${new Date(best.t).toLocaleDateString('de-DE', {day:'2-digit', month:'short', year:'numeric'})}${best.e ? ' · Schätzung' : ''}`;
+    const px = x * (r.width / W);
+    tip.style.left = Math.min(Math.max(px, 60), r.width - 60) + 'px'; tip.style.opacity = 1;
+  };
+  const leave = () => { tip.style.opacity = 0; cx.setAttribute('visibility', 'hidden'); cd.setAttribute('visibility', 'hidden'); };
+  el.onpointermove = move; el.onpointerdown = move; el.onpointerleave = leave;
+}
+let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => document.querySelectorAll('.chart-box').forEach(b => b._series && drawChart(b)), 150); });
+
+function sparkSVG(series){
+  const raw = [...series.est.filter(p => p !== series.est[series.est.length - 1]), ...series.real].sort((a, b) => a.t - b.t);
+  const from = (raw.length ? raw[raw.length - 1].t : Date.now()) - 31 * DAY;
+  const pts = raw.filter(p => p.t >= from);
+  if(pts.length < 2) return '<svg class="spark"></svg>';
+  const lo = Math.min(...pts.map(p => p.v)), hi = Math.max(...pts.map(p => p.v)), t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+  const d = pts.map((p, i) => `${i ? 'L' : 'M'}${((p.t - t0) / ((t1 - t0) || 1) * 100).toFixed(1)} ${(24 - (p.v - lo) / ((hi - lo) || 1) * 20).toFixed(1)}`).join(' ');
+  const col = pts[pts.length - 1].v >= pts[0].v ? '#3dffa8' : '#ff5c7a';
+  return `<svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="${col}" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+}
+
+/* ═══════ Startseite ═══════ */
+const HOME = {
+  hero: ['me02.5-284', 'me02-125', 'me02.5-276'],
+  mega: ['me02-125', 'me02.5-276', 'me02.5-284', 'me05-116', 'me01-188', 'me04-116', 'me02.5-290', 'me03-124'],
+  classics: ['base1-4', 'swsh7-215', 'base1-10', 'sv03.5-151', 'base1-58', 'sv08-247', 'sv03-125', 'base1-44'],
+  chips: ['Glurak', 'Pikachu', 'Mega-Gengar', 'Nachtara', 'Mewtu', 'Lucario']
+};
+const homeItems = {};
+
+function homeItem(id, c, hist){
+  const v = cmVariants(c)[0] || {};
+  const cm = v.cm || c?.pricing?.cardmarket || null;
+  return {
+    id, name: c?.name || id, set: c?.set?.name || '', img: c?.image ? c.image + '/high.webp' : guessImg(id, 'de'),
+    idProduct: v.idProduct || null, cm, price: cmMain(cm), chg: cmChange(cm),
+    series: priceSeries(cm, (hist || {})[v.idProduct]), card: c
+  };
+}
+
+function tileHTML(it, opts){
+  opts = opts || {};
+  return `<div class="tile" onclick="openCard('${safe(it.id)}','de')">
+    ${opts.rank ? `<div class="rank-badge">${opts.rank}</div>` : ''}
+    <img src="${safe(it.img)}" onerror="imgFallback(this)" alt="${safe(it.name)}" loading="lazy">
     <div class="meta">
-      <div class="name">${safe(c.name)}</div>
-      <div class="set">${safe(c.set)}</div>
-      <div class="price-row">
-        <div><span class="price" data-id="${safe(c.id)}">${price}</span>${lowLine}</div>
-        ${change}
-      </div>
+      <div class="name">${safe(it.name)}</div>
+      <div class="set">${safe(it.set)}</div>
+      <div class="price-row"><span class="price">${it.loading ? 'lädt…' : fmtEUR(it.price)}</span>${it.loading ? '' : chgHTML(it.chg)}</div>
+      ${it.series ? sparkSVG(it.series) : '<svg class="spark"></svg>'}
+      <div class="bottom"><span class="muted" style="font-size:10px">Cardmarket</span>
+        <a class="cm-mini" href="${cmLink(it.idProduct, it.card || {name: it.name})}" target="_blank" rel="noopener" onclick="event.stopPropagation()">CM ↗</a></div>
     </div>
   </div>`;
 }
 
-async function fetchCardPrice(id){
-  try{
-    const r = await fetch(`https://api.tcgdex.net/v2/en/cards/${id}`);
-    if(!r.ok) return null;
-    const d = await r.json();
-    const cm = (d.pricing && d.pricing.cardmarket) || {};
-    const trend = Number(cm.trend || cm.avg7 || cm.avg || 0);
-    const low = Number(cm.low || 0);
-    const avg30 = Number(cm.avg30 || 0);
-    let change = null;
-    if(trend>0 && avg30>0){
-      change = Math.round(((trend - avg30) / avg30) * 100);
-    }
-    return {
-      price: trend>0 ? trend : (low>0 ? low : null),
-      low: low>0 ? low : null,
-      trend: trend>0 ? trend : null,
-      change,
-      name: d.name,
-      pricing: d.pricing || null
-    };
-  }catch(e){ return null; }
+function holoHTML(it, cls){
+  return `<div class="holo ${cls || ''}" onclick="openCard('${safe(it.id)}','de')" title="${safe(it.name)}">
+    <img src="${safe(it.img)}" onerror="imgFallback(this)" alt="${safe(it.name)}"></div>`;
+}
+function wireHolo(root){
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  root.querySelectorAll('.holo').forEach(h => {
+    h.addEventListener('pointermove', e => {
+      const r = h.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      h.style.setProperty('--ry', ((x - .5) * 22).toFixed(1) + 'deg');
+      h.style.setProperty('--rx', ((.5 - y) * 22).toFixed(1) + 'deg');
+      h.style.setProperty('--mx', (x * 100).toFixed(0) + '%');
+      h.style.setProperty('--my', (y * 100).toFixed(0) + '%');
+    });
+    h.addEventListener('pointerleave', () => { ['--rx','--ry','--mx','--my'].forEach(p => h.style.removeProperty(p)); });
+  });
+}
+
+function dailyPick(){
+  const pool = [...new Set([...HOME.mega, ...HOME.classics])];
+  const d = Math.floor((Date.now() + 36e5) / DAY);      // wechselt täglich
+  return pool[d % pool.length];
+}
+
+function renderDaily(it){
+  const box = document.getElementById('daily');
+  box.innerHTML = `
+    <div>${holoHTML(it)}</div>
+    <div class="daily-info">
+      <div class="label">★ KARTE DES TAGES</div>
+      <h3>${safe(it.name)}</h3>
+      <div class="set">${safe(it.set)}</div>
+      <div class="row" style="margin-top:4px;gap:10px"><span class="big">${fmtEUR(it.price)}</span>${chgHTML(it.chg)}</div>
+      <div class="row" style="margin-top:8px">
+        <a class="cm-btn" href="${cmLink(it.idProduct, it.card)}" target="_blank" rel="noopener">Diese Karte auf Cardmarket ↗</a>
+        <button type="button" class="secondary" onclick="openCard('${safe(it.id)}','de')">Details</button>
+      </div>
+      ${chartHTML('Preisverlauf')}
+    </div>`;
+  wireHolo(box);
+  mountChart(box.querySelector('.chart-box'), it.series);
+}
+
+function renderTicker(items){
+  const list = items.filter(it => it.price);
+  if(!list.length) return;
+  const one = list.map(it => `<span class="tk" onclick="openCard('${safe(it.id)}','de')"><span class="live-dot"></span><b>${safe(it.name)}</b><span class="p">${fmtEUR(it.price)}</span>${it.chg == null ? '' : `<span class="${it.chg >= 0 ? 'up' : 'down'}">${it.chg >= 0 ? '▲' : '▼'} ${Math.abs(it.chg).toLocaleString('de-DE', {maximumFractionDigits:1})} %</span>`}</span>`).join('');
+  const track = document.getElementById('tickerTrack');
+  track.innerHTML = one + one;
+  track.style.animationDuration = Math.max(30, list.length * 4) + 's';
+}
+
+async function pool(list, n, fn){
+  const out = new Array(list.length); let i = 0;
+  await Promise.all(Array.from({length: Math.min(n, list.length)}, async () => { while(i < list.length){ const k = i++; out[k] = await fn(list[k], k); } }));
+  return out;
 }
 
 async function renderHome(){
-  // paint skeleton first
-  popularScroll.innerHTML = homeCards.popular.map(c=>tileHTML(c,true)).join('');
-  risersScroll.innerHTML = homeCards.risers.map(c=>tileHTML(c,false)).join('');
-  newScroll.innerHTML = homeCards.news.map(c=>tileHTML(c,false)).join('');
-  searchedScroll.innerHTML = homeCards.searched.map(c=>tileHTML(c,false)).join('');
+  // Sofort: Hero, Chips, Platzhalter-Kacheln
+  heroChips.innerHTML = HOME.chips.map(n => `<button type="button" class="chip" onclick="searchPopular('${safe(n)}')">${safe(n)}</button>`).join('');
+  const ph = id => ({id, name: '…', set: '', img: guessImg(id, 'de'), loading: true});
+  heroStage.innerHTML = HOME.hero.map((id, i) => holoHTML(ph(id), 'h' + (i + 1))).join('');
+  wireHolo(heroStage);
+  megaScroll.innerHTML = HOME.mega.map(id => tileHTML(ph(id))).join('');
+  classicScroll.innerHTML = HOME.classics.map(id => tileHTML(ph(id))).join('');
+  moversScroll.innerHTML = HOME.mega.slice(0, 4).map(id => tileHTML(ph(id))).join('');
 
-  // unique IDs to fetch once
-  const all = [...homeCards.popular, ...homeCards.risers, ...homeCards.news, ...homeCards.searched];
-  const ids = [...new Set(all.map(c=>c.id))];
-  const cache = {};
-  await Promise.all(ids.map(async id=>{
-    cache[id] = await fetchCardPrice(id);
-  }));
+  const ids = [...new Set([...HOME.hero, ...HOME.mega, ...HOME.classics])];
+  const cards = {};
+  await pool(ids, 6, async id => { cards[id] = await tcgCard(id, 'de'); });
+  const prods = ids.map(id => (cmVariants(cards[id])[0] || {}).idProduct).filter(Boolean);
+  const hist = await PriceHist.load(prods);
+  ids.forEach(id => homeItems[id] = homeItem(id, cards[id], hist));
 
-  // apply prices
-  function enrich(list){
-    return list.map(c=>{
-      const p = cache[c.id];
-      return {
-        ...c,
-        livePrice: p && p.price,
-        liveLow: p && p.low,
-        liveChange: p && p.change
-      };
-    });
-  }
-  popularScroll.innerHTML = enrich(homeCards.popular).map(c=>tileHTML(c,true)).join('');
-  risersScroll.innerHTML = enrich(homeCards.risers).map(c=>tileHTML(c,false)).join('');
-  newScroll.innerHTML = enrich(homeCards.news).map(c=>tileHTML(c,false)).join('');
-  searchedScroll.innerHTML = enrich(homeCards.searched).map(c=>tileHTML(c,false)).join('');
-
-  // update featured with first popular card price
-  const top = cache['sv03-125'];
-  if(top && top.price){
-    const el = document.querySelector('.hero-card .price');
-    const ch = document.querySelector('.hero-card .change');
-    if(el) el.textContent = fmtEUR(top.price);
-    if(ch && top.change!=null){
-      ch.textContent = (top.change>=0?'▲ +':'▼ ') + top.change + ' % vs. 30-Tage-Ø';
-      ch.style.color = top.change>=0 ? 'var(--green)' : 'var(--red)';
-    }
-  }
+  heroStage.innerHTML = HOME.hero.map((id, i) => holoHTML(homeItems[id], 'h' + (i + 1))).join('');
+  wireHolo(heroStage);
+  megaScroll.innerHTML = HOME.mega.map(id => tileHTML(homeItems[id])).join('');
+  classicScroll.innerHTML = HOME.classics.map(id => tileHTML(homeItems[id])).join('');
+  const movers = ids.map(id => homeItems[id]).filter(it => it.chg != null && it.price)
+    .sort((a, b) => Math.abs(b.chg) - Math.abs(a.chg)).slice(0, 8);
+  moversScroll.innerHTML = movers.length ? movers.map((it, i) => tileHTML(it, {rank: i + 1})).join('')
+    : '<div class="empty" style="flex:1">Preise gerade nicht erreichbar.</div>';
+  renderTicker(ids.map(id => homeItems[id]));
+  renderDaily(homeItems[dailyPick()]);
 }
 
 function searchPopular(name){
-  document.getElementById('q').value=name;
+  document.getElementById('q').value = name;
+  document.getElementById('lang').value = 'de';
   show('search');
   search();
 }
+document.getElementById('heroSearch').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = heroQ.value.trim(); if(v) searchPopular(v);
+});
 
 /* Search */
 async function search(){
@@ -973,9 +1340,9 @@ async function search(){
 
 function renderResults(arr,lang){
   results.innerHTML=arr.length?arr.map((c,i)=>`
-    <div class="tile" style="flex:none;width:100%" onclick="openDetail(${i},'${lang}')">
-      <img src="${safe(cardImage(c)||c.image||'')}"
-           onerror="this.onerror=null;this.src='https://images.pokemontcg.io/${(c.id||'').replace(/-/g,'/')}_hires.png'"
+    <div class="tile" style="flex:none;width:100%" onclick="openCard('${safe(c.id)}','${lang}')">
+      <img src="${safe(cardImage(c)||c.image||guessImg(c.id,lang))}" loading="lazy"
+           onerror="imgFallback(this)"
            alt="${safe(c.name)}">
       <div class="meta">
         <div class="name">${safe(c.name)}</div>
@@ -983,30 +1350,6 @@ function renderResults(arr,lang){
         <div class="price-row"><span class="price">Nr. ${safe(c.localId||'–')}</span></div>
       </div>
     </div>`).join(''):'<div class="empty">Keine Treffer.</div>';
-}
-
-let pendingCard=null, pendingLang='de';
-function pushPriceSnapshot(key,cm){
-  let hist=JSON.parse(localStorage.getItem('poketa_price_history')||'{}');
-  if(!hist[key])hist[key]=[];
-  let today=new Date().toISOString().slice(0,10), last=hist[key][hist[key].length-1];
-  if(last&&last.date===today) last.cm=cm||last.cm;
-  else hist[key].push({date:today,cm:cm||null});
-  hist[key]=hist[key].slice(-365);
-  localStorage.setItem('poketa_price_history',JSON.stringify(hist));
-}
-function historyMarkup(key){
-  let hist=JSON.parse(localStorage.getItem('poketa_price_history')||'{}')[key]||[];
-  if(hist.length<2) return '<div class="notice">Preisverlauf startet mit der ersten Aktualisierung.</div>';
-  let vals=hist.map(x=>Number(x.cm||0)).filter(x=>x>0);
-  if(vals.length<2) return '<div class="notice">Noch zu wenig Datenpunkte.</div>';
-  let max=Math.max(...vals),min=Math.min(...vals),range=max-min||1;
-  let pts=hist.map((x,i)=>x.cm?`${(i/(hist.length-1))*100},${88-((x.cm-min)/range)*72}`:null).filter(Boolean).join(' ');
-  return `<div style="margin:10px 0;padding:12px;background:#0a1220;border-radius:12px;border:1px solid var(--line)">
-    <b style="font-size:13px">Preisverlauf</b>
-    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:90px;margin-top:8px">
-      <polyline points="${pts}" fill="none" stroke="#3dd9f5" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
-    </svg></div>`;
 }
 
 /* ── Optional external Cardmarket API (key in localStorage) ── */
@@ -1033,11 +1376,7 @@ function cmSetCode(c){
   if(m && CM_SET_CODE[m[1].toLowerCase()]) return CM_SET_CODE[m[1].toLowerCase()];
   return '';
 }
-function cardmarketProductUrl(c){
-  const cm = c?.pricing?.cardmarket || {};
-  const idProduct = cm.idProduct
-    || (c?.variants_detailed||[]).map(v=>v?.thirdParty?.cardmarket).find(Boolean)
-    || null;
+function cmSearchQuery(c){
   // Immer englische Namen für Cardmarket
   let name = (c?.enName || c?.name || '')
     .replace(/-/g,' ')
@@ -1062,10 +1401,9 @@ function cardmarketProductUrl(c){
   } else if(name && num){
     q = name + ' ' + num;
   } else {
-    q = name || String(idProduct||'Pokemon');
+    q = name || 'Pokemon';
   }
-  // Englische CM-Suche, Kategorie Singles implizit über Pokemon-Pfad
-  return `https://www.cardmarket.com/en/Pokemon/Products/Search?searchString=${encodeURIComponent(q)}`;
+  return q;
 }
 
 function getCmConfig(){
@@ -1160,55 +1498,6 @@ function externalPriceForCondition(ext, condition){
 
 let pendingExternalCM = null;
 
-function marketMarkup(c){
-  const cm = c.pricing?.cardmarket || {};
-  const tcg = c.pricing?.tcgplayer || {};
-  const idProduct = cm.idProduct || (c.variants_detailed||[]).map(v=>v.thirdParty?.cardmarket).find(Boolean);
-  const rows = [];
-  const add = (l,v,cur) => { if(typeof v==='number' && v>0) rows.push({l,v,cur}); };
-  // Cardmarket guide (EUR)
-  add('CM Low', cm.low, '€');
-  add('CM Trend', cm.trend, '€');
-  add('CM Ø 1 Tag', cm.avg1, '€');
-  add('CM Ø 7 Tage', cm.avg7, '€');
-  add('CM Ø 30 Tage', cm.avg30, '€');
-  add('CM Ø gesamt', cm.avg, '€');
-  add('CM Low Holo', cm['low-holo'], '€');
-  add('CM Trend Holo', cm['trend-holo'], '€');
-  add('CM Ø7 Holo', cm['avg7-holo'], '€');
-  // TCGPlayer (USD)
-  const holo = tcg.holofoil || {};
-  const normal = tcg.normal || {};
-  add('TCG Market', holo.marketPrice || normal.marketPrice, '$');
-  add('TCG Low', holo.lowPrice || normal.lowPrice, '$');
-  add('TCG Mid', holo.midPrice || normal.midPrice, '$');
-  const updated = cm.updated ? new Date(cm.updated).toLocaleString('de-DE') : '–';
-  const cmDirect = cardmarketProductUrl(c);
-  const cmUrl = cmDirect;
-
-  if(!rows.length){
-    return `<div class="empty">Keine Cardmarket-/TCGPlayer-Preise hinterlegt.</div>
-      <p style="margin-top:8px"><a href="${cmUrl}" target="_blank" rel="noopener" style="color:var(--b)">Auf Cardmarket suchen ↗</a></p>`;
-  }
-  return `
-  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px">
-    <a href="${cmDirect}" target="_blank" rel="noopener" style="color:var(--b);font-weight:700;font-size:13px">Cardmarket Produkt ↗</a>
-    ${idProduct?`<span class="muted" style="font-size:11px">idProduct ${idProduct}</span>`:''}
-    <button type="button" class="secondary" style="padding:6px 10px;font-size:12px" onclick="refreshDetailPrices()">↻ Preise neu laden</button>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin:8px 0">
-    ${rows.map(x=>`<div style="background:#0a1220;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center">
-      <div style="font-size:10px;color:var(--muted)">${x.l}</div>
-      <div style="font-size:15px;font-weight:800;color:var(--b)">${Number(x.v).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} ${x.cur}</div>
-    </div>`).join('')}
-  </div>
-  <p class="muted" style="font-size:11px;margin-top:6px">
-    <b>Cardmarket Price Guide (EUR)</b> — Low = günstigstes gelistetes Angebot, Trend = Markttendenz, Ø = Durchschnitt.<br>
-    Datenquelle: TCGdex ← Cardmarket · Stand: ${updated}. Keine Verkaufsgarantie.
-  </p>`;
-}
-
-
 async function enrichWithExternalCM(){
   const box = document.getElementById('externalCmBox');
   const {key} = getCmConfig();
@@ -1216,8 +1505,7 @@ async function enrichWithExternalCM(){
     if(box) box.innerHTML = '';
     return;
   }
-  const cm = pendingCard?.pricing?.cardmarket || {};
-  const idProduct = cm.idProduct || (pendingCard?.variants_detailed||[]).map(v=>v.thirdParty?.cardmarket).find(Boolean);
+  const idProduct = pendingVar?.idProduct;
   if(!idProduct){
     if(box) box.innerHTML = '<p class="muted" style="font-size:12px">Keine Cardmarket-idProduct für diese Karte.</p>';
     return;
@@ -1282,33 +1570,11 @@ async function enrichWithExternalCM(){
   }catch(e){}
 }
 
-async function refreshDetailPrices(){
-  if(!pendingCard || !pendingCard.id) return;
-  const hint = document.getElementById('condPriceHint');
-  if(hint) hint.textContent = 'Lade Cardmarket-Preise…';
-  try{
-    const r = await fetch(`https://api.tcgdex.net/v2/${pendingLang||'en'}/cards/${pendingCard.id}`);
-    if(!r.ok) throw Error('fail');
-    const fresh = await r.json();
-    pendingCard = {...pendingCard, ...fresh, pricing: fresh.pricing || pendingCard.pricing};
-    // re-render detail prices section only by reopening
-    const idx = current.findIndex(x=>x.id===pendingCard.id);
-    if(idx>=0){ current[idx]=pendingCard; openDetail(idx, pendingLang||'en'); }
-    else {
-      // force partial update
-      if(hint) hint.textContent = 'Preise aktualisiert.';
-      onConditionChange();
-    }
-  }catch(e){
-    if(hint) hint.textContent = 'Preis-Update fehlgeschlagen – TCGdex nicht erreichbar.';
-  }
-}
-
 function priceForCondition(cm, condition){
   if(!cm) return 0;
-  const low = Number(cm.low || 0);
-  const trend = Number(cm.trend || cm.avg || cm.avg7 || 0);
-  const avg30 = Number(cm.avg30 || 0);
+  const low = Number(cmVal(cm,'low') || 0);
+  const trend = Number(cmVal(cm,'trend') || cmVal(cm,'avg') || cmVal(cm,'avg7') || 0);
+  const avg30 = Number(cmVal(cm,'avg30') || 0);
   const base = trend > 0 ? trend : (avg30 > 0 ? avg30 : low);
   if(base <= 0 && low <= 0) return 0;
 
@@ -1342,7 +1608,7 @@ function onConditionChange(){
   const sel = document.getElementById('conditionInput');
   const valInput = document.getElementById('valueInput');
   if(!sel || !valInput || !pendingCard) return;
-  const cm = pendingCard.pricing?.cardmarket || {};
+  const cm = pendingVar?.cm || null;
   let p = 0;
   let source = '';
   if(pendingExternalCM){
@@ -1351,7 +1617,7 @@ function onConditionChange(){
   }
   if(!(p > 0)){
     p = priceForCondition(cm, sel.value);
-    source = 'TCGdex Price Guide (Low/Trend)';
+    source = 'Cardmarket-Price-Guide (Low/Trend)';
   }
   if(p > 0) valInput.value = p;
   const hint = document.getElementById('condPriceHint');
@@ -1363,49 +1629,39 @@ function onConditionChange(){
 }
 
 
-async function openDetail(i,lang){
-  let c=current[i]; detail.classList.remove('hidden'); detail.innerHTML='<p class="muted">Lade…</p>';
-  try{let r=await fetch(`https://api.tcgdex.net/v2/${lang}/cards/${c.id}`); if(r.ok)c=await r.json()}catch(e){}
-  // Englische Bezeichnung für Cardmarket-Link (Glurak → Charizard)
-  try{
-    if(c.id){
-      const re = await fetch(`https://api.tcgdex.net/v2/en/cards/${c.id}`);
-      if(re.ok){
-        const en = await re.json();
-        c.enName = en.name || c.name;
-        c.enSet = en.set?.name || c.set?.name;
-        if(en.pricing) c.pricing = c.pricing || en.pricing;
-        if(!c.pricing?.cardmarket?.idProduct && en.pricing?.cardmarket?.idProduct){
-          c.pricing = en.pricing;
-        }
-      }
-    }
-  }catch(e){}
-  pendingCard=c; pendingLang=lang;
-  let img=cardImage(c)||c.image||'';
-  let p=c.pricing?.cardmarket||{};
-  let suggested=Number(p.trend||p.avg||p.avg7||p.low||0);
-  let key=`${lang}:${c.id}`;
-  pushPriceSnapshot(key,suggested);
-  detail.innerHTML=`
+/* ═══════ Kartenansicht ═══════ */
+let pendingCard = null, pendingLang = 'de', pendingVariants = [], pendingVar = null, pendingHist = {};
+
+async function openCard(id, lang, fresh){
+  lang = lang || 'de';
+  if(!document.getElementById('search').classList.contains('active')) show('search');
+  detail.classList.remove('hidden');
+  detail.innerHTML = '<p class="muted">Lade Karte und Cardmarket-Preise …</p>';
+  detail.scrollIntoView({behavior:'smooth', block:'start'});
+  const c = await tcgCard(id, lang, fresh);
+  if(!c){ detail.innerHTML = '<div class="empty">Karte konnte nicht geladen werden – TCGdex ist gerade nicht erreichbar. Bitte gleich nochmal versuchen.</div>'; return; }
+  pendingCard = c; pendingLang = lang; pendingExternalCM = null;
+  pendingVariants = cmVariants(c); pendingVar = pendingVariants[0] || null;
+  const img = c.image ? c.image + '/high.webp' : guessImg(c.id, lang);
+  detail.innerHTML = `
     <div class="row" style="align-items:flex-start">
-      <img class="detail-img" src="${safe(img)}"
-           onerror="this.onerror=null;this.src='https://images.pokemontcg.io/${(c.id||'').replace(/-/g,'/')}_hires.png'">
-      <div class="grow">
-        <h2 style="font-size:18px;margin-bottom:4px">${safe(c.name)}</h2>
-        <p class="muted" style="font-size:13px">${safe(c.set?.name||'')} · Nr. ${safe(c.localId||'–')}</p>
-        <p style="font-size:13px;margin-top:4px">${safe(c.rarity||'')}</p>
-        <p style="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-          <a href="${cardmarketProductUrl(c)}" target="_blank" rel="noopener" style="color:var(--b);font-size:13px;font-weight:700">Cardmarket öffnen ↗</a>
-          ${(c.pricing?.cardmarket?.idProduct)?`<span class="muted" style="font-size:11px">ID ${c.pricing.cardmarket.idProduct}</span>`:''}
-        </p>
+      <img class="detail-img" src="${safe(img)}" onerror="imgFallback(this)" alt="${safe(c.name)}">
+      <div class="grow" style="min-width:200px">
+        <h2 style="font-size:19px;margin-bottom:4px">${safe(c.name)}</h2>
+        <p class="muted" style="font-size:13px">${safe(c.set?.name || '')} · Nr. ${safe(c.localId || '–')}</p>
+        <p style="font-size:13px;margin-top:4px">${safe(c.rarity || '')}</p>
+        ${pendingVariants.length > 1 ? `<div class="variant-row"><label for="variantSel">Variante</label>
+          <select id="variantSel" class="field" onchange="onVariantChange(this.value)">
+            ${pendingVariants.map((v, i) => `<option value="${i}">${safe(v.label)}${pos(cmMain(v.cm)) ? ' – ' + fmtEUR(cmMain(v.cm)) : ''}</option>`).join('')}
+          </select></div>` : ''}
+        <div style="margin-top:12px"><a id="cmBtn" class="cm-btn" target="_blank" rel="noopener">Diese Karte auf Cardmarket ↗</a></div>
       </div>
     </div>
-    <div style="margin-top:12px"><b style="font-size:14px">Preise</b>${marketMarkup(c)}</div>
-    ${historyMarkup(key)}
+    <div id="priceArea"></div>
+    ${chartHTML('Preisverlauf · Cardmarket')}
     <div class="row" style="margin-top:12px">
       <input id="buyInput" class="field" type="number" min="0" step=".01" placeholder="Kaufpreis €" style="width:110px">
-      <input id="valueInput" class="field" type="number" min="0" step=".01" value="${suggested||''}" placeholder="Wert €" style="width:110px">
+      <input id="valueInput" class="field" type="number" min="0" step=".01" placeholder="Wert €" style="width:110px">
       <select id="conditionInput" class="field" onchange="onConditionChange()">
         <option value="Near Mint">Near Mint</option>
         <option value="Excellent">Excellent</option>
@@ -1417,50 +1673,115 @@ async function openDetail(i,lang){
       <button class="secondary" onclick="addWishFromDetail('${safe(c.name)}')">♡</button>
     </div>
     <div id="externalCmBox"></div>
-    <p id="condPriceHint" class="muted" style="font-size:12px;margin-top:8px">Zustand wählen → Referenzpreis wird an den günstigsten passenden Cardmarket-Wert angepasst.</p>`;
-  detail.scrollIntoView({behavior:'smooth',block:'start'});
-  setTimeout(onConditionChange, 0);
+    <p id="condPriceHint" class="muted" style="font-size:12px;margin-top:8px">Zustand wählen → Referenzpreis wird aus dem Cardmarket-Price-Guide abgeleitet.</p>`;
+  valueInput.addEventListener('input', () => valueInput.dataset.touched = 1);
+  renderVariant();
+  pendingHist = await PriceHist.load(pendingVariants.map(v => v.idProduct));
+  if(pendingCard === c) renderVariant();
   enrichWithExternalCM();
 }
-function addPendingCard(){
-  if(!pendingCard)return;
-  let c=pendingCard;
-  cards.push({id:c.id,lang:pendingLang,name:c.name,localId:c.localId,set:c.set?.name||'',
-    image:cardImage(c)||c.image||'',buy:Number(buyInput.value||0),
-    value:Number(valueInput.value||c.pricing?.cardmarket?.trend||0),
-    condition:conditionInput.value,updated:new Date().toISOString()});
-  save(); alert('Hinzugefügt!');
-}
-function addWishFromDetail(n){wishName.value=n;show('wishlist')}
+/* Alte Aufrufe (Suchergebnisse per Index) */
+function openDetail(i, lang){ const c = current[i]; if(c) openCard(c.id, lang); }
 
+function onVariantChange(i){
+  pendingVar = pendingVariants[Number(i)] || pendingVariants[0];
+  pendingExternalCM = null;
+  renderVariant();
+  enrichWithExternalCM();
+}
+
+function renderVariant(){
+  const c = pendingCard, v = pendingVar || {}, cm = v.cm || null;
+  const btn = document.getElementById('cmBtn');
+  if(btn){
+    btn.href = cmLink(v.idProduct, c);
+    btn.textContent = v.idProduct ? 'Diese Karte auf Cardmarket ↗' : 'Auf Cardmarket suchen ↗';
+  }
+  document.getElementById('priceArea').innerHTML = marketMarkup(cm, v);
+  const box = detail.querySelector('.chart-box');
+  if(box){
+    if(cm) mountChart(box, priceSeries(cm, pendingHist[v.idProduct]));
+    else box.querySelector('.chart').innerHTML = '<div class="empty" style="padding:40px 10px;font-size:12px">Für diese Variante gibt es keine Cardmarket-Preise.</div>';
+  }
+  const vi = document.getElementById('valueInput');
+  if(vi && !vi.dataset.touched) onConditionChange();
+}
+
+function marketMarkup(cm, v){
+  if(!cm) return `<div class="notice" style="margin-top:12px">Keine Cardmarket-Preise für diese Version hinterlegt.</div>`;
+  const holo = cmHolo(cm), rows = [];
+  const add = (l, k, main) => { const x = cmVal(cm, k); if(pos(x)) rows.push({l, x, main}); };
+  add('Trend', 'trend', true); add('Ab (Low)', 'low'); add('Ø 1 Tag', 'avg1'); add('Ø 7 Tage', 'avg7'); add('Ø 30 Tage', 'avg30'); add('Ø Verkauf', 'avg');
+  if(!holo){ ['trend', 'low', 'avg30'].forEach(k => { const x = cm[k + '-holo']; if(pos(x)) rows.push({l: {trend:'Trend', low:'Ab', avg30:'Ø 30T'}[k] + ' Reverse/Holo', x}); }); }
+  const updated = cm.updated ? new Date(cm.updated).toLocaleString('de-DE', {dateStyle:'medium', timeStyle:'short'}) : '–';
+  return `
+  <div class="row" style="margin-top:14px;justify-content:space-between">
+    <b style="font-size:14px">Cardmarket-Preise ${holo ? '(Holo)' : ''}</b>
+    <span class="row" style="gap:8px">${chgHTML(cmChange(cm))}<button type="button" class="secondary" style="padding:6px 10px;font-size:12px" onclick="refreshDetailPrices()">↻ Neu laden</button></span>
+  </div>
+  <div class="price-grid">${rows.map(r => `<div class="price-box${r.main ? ' main' : ''}"><span>${r.l}</span><b>${fmtEUR(r.x)}</b></div>`).join('')}</div>
+  <p class="muted" style="font-size:11px">Offizieller Cardmarket-Price-Guide (über TCGdex) · Stand ${updated}${v && v.idProduct ? ' · Produkt-ID ' + v.idProduct : ''}. Trend = Markttendenz, Ab = günstigstes Angebot. Keine Verkaufsgarantie.</p>`;
+}
+
+async function refreshDetailPrices(){
+  if(!pendingCard) return;
+  const idx = pendingVariants.indexOf(pendingVar);
+  await openCard(pendingCard.id, pendingLang, true);
+  if(idx > 0 && pendingVariants[idx]){ const s = document.getElementById('variantSel'); if(s){ s.value = idx; onVariantChange(idx); } }
+}
+
+function addPendingCard(){
+  if(!pendingCard) return;
+  const c = pendingCard, v = pendingVar || {};
+  cards.push({id:c.id, lang:pendingLang, name:c.name, localId:c.localId, set:c.set?.name || '',
+    image: c.image ? c.image + '/high.webp' : guessImg(c.id, pendingLang),
+    idProduct: v.idProduct || null, variant: pendingVariants.length > 1 ? v.label : '',
+    buy: Number(buyInput.value || 0), value: Number(valueInput.value || cmMain(v.cm) || 0),
+    condition: conditionInput.value, updated: new Date().toISOString()});
+  save(); toastMsg('Zur Sammlung hinzugefügt.');
+}
+function addWishFromDetail(n){ wishName.value = n; show('wishlist'); }
+function toastMsg(m){
+  const box = document.getElementById('toasts');
+  if(!box){ alert(m); return; }
+  const t = document.createElement('div'); t.className = 'toast ok'; t.textContent = m; box.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+/* ═══════ Sammlung ═══════ */
 function renderCollection(){
-  let q=collectionFilter.value.toLowerCase();
-  collectionList.innerHTML=cards.length
-    ? cards.map((c,i)=>({c,i})).filter(x=>(x.c.name||'').toLowerCase().includes(q)).map(({c,i})=>`
+  const q = collectionFilter.value.toLowerCase();
+  collectionList.innerHTML = cards.length
+    ? cards.map((c, i) => ({c, i})).filter(x => (x.c.name || '').toLowerCase().includes(q)).map(({c, i}) => `
       <div class="item">
-        <img src="${safe(c.image)}" onerror="this.style.opacity=.3">
-        <div class="grow"><b>${safe(c.name)}</b><br><small>${safe(c.set)} · ${money(c.buy)} → ${money(c.value)}</small></div>
-        <button class="ghost" onclick="removeCard(${i})">✕</button>
+        <img src="${safe(c.image)}" onerror="imgFallback(this)" style="cursor:pointer" onclick="openCard('${safe(c.id)}','${safe(c.lang || 'de')}')">
+        <div class="grow" style="cursor:pointer" onclick="openCard('${safe(c.id)}','${safe(c.lang || 'de')}')">
+          <b>${safe(c.name)}</b>${c.variant ? ` <span class="muted" style="font-size:11px">· ${safe(c.variant)}</span>` : ''}<br>
+          <small>${safe(c.set)} · ${safe(c.condition || '')} · ${money(c.buy)} → ${money(c.value)}</small>
+        </div>
+        <a class="cm-mini" href="${cmLink(c.idProduct, c)}" target="_blank" rel="noopener">CM ↗</a>
+        <button class="ghost" onclick="removeCard(${i})" aria-label="Entfernen">✕</button>
       </div>`).join('')
     : '<div class="empty">Sammlung leer.</div>';
 }
 async function refreshCollectionPrices(){
-  if(!cards.length){refreshStatus.textContent='Leer.';return}
-  refreshPrices.disabled=true; refreshStatus.textContent='Aktualisiere…';
-  let ok=0;
-  for(let c of cards){
-    try{
-      let r=await fetch(`https://api.tcgdex.net/v2/${c.lang||'de'}/cards/${c.id}`);
-      if(!r.ok)continue;
-      let f=await r.json(), p=f.pricing?.cardmarket||{};
-      let v=Number(p.trend||p.avg||0);
-      if(v>0){c.value=v;ok++}
-      c.updated=new Date().toISOString();
-      pushPriceSnapshot(`${c.lang||'de'}:${c.id}`,v);
-    }catch(e){}
-  }
-  save();renderCollection(); refreshPrices.disabled=false;
-  refreshStatus.textContent=`${ok} Preise aktualisiert.`;
+  if(!cards.length){ refreshStatus.textContent = 'Leer.'; return; }
+  refreshPrices.disabled = true; refreshStatus.textContent = 'Aktualisiere mit dem Cardmarket-Price-Guide …';
+  let ok = 0, done = 0;
+  await pool(cards, 4, async c => {
+    const f = await tcgCard(c.id, c.lang || 'de', true);
+    done++; refreshStatus.textContent = `Aktualisiere … ${done}/${cards.length}`;
+    if(!f) return;
+    const vars = cmVariants(f);
+    const v = vars.find(x => x.idProduct && x.idProduct === c.idProduct) || vars[0];
+    if(!v) return;
+    if(!c.idProduct && v.idProduct) c.idProduct = v.idProduct;
+    const p = priceForCondition(v.cm, c.condition || 'Near Mint') || cmMain(v.cm);
+    if(pos(p)){ c.value = p; ok++; }
+    c.updated = new Date().toISOString();
+  });
+  save(); renderCollection(); refreshPrices.disabled = false;
+  refreshStatus.textContent = `${ok} von ${cards.length} Preisen aktualisiert (Cardmarket-Price-Guide).`;
 }
 document.getElementById('refreshPrices').addEventListener('click',refreshCollectionPrices);
 function removeCard(i){cards.splice(i,1);save();renderCollection()}
