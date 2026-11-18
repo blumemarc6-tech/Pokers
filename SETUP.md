@@ -1,68 +1,43 @@
-# POKETA einrichten – Cloudflare Pages + Supabase
+# POKETA – Betrieb auf Cloudflare Pages + Supabase
 
-Alles kostenlos. Dauer: ca. 20 Minuten. Reihenfolge einhalten.
+**Live:** <https://poketa.pages.dev>
 
-## 1. Supabase-Projekt anlegen
+## Was eingerichtet ist
 
-1. Auf <https://supabase.com> registrieren → **New project** (Region z. B. *Frankfurt*). Datenbank-Passwort notieren.
-2. Links **SQL Editor** → **New query** → den kompletten Inhalt von [`supabase/schema.sql`](supabase/schema.sql) einfügen → **Run**.
-   Erwartet: „Success. No rows returned“.
-3. **Project Settings → API** öffnen und zwei Werte kopieren:
-   - **Project URL** (z. B. `https://abcd1234.supabase.co`)
-   - **anon / publishable key**
-   - Den **service_role / secret key** brauchst du erst in Schritt 4 – der kommt **nie** in die Website.
+| Teil | Wo | Details |
+|---|---|---|
+| Website | Cloudflare Pages, Projekt `poketa` | wird von `scripts/deploy-cloudflare.mjs` als Pages-Skript veröffentlicht |
+| Anmeldung | Supabase Auth, Projekt `zyhafbncnadtpsvijaza` | E-Mail + Passwort (mit Bestätigung), Passwort-Reset; Site-URL `https://poketa.pages.dev` |
+| Konto-Daten | Supabase-Tabelle `user_data` | nur über Funktionen, Row Level Security, Konflikterkennung ([`supabase/schema.sql`](supabase/schema.sql)) |
+| Preisverlauf | Supabase-Tabellen `tracked_products`, `price_history` | täglich 05:10 UTC per `pg_cron`/`pg_net` aus dem Cardmarket-Price-Guide ([`supabase/snapshot.sql`](supabase/snapshot.sql)) |
+| Zugangsdaten fürs Frontend | [`config.js`](config.js) | Projekt-URL + öffentlicher *publishable* Key (darf öffentlich sein) |
 
-## 2. Werte in `config.js` eintragen
+## Noch offen (braucht dich)
 
-Datei [`config.js`](config.js) im Repo bearbeiten (direkt auf GitHub über den Stift):
+1. **E-Mails an Nutzer:** Supabase verschickt ohne eigenen Mail-Server Bestätigungs- und Reset-Mails
+   **nur an Mitglieder deines Supabase-Teams**. Für echte Nutzer unter
+   *Authentication → Emails → SMTP Settings* einen Anbieter eintragen (z. B. Resend oder Brevo, beide mit Gratis-Kontingent).
+   Alternative: *Authentication → Sign In / Providers → Email → „Confirm email“* ausschalten.
+2. **Google-Login:** In der [Google Cloud Console](https://console.cloud.google.com/apis/credentials) eine
+   *OAuth-Client-ID (Webanwendung)* anlegen, als Weiterleitungs-URI
+   `https://zyhafbncnadtpsvijaza.supabase.co/auth/v1/callback` eintragen, dann Client-ID und Secret in Supabase unter
+   *Authentication → Sign In / Providers → Google* einfügen. Der Google-Button erscheint danach automatisch.
+3. **Apple-Login (später):** braucht ein Apple-Developer-Konto. Provider in Supabase einschalten – der Button erscheint automatisch.
 
-```js
-window.POKETA_CONFIG = {
-  supabaseUrl: 'https://abcd1234.supabase.co',
-  supabaseAnonKey: 'eyJ… oder sb_publishable_…'
-};
-```
-
-Solange die Werte leer sind, läuft POKETA wie früher ohne Konto.
-
-## 3. Website auf Cloudflare Pages
-
-1. Auf <https://dash.cloudflare.com> registrieren → **Workers & Pages → Create → Pages → Connect to Git**.
-2. Repo `Pokers` wählen. Branch: `claude/poketa-account-ui-ikh7qr` (oder `main`, falls gemerged).
-3. Build-Einstellungen: **Framework preset: None**, **Build command: leer**, **Build output directory: `/`** → **Save and Deploy**.
-4. Du bekommst eine Adresse wie `https://pokers.pages.dev`.
-
-## 4. Anmeldung in Supabase einstellen
-
-**Authentication → URL Configuration**
-- **Site URL**: deine Cloudflare-Adresse, z. B. `https://pokers.pages.dev`
-- **Redirect URLs**: dieselbe Adresse hinzufügen, plus `https://*.pokers.pages.dev/**` für Vorschau-Deploys
-
-**Authentication → Sign In / Providers**
-- **Email**: an. „Confirm email“ an lassen (neue Konten bestätigen ihre E-Mail) oder abschalten.
-- **Google**: an. Dafür in der [Google Cloud Console](https://console.cloud.google.com/apis/credentials) eine *OAuth-Client-ID (Webanwendung)* erstellen,
-  als *Autorisierte Weiterleitungs-URI* die **Callback URL** eintragen, die Supabase beim Google-Provider anzeigt
-  (`https://<projekt>.supabase.co/auth/v1/callback`). Client-ID und Secret in Supabase einfügen.
-- **Apple** (später): braucht ein Apple-Developer-Konto (99 $/Jahr). Sobald du den Provider in Supabase einschaltest,
-  erscheint der Button „Mit Apple fortfahren“ automatisch – am Code muss nichts geändert werden.
-
-**Optional – eigene E-Mails:** Supabase verschickt im Gratis-Plan nur wenige Mails pro Stunde. Für echten Betrieb unter
-**Authentication → Emails → SMTP Settings** einen Mail-Anbieter (z. B. Resend, Brevo) eintragen.
-
-## 5. Täglicher Preis-Snapshot (GitHub Action)
-
-Im GitHub-Repo: **Settings → Secrets and variables → Actions → New repository secret**
-- `SUPABASE_URL` = Project URL
-- `SUPABASE_SERVICE_ROLE_KEY` = service_role / secret key
-
-Dann **Actions → Preis-Snapshot → Run workflow** einmal manuell starten. Danach läuft er jeden Tag um 05:17 UTC
-und speichert die Cardmarket-Preise aller Karten, die jemand in POKETA geöffnet hat.
-
-> Hinweis: GitHub pausiert geplante Actions, wenn im Repo 60 Tage lang nichts passiert. Dann einfach wieder auf „Enable“ klicken.
-
-## Testen (für Entwickler)
+## Neu veröffentlichen
 
 ```bash
-npm test                 # Preis-Snapshot-Skript
-npm run test:db          # Datenbank-Schema gegen lokales Postgres (braucht psql)
+CLOUDFLARE_API_TOKEN=<Token mit „Cloudflare Pages: Edit“> node scripts/deploy-cloudflare.mjs poketa main
+```
+
+## Datenbank ändern
+
+`supabase/schema.sql` bzw. `supabase/snapshot.sql` im Supabase-SQL-Editor erneut ausführen (beide sind wiederholbar).
+Letzte Snapshot-Läufe: `select * from snapshot_runs order by id desc;`
+
+## Tests
+
+```bash
+npm test          # Snapshot-Logik (scripts/price-snapshot.mjs, manuelle Alternative zum pg_cron-Job)
+npm run test:db   # Schema gegen lokales Postgres (braucht psql)
 ```

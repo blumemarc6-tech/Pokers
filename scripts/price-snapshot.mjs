@@ -3,7 +3,7 @@
    POKETA – täglicher Preis-Snapshot
    Lädt den offiziellen Cardmarket-Price-Guide (Pokémon) und speichert für
    jede vorgemerkte Karte den Tagespreis in Supabase.
-   Läuft als GitHub Action (.github/workflows/price-snapshot.yml).
+   Manuelle Alternative zum pg_cron-Job in supabase/snapshot.sql.
 
    Umgebung:
      SUPABASE_URL               https://<projekt>.supabase.co
