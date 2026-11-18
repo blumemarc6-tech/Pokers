@@ -682,7 +682,7 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
 </section>
 
 </main>
-<footer class="foot">POKETA · Sammlung wird mit deinem Konto synchronisiert · keine offizielle Pokémon-Verbindung</footer>
+<footer class="foot">POKETA · lokal gespeichert · keine offizielle Pokémon-Verbindung</footer>
 </div>
 
 <div class="boot" id="boot"><div><div class="spin"></div>Lade …</div></div>
@@ -1552,7 +1552,7 @@ renderHome(); update(); renderCollection(); renderWishes();
 'use strict';
 
 /* false = App wie früher ohne Anmeldung nutzbar */
-const AUTH_REQUIRED = true;
+const AUTH_REQUIRED = false;
 
 const ID = '/.netlify/identity';
 const SYNC_URL = '/.netlify/functions/sync';
