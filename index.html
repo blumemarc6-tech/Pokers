@@ -682,7 +682,7 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
 </section>
 
 </main>
-<footer class="foot">POKETA · lokal gespeichert · keine offizielle Pokémon-Verbindung</footer>
+<footer class="foot">POKETA · <span id="footStore">lokal gespeichert</span> · keine offizielle Pokémon-Verbindung</footer>
 </div>
 
 <div class="boot" id="boot"><div><div class="spin"></div>Lade …</div></div>
@@ -1551,8 +1551,8 @@ renderHome(); update(); renderCollection(); renderWishes();
 (function(){
 'use strict';
 
-/* false = App wie früher ohne Anmeldung nutzbar */
-const AUTH_REQUIRED = false;
+/* true = Anmeldung beim Öffnen nötig (false = App wie früher ohne Konto nutzbar) */
+const AUTH_REQUIRED = true;
 
 const ID = '/.netlify/identity';
 const SYNC_URL = '/.netlify/functions/sync';
@@ -1977,6 +1977,7 @@ async function enter(notice){
   setUserUi(session.user);
   document.body.classList.remove('locked', 'auth-open');
   $('topRight').classList.remove('hidden');
+  $('footStore').textContent = 'mit deinem Konto synchronisiert';
   if(notice) toast(notice.m, notice.t);
   Sync.start();
   // Profil im Hintergrund auffrischen (z. B. Namensänderung auf anderem Gerät)
