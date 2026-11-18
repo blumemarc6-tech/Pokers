@@ -1,0 +1,2166 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>POKETA – Pokémon Card Hub</title>
+<style>
+:root{
+  --bg:#070b14;
+  --card:#0f1628;
+  --card2:#141e34;
+  --line:rgba(100,140,220,.18);
+  --txt:#f0f4ff;
+  --muted:#8b9bb8;
+  --a:#8b6fff;
+  --b:#3dd9f5;
+  --green:#3dffa8;
+  --red:#ff5c7a;
+  --gold:#ffc94a;
+  --orange:#ff8c42;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;color:var(--txt);
+  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 90% 60% at 15% -5%, rgba(139,111,255,.28) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 95% 5%, rgba(61,217,245,.15) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 110%, rgba(255,92,122,.08) 0%, transparent 50%);
+}
+button,input,select{font:inherit}
+button{
+  cursor:pointer;border:0;border-radius:12px;padding:11px 16px;
+  color:#fff;font-weight:700;
+  background:linear-gradient(125deg,var(--a),#5a7fff);
+  transition:transform .15s,box-shadow .15s,filter .15s;
+}
+button:hover{transform:translateY(-1px);filter:brightness(1.08);box-shadow:0 6px 20px rgba(139,111,255,.4)}
+button.secondary{background:var(--card2);border:1px solid var(--line);box-shadow:none}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);box-shadow:none}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+.wrap{max-width:1100px;margin:0 auto;padding:16px 16px 48px}
+
+/* Header */
+.top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.logo{
+  width:42px;height:42px;border-radius:14px;
+  background:linear-gradient(145deg,#a78bfa,#3dd9f5);
+  display:grid;place-items:center;font-weight:900;font-size:20px;color:#0a1020;
+  box-shadow:0 0 20px rgba(139,111,255,.45);
+}
+.brand{font-size:22px;font-weight:900;letter-spacing:2px}
+.sub{color:var(--muted);font-size:12px}
+
+/* Nav */
+.nav{
+  display:flex;gap:4px;overflow-x:auto;padding:6px;
+  background:rgba(12,18,36,.75);backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:16px;margin-bottom:20px;
+  -webkit-overflow-scrolling:touch;
+}
+.nav button{
+  flex-shrink:0;background:transparent;color:var(--muted);
+  padding:10px 14px;border-radius:12px;font-size:13px;box-shadow:none;
+}
+.nav button.active{
+  background:rgba(139,111,255,.25);color:#fff;
+  border:1px solid rgba(139,111,255,.35);
+}
+
+/* Views */
+.view{display:none}.view.active{display:block}
+.hidden{display:none!important}
+
+/* Section titles */
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:22px 0 12px;gap:10px;
+}
+.sec-head h2{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px}
+.sec-head .more{font-size:12px;color:var(--b);font-weight:600;cursor:pointer}
+
+/* Horizontal card scroller */
+.h-scroll{
+  display:flex;gap:12px;overflow-x:auto;padding:4px 2px 12px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+}
+.h-scroll::-webkit-scrollbar{height:4px}
+.h-scroll::-webkit-scrollbar-thumb{background:rgba(139,111,255,.35);border-radius:4px}
+
+/* Card tile – large image focused */
+.tile{
+  flex:0 0 148px;scroll-snap-align:start;
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  overflow:hidden;cursor:pointer;
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+.tile:hover,.tile:active{
+  transform:translateY(-4px);
+  box-shadow:0 12px 28px rgba(0,0,0,.45);
+  border-color:rgba(139,111,255,.45);
+}
+.tile img{
+  width:100%;height:195px;object-fit:contain;
+  background:linear-gradient(180deg,#0c1426,#080e1a);
+  display:block;
+}
+.tile .meta{padding:8px 10px 10px}
+.tile .name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .set{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.tile .price-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.tile .price{font-size:13px;font-weight:800;color:var(--b)}
+.tile .change{font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px}
+.tile .change.up{background:rgba(61,255,168,.15);color:var(--green)}
+.tile .change.down{background:rgba(255,92,122,.15);color:var(--red)}
+.tile .badge{
+  position:absolute;top:8px;left:8px;
+  font-size:10px;font-weight:800;padding:3px 7px;border-radius:8px;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(6px);color:#fff;
+}
+.tile{position:relative}
+.tile .rank-badge{
+  position:absolute;top:8px;left:8px;width:24px;height:24px;
+  border-radius:50%;display:grid;place-items:center;
+  font-size:11px;font-weight:900;color:#fff;
+  background:linear-gradient(145deg,var(--a),#5a7fff);
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+.tile.r1 .rank-badge{background:linear-gradient(145deg,#ffc94a,#e8a010);color:#1a1000}
+.tile.r2 .rank-badge{background:linear-gradient(145deg,#c8d0e0,#8896a8);color:#0d1118}
+.tile.r3 .rank-badge{background:linear-gradient(145deg,#d47830,#9a4e18)}
+
+/* Featured hero card */
+.hero-card{
+  display:flex;gap:14px;align-items:stretch;
+  background:linear-gradient(135deg,rgba(139,111,255,.2),rgba(61,217,245,.1));
+  border:1px solid rgba(139,111,255,.3);border-radius:20px;
+  padding:14px;margin-bottom:8px;cursor:pointer;
+  transition:border-color .2s,box-shadow .2s;
+}
+.hero-card:hover{border-color:rgba(139,111,255,.55);box-shadow:0 8px 28px rgba(139,111,255,.2)}
+.hero-card img{
+  width:110px;height:154px;object-fit:contain;border-radius:12px;
+  background:#0a1220;flex-shrink:0;
+}
+.hero-card .info{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.hero-card .label{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--gold);margin-bottom:4px}
+.hero-card h3{font-size:18px;font-weight:800;margin-bottom:2px}
+.hero-card .set{font-size:12px;color:var(--muted)}
+.hero-card .price{font-size:20px;font-weight:900;color:var(--b);margin-top:8px}
+.hero-card .change{font-size:12px;font-weight:700;color:var(--green);margin-top:2px}
+
+/* Stats mini */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.stat{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:12px 10px;text-align:center;
+}
+.stat strong{display:block;font-size:18px;font-weight:900;margin:2px 0}
+.stat span{font-size:11px;color:var(--muted)}
+
+/* Search / panels */
+.panel{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:16px;margin:12px 0;
+}
+.panel h2{font-size:15px;margin-bottom:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.field{
+  background:#0a1020;color:var(--txt);border:1px solid var(--line);
+  border-radius:11px;padding:11px 13px;min-width:0;
+}
+.field:focus{outline:none;border-color:var(--a)}
+.search{flex:1;min-width:140px}
+.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+.notice{padding:10px 12px;border-radius:10px;background:rgba(20,30,55,.7);color:#a8b8d4;font-size:12px;margin:8px 0;border:1px solid var(--line)}
+.list{display:grid;gap:8px}
+.item{display:flex;gap:10px;align-items:center;padding:10px;background:#0a1220;border:1px solid var(--line);border-radius:12px}
+.item img{width:44px;height:60px;object-fit:contain;border-radius:5px}
+.item .grow{flex:1;min-width:0}
+.item small{color:var(--muted);font-size:12px}
+.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.muted{color:var(--muted)}
+.foot{text-align:center;color:#4a5a78;font-size:11px;padding:24px 0 8px}
+
+/* Detail */
+.detail-img{width:140px;max-height:200px;object-fit:contain;border-radius:10px}
+
+@media(max-width:640px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .tile{flex:0 0 132px}
+  .tile img{height:170px}
+  .hero-card img{width:90px;height:126px}
+  .two{grid-template-columns:1fr}
+  .nav{margin:0 -4px 16px}
+}
+
+/* AI Grading coming soon */
+.soon-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+  padding:5px 10px;border-radius:999px;
+  background:linear-gradient(125deg,rgba(139,111,255,.35),rgba(61,217,245,.25));
+  border:1px solid rgba(139,111,255,.45);color:#e8e6ff;
+}
+.grade-hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,rgba(139,111,255,.18),rgba(61,217,245,.08));
+  border:1px solid rgba(139,111,255,.3);border-radius:20px;padding:18px;margin-bottom:14px;
+}
+.grade-hero h2{font-size:18px;margin:8px 0 6px}
+.grade-scores{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;
+}
+.g-score{
+  background:rgba(10,16,32,.7);border:1px solid var(--line);border-radius:14px;
+  padding:12px 8px;text-align:center;
+}
+.g-score strong{display:block;font-size:22px;font-weight:900;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;color:transparent}
+.g-score span{font-size:11px;color:var(--muted)}
+.grade-mock{
+  filter:blur(1.5px);opacity:.55;pointer-events:none;user-select:none;
+  position:relative;
+}
+.grade-mock::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(7,11,20,.85));
+  border-radius:16px;pointer-events:none;
+}
+.soon-overlay{
+  position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);
+  z-index:2;text-align:center;width:90%;
+}
+.soon-card{
+  background:rgba(12,18,36,.92);backdrop-filter:blur(12px);
+  border:1px solid rgba(139,111,255,.4);border-radius:16px;
+  padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.45);
+}
+@media(max-width:640px){
+  .grade-scores{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ═══════ Konto / Anmeldung ═══════ */
+body.locked{overflow:hidden}
+body.locked .wrap{display:none}
+.boot{display:none;position:fixed;inset:0;place-items:center;color:var(--muted);font-size:13px}
+body.locked:not(.auth-open) .boot{display:grid}
+.spin{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--a);animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.auth{display:none;position:fixed;inset:0;z-index:50;overflow-y:auto;padding:max(20px,env(safe-area-inset-top)) 16px 28px;place-items:center}
+body.auth-open .auth{display:grid}
+.auth-card{
+  width:100%;max-width:400px;margin:auto;
+  background:rgba(15,22,40,.92);backdrop-filter:blur(16px);
+  border:1px solid rgba(139,111,255,.3);border-radius:22px;padding:22px 20px 18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.auth-tabs{display:flex;gap:4px;padding:4px;background:#0a1020;border:1px solid var(--line);border-radius:14px;margin-bottom:16px}
+.auth-tabs button{flex:1;background:transparent;color:var(--muted);box-shadow:none;padding:9px 10px;font-size:13px}
+.auth-tabs button.active{background:rgba(139,111,255,.25);color:#fff;border:1px solid rgba(139,111,255,.35)}
+.auth-card h2{font-size:17px;margin-bottom:4px}
+.auth-card .lead{color:var(--muted);font-size:13px;margin-bottom:14px}
+.auth-card label{display:block;font-size:12px;color:var(--muted);margin-bottom:12px}
+.auth-card label .field{display:block;width:100%;margin-top:5px;font-size:16px}
+.auth-card form>button[type=submit]{width:100%;margin-top:4px;padding:13px}
+.pw{position:relative}
+.pw .field{padding-right:74px}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:6px 10px;font-size:12px;border-radius:9px}
+.pw button:hover{transform:translateY(-50%)}
+.g-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:#fff;color:#1f2937;box-shadow:none;padding:12px;margin-bottom:14px;
+}
+.g-btn:hover{box-shadow:0 6px 20px rgba(255,255,255,.18)}
+.g-btn svg{width:18px;height:18px}
+.auth-or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px;margin:2px 0 14px}
+.auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--line)}
+.auth-msg{padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px;border:1px solid var(--line);background:rgba(20,30,55,.7);color:#c8d4ee}
+.auth-msg.err{border-color:rgba(255,92,122,.45);background:rgba(255,92,122,.1);color:#ffc2cd}
+.auth-msg.ok{border-color:rgba(61,255,168,.4);background:rgba(61,255,168,.08);color:#b8ffe0}
+.meter{display:flex;align-items:center;gap:10px;margin:-4px 0 12px}
+.meter .bars{display:flex;gap:4px;flex:1}
+.meter .bars i{flex:1;height:5px;border-radius:3px;background:#1a2540;transition:background .2s}
+.meter span{font-size:11px;color:var(--muted);min-width:64px;text-align:right}
+.meter[data-s="1"] .bars i:nth-child(-n+1){background:var(--red)}
+.meter[data-s="2"] .bars i:nth-child(-n+2){background:var(--orange)}
+.meter[data-s="3"] .bars i:nth-child(-n+3){background:var(--gold)}
+.meter[data-s="4"] .bars i:nth-child(-n+4){background:var(--green)}
+.auth-links{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+button.link{background:none;border:0;box-shadow:none;padding:4px 0;color:var(--b);font-size:13px;font-weight:600}
+button.link:hover{transform:none;box-shadow:none;text-decoration:underline}
+
+/* Header rechts: Sync + Avatar */
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px;position:relative}
+.sync-pill{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);padding:5px 9px;border:1px solid var(--line);border-radius:999px;background:rgba(12,18,36,.6);white-space:nowrap}
+.sync-pill i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync-pill[data-s="ok"] i{background:var(--green)}
+.sync-pill[data-s="busy"] i{background:var(--gold);animation:pulse 1s infinite}
+.sync-pill[data-s="err"] i{background:var(--red)}
+@keyframes pulse{50%{opacity:.3}}
+.avatar{
+  width:40px;height:40px;border-radius:50%;padding:0;font-size:14px;font-weight:800;
+  background:linear-gradient(145deg,var(--a),var(--b));color:#0a1020;border:2px solid rgba(255,255,255,.15);
+}
+.menu{
+  position:absolute;right:0;top:48px;z-index:20;min-width:210px;
+  background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:6px;
+  box-shadow:0 14px 40px rgba(0,0,0,.55);
+}
+.menu .who{padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.menu .who b{display:block;font-size:13px}
+.menu .who small{color:var(--muted);font-size:11px;word-break:break-all}
+.menu button{width:100%;text-align:left;background:transparent;box-shadow:none;border-radius:9px;padding:9px 10px;font-size:13px;font-weight:600}
+.menu button:hover{background:rgba(139,111,255,.18);transform:none;box-shadow:none}
+
+/* Toasts */
+.toasts{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:80;display:grid;gap:8px;width:min(92vw,420px);pointer-events:none}
+.toast{pointer-events:auto;padding:11px 14px;border-radius:12px;font-size:13px;background:var(--card2);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.5);animation:tin .2s ease-out}
+.toast.ok{border-color:rgba(61,255,168,.45)}
+.toast.err{border-color:rgba(255,92,122,.5)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+
+/* Konto-Seite */
+.acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--muted)}
+.kv b{word-break:break-all;text-align:right}
+.panel label.lbl{display:block;font-size:12px;color:var(--muted);margin:10px 0 0}
+.panel label.lbl .field{display:block;width:100%;margin-top:5px}
+button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.4);color:#ffc2cd;box-shadow:none}
+@media(max-width:640px){
+  .acct-grid{grid-template-columns:1fr}
+  .sync-pill span{display:none}
+  .sync-pill{padding:7px}
+}
+</style>
+</head>
+<body class="locked">
+<div class="wrap">
+
+<header class="top">
+  <div class="logo">◉</div>
+  <div>
+    <div class="brand">POKETA</div>
+    <div class="sub">v1.1 · Card Hub</div>
+  </div>
+  <div class="top-right hidden" id="topRight">
+    <div class="sync-pill" id="syncPill" data-s="idle" title="Synchronisierung"><i></i><span id="syncTxt">–</span></div>
+    <button class="avatar" id="avatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Konto-Menü">?</button>
+    <div class="menu hidden" id="acctMenu" role="menu">
+      <div class="who"><b id="menuName">–</b><small id="menuMail">–</small></div>
+      <button role="menuitem" id="menuAccount">☺ Mein Konto</button>
+      <button role="menuitem" id="menuSync">⟳ Jetzt synchronisieren</button>
+      <button role="menuitem" id="menuLogout">⎋ Abmelden</button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav" id="nav">
+  <button class="active" data-view="dashboard">⌂ Start</button>
+  <button data-view="search">⌕ Suche</button>
+  <button data-view="collection">▤ Sammlung</button>
+  <button data-view="wishlist">♡ Wunschliste</button>
+  <button data-view="scanner">▧ Scanner</button>
+  <button data-view="grading">✧ Grading</button>
+  <button data-view="settings">⚙ Preise</button>
+</nav>
+
+<main>
+
+<!-- ═══════ START / DASHBOARD ═══════ -->
+<section class="view active" id="dashboard">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat"><span>Sammlung</span><strong id="statCount">0</strong></div>
+    <div class="stat"><span>Kaufwert</span><strong id="statBuy">0 €</strong></div>
+    <div class="stat"><span>Wert</span><strong id="statValue">0 €</strong></div>
+    <div class="stat"><span>G/V</span><strong id="statProfit">0 €</strong></div>
+  </div>
+
+  <!-- Featured -->
+  <div class="hero-card" onclick="searchPopular('Glurak ex')">
+    <img src="https://images.pokemontcg.io/sv3/125_hires.png"
+         onerror="this.src='https://images.pokemontcg.io/sv3/125.png'"
+         alt="Glurak ex">
+    <div class="info">
+      <div class="label">★ KARTEN DES TAGES</div>
+      <h3>Glurak ex</h3>
+      <div class="set">Obsidianflammen · SIR</div>
+      <div class="price">lädt…</div>
+      <div class="change">Cardmarket Live</div>
+    </div>
+  </div>
+
+  <!-- Beliebteste Karten -->
+  <div class="sec-head">
+    <h2>🔥 Beliebteste Karten</h2>
+    <span class="more" onclick="show('search')">Alle →</span>
+  </div>
+  <div class="h-scroll" id="popularScroll"></div>
+
+  <!-- Preissteigerungen -->
+  <div class="sec-head">
+    <h2>📈 Preissteigerungen</h2>
+    <span class="more" onclick="show('search')">Mehr →</span>
+  </div>
+  <div class="h-scroll" id="risersScroll"></div>
+
+  <!-- Neuerscheinungen -->
+  <div class="sec-head">
+    <h2>✨ Neu erschienene Karten</h2>
+    <span class="more" onclick="show('search')">Mehr →</span>
+  </div>
+  <div class="h-scroll" id="newScroll"></div>
+
+  <!-- Meistgesucht -->
+  <div class="sec-head">
+    <h2>🔍 Meistgesuchte Karten</h2>
+  </div>
+  <div class="h-scroll" id="searchedScroll"></div>
+
+  <!-- Zuletzt -->
+  <div class="sec-head">
+    <h2>🕐 Zuletzt hinzugefügt</h2>
+  </div>
+  <div id="recent" class="empty">Noch keine Karten in deiner Sammlung.</div>
+
+  <div class="hero-card" style="margin-top:16px;cursor:pointer" onclick="show('grading')">
+    <div style="width:72px;height:72px;border-radius:16px;background:linear-gradient(145deg,rgba(139,111,255,.4),rgba(61,217,245,.25));display:grid;place-items:center;font-size:28px;flex-shrink:0">✧</div>
+    <div class="info">
+      <div class="label">BALD VERFÜGBAR</div>
+      <h3 style="font-size:16px">KI-Grading</h3>
+      <div class="set">Subgrades · Zentrierung · Marktwert-Schätzung</div>
+      <div class="change" style="margin-top:6px">Kommt demnächst →</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════ SUCHE ═══════ -->
+<section class="view" id="search">
+  <div class="panel">
+    <div class="row">
+      <input id="q" class="field search" placeholder="Name oder Nr. z. B. Glurak" autocomplete="off">
+      <select id="lang" class="field">
+        <option value="de">DE</option>
+        <option value="en">EN</option>
+        <option value="ja">JP</option>
+      </select>
+      <button id="searchBtn">Suchen</button>
+    </div>
+    <div class="notice" id="searchStatus">Live-Daten über TCGdex · Preise sind Referenzwerte</div>
+    <div id="results" class="results"></div>
+  </div>
+  <div class="panel hidden" id="detail"></div>
+</section>
+
+<!-- ═══════ SAMMLUNG ═══════ -->
+<section class="view" id="collection">
+  <div class="panel">
+    <div class="row">
+      <input id="collectionFilter" class="field search" placeholder="Suchen…">
+      <button id="refreshPrices" class="secondary">↻ Preise</button>
+      <button class="secondary" onclick="exportData()">Export</button>
+    </div>
+    <div class="notice" id="refreshStatus">Preise nur bei verfügbaren Daten aktualisiert.</div>
+    <div id="collectionList" class="list" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<!-- ═══════ WUNSCHLISTE ═══════ -->
+<section class="view" id="wishlist">
+  <div class="panel">
+    <div class="row">
+      <input id="wishName" class="field search" placeholder="Kartenname">
+      <input id="wishPrice" class="field" type="number" min="0" step=".01" placeholder="Ziel €">
+      <button id="addWish">＋</button>
+    </div>
+    <div id="wishList" class="list" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<!-- ═══════ SCANNER ═══════ -->
+<section class="view" id="scanner">
+  <div class="panel">
+    <input id="photo" class="field" type="file" accept="image/*" capture="environment" style="width:100%">
+    <div id="photoPreview" style="margin-top:12px"></div>
+    <div class="notice">Foto wird angezeigt – Erkennung manuell über Suche.</div>
+    <button class="secondary" onclick="show('search')" style="margin-top:8px">Zur Suche</button>
+  </div>
+</section>
+
+<!-- ═══════ GRADING ═══════ -->
+<section class="view" id="grading">
+  <div class="grade-hero">
+    <span class="soon-badge">✦ KI-Grading · kommt demnächst</span>
+    <h2>Digitales Karten-Grading</h2>
+    <p class="muted" style="font-size:13px;line-height:1.5">
+      Wie bei modernen AI-Grading-Apps: Foto machen, Subgrades für Zentrierung, Ecken, Kanten und Oberfläche erhalten –
+      plus Marktwert-Schätzung. Noch nicht live, aber schon vorbereitet.
+    </p>
+    <div class="grade-scores">
+      <div class="g-score"><strong>—</strong><span>Gesamt</span></div>
+      <div class="g-score"><strong>—</strong><span>Zentrierung</span></div>
+      <div class="g-score"><strong>—</strong><span>Ecken</span></div>
+      <div class="g-score"><strong>—</strong><span>Kanten</span></div>
+      <div class="g-score"><strong>—</strong><span>Oberfläche</span></div>
+      <div class="g-score"><strong>—</strong><span>Struktur</span></div>
+    </div>
+  </div>
+
+  <div class="panel" style="position:relative;overflow:hidden">
+    <div class="grade-mock">
+      <h2 style="margin-bottom:10px">Beispiel-Report</h2>
+      <div class="row" style="align-items:flex-start;margin-bottom:12px">
+        <div style="width:90px;height:126px;border-radius:10px;background:linear-gradient(145deg,#1a2540,#0c1426);border:1px solid var(--line);flex-shrink:0"></div>
+        <div class="grow">
+          <b>Glurak ex</b>
+          <p class="muted" style="font-size:12px">Obsidianflammen · Beispiel</p>
+          <p style="margin-top:8px;font-size:22px;font-weight:900;color:var(--b)">PSA-Äquivalent 9</p>
+          <p class="muted" style="font-size:12px">Predicted Value · Markttrend</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+        <div style="background:#0a1220;border-radius:10px;padding:10px;border:1px solid var(--line)"><span class="muted" style="font-size:11px">Surface</span><div style="font-weight:800">9.0</div></div>
+        <div style="background:#0a1220;border-radius:10px;padding:10px;border:1px solid var(--line)"><span class="muted" style="font-size:11px">Corners</span><div style="font-weight:800">9.5</div></div>
+        <div style="background:#0a1220;border-radius:10px;padding:10px;border:1px solid var(--line)"><span class="muted" style="font-size:11px">Centering</span><div style="font-weight:800">9.5</div></div>
+        <div style="background:#0a1220;border-radius:10px;padding:10px;border:1px solid var(--line)"><span class="muted" style="font-size:11px">Edges</span><div style="font-weight:800">9.0</div></div>
+      </div>
+    </div>
+    <div class="soon-overlay">
+      <div class="soon-card">
+        <div class="soon-badge" style="margin-bottom:10px">Demnächst</div>
+        <b style="font-size:16px">KI-Foto-Grading</b>
+        <p class="muted" style="font-size:13px;margin:8px 0 12px;line-height:1.45">
+          Foto von Vorder- und Rückseite → automatische Bewertung (Zentrierung, Ecken, Kanten, Oberfläche)
+          und grobe Wertschätzung. Kein offizielles PSA/CGC-Grading.
+        </p>
+        <button type="button" class="secondary" onclick="alert('KI-Grading kommt in einer späteren POKETA-Version. Bis dahin: Checkliste unten nutzen.')">Benachrichtigung merken</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="two" style="margin-top:14px">
+    <div class="panel">
+      <h2>Manuelle Prüfliste (jetzt nutzbar)</h2>
+      <p class="muted" style="font-size:12px;margin-bottom:8px">Bis die KI live ist – eigene Einschätzung dokumentieren.</p>
+      <label><input type="checkbox" id="gCent"> Zentrierung ok</label>
+      <p><label><input type="checkbox" id="gCorn"> Ecken intakt</label></p>
+      <p><label><input type="checkbox" id="gEdge"> Kanten sauber</label></p>
+      <p><label><input type="checkbox" id="gSurf"> Oberfläche frei</label></p>
+      <p><label><input type="checkbox" id="gStru"> Keine Wölbung / Struktur ok</label></p>
+      <textarea id="gradingNotes" class="field" style="width:100%;min-height:80px;margin-top:8px" placeholder="Notizen, geschätzte Note…"></textarea>
+      <button onclick="saveNotes()" style="margin-top:8px">Speichern</button>
+    </div>
+    <div class="panel">
+      <h2>Hinweis</h2>
+      <p class="muted" style="font-size:13px;line-height:1.5">
+        POKETA liefert <b>kein offizielles Grading</b>. Die kommende KI-Funktion ist eine Orientierungshilfe –
+        vergleichbar mit Apps wie Digital Grading, aber ohne Anspruch auf PSA/BGS/CGC-Genauigkeit.
+      </p>
+      <p class="muted" style="font-size:13px;margin-top:10px;line-height:1.5">
+        Geplant: Foto-Upload → Subgrades → grober Marktwert aus Cardmarket-Trend.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="view" id="settings">
+  <div class="panel">
+    <h2>Cardmarket / Marktpreise</h2>
+    <p class="muted" style="font-size:13px;margin:8px 0 10px">
+      <b>Standard (ohne Key):</b> TCGdex liefert Cardmarket-Price-Guide (Low, Trend, Ø 1/7/30) und TCGPlayer – kostenlos.
+    </p>
+    <p class="muted" style="font-size:13px;margin-bottom:12px">
+      <b>Mit API-Key:</b> Live-Angebote und günstigste Preise <em>pro Zustand</em> (NM, EX, GD …), sofern der Anbieter das liefert.
+    </p>
+
+    <div class="notice" style="margin-bottom:14px">
+      <b>So bekommst du einen Key</b><br>
+      1. Bei einem Anbieter registrieren, z. B.
+      <a href="https://www.cardmarketapi.com/docs" target="_blank" rel="noopener" style="color:var(--b)">cardmarketapi.com</a>,
+      <a href="https://api.sh/cardmarket-api" target="_blank" rel="noopener" style="color:var(--b)">API.SH</a>
+      oder <a href="https://tcgapis.com/cardmarket-api" target="_blank" rel="noopener" style="color:var(--b)">TCGAPIs</a><br>
+      2. API-Key kopieren und hier einfügen<br>
+      3. Basis-URL prüfen (siehe Anbieter-Docs) → Speichern<br>
+      4. Karte in der Suche öffnen → Live-Block erscheint in den Details
+    </div>
+
+    <label class="muted" style="font-size:12px">API-Key (nur in diesem Browser gespeichert)</label>
+    <input id="cmApiKey" class="field" style="width:100%;margin:6px 0 10px" placeholder="Dein Key hier einfügen" type="password" autocomplete="off">
+    <label class="muted" style="font-size:12px">API-Basis-URL</label>
+    <input id="cmApiBase" class="field" style="width:100%;margin:6px 0 10px" placeholder="https://api.api.sh/cardmarket/v1/" value="https://api.api.sh/cardmarket/v1/">
+    <div class="row" style="margin-top:4px">
+      <button onclick="saveCmSettings()">Speichern</button>
+      <button class="secondary" onclick="clearCmSettings()">Key löschen</button>
+      <button class="secondary" onclick="testCmKey()">Key testen</button>
+    </div>
+    <div class="notice" id="cmSettingsStatus" style="margin-top:12px">
+      Standard: TCGdex (funktioniert ohne Key). Externe Keys scheitern im Browser oft an CORS – dann bleiben die TCGdex-Preise.
+    </div>
+
+    <h2 style="margin-top:18px">Was die Daten bedeuten</h2>
+    <ul class="muted" style="font-size:13px;line-height:1.65;padding-left:18px;margin-top:8px">
+      <li><b>Low / From</b> – günstigstes Angebot</li>
+      <li><b>Trend</b> – Cardmarket-Markttendenz</li>
+      <li><b>Ø 7 / 30</b> – gleitende Durchschnitte</li>
+      <li><b>Ohne Key:</b> Zustand ≈ Ableitung aus Low/Trend</li>
+      <li><b>Mit Key:</b> Zustand ≈ günstigstes Live-Listing dieser Condition (wenn die API Listings liefert)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════ KONTO ═══════ -->
+<section class="view" id="account">
+  <div class="acct-grid">
+    <div class="panel">
+      <h2>Mein Konto</h2>
+      <div class="kv"><span>E-Mail</span><b id="acMail">–</b></div>
+      <div class="kv"><span>Anmeldung</span><b id="acProvider">–</b></div>
+      <label class="lbl">Anzeigename
+        <input id="acName" class="field" maxlength="60" autocomplete="name" placeholder="Wie sollen wir dich nennen?">
+      </label>
+      <div class="row" style="margin-top:10px">
+        <button id="acNameSave">Namen speichern</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Synchronisierung</h2>
+      <div class="kv"><span>Status</span><b id="acSyncState">–</b></div>
+      <div class="kv"><span>Zuletzt</span><b id="acSyncTime">–</b></div>
+      <div class="kv"><span>In der Cloud</span><b id="acSyncCount">–</b></div>
+      <p class="muted" style="font-size:12px;margin-top:10px;line-height:1.5">
+        Sammlung, Wunschliste und Grading-Notizen liegen in deinem Konto und sind auf jedem Gerät verfügbar.
+        Dein Preis-API-Key bleibt bewusst nur in diesem Browser.
+      </p>
+      <div class="row" style="margin-top:10px">
+        <button id="acSyncNow">Jetzt synchronisieren</button>
+        <button class="secondary" onclick="exportData()">Export (JSON)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="acct-grid">
+    <div class="panel" id="acPwPanel">
+      <h2>Passwort ändern</h2>
+      <label class="lbl">Neues Passwort
+        <input id="acPw1" type="password" class="field" autocomplete="new-password" placeholder="Mindestens 8 Zeichen">
+      </label>
+      <div class="meter" id="acMeter" data-s="0" style="margin-top:10px"><div class="bars"><i></i><i></i><i></i><i></i></div><span id="acMeterTxt"></span></div>
+      <label class="lbl">Wiederholen
+        <input id="acPw2" type="password" class="field" autocomplete="new-password">
+      </label>
+      <div class="row" style="margin-top:10px">
+        <button id="acPwSave">Passwort speichern</button>
+      </div>
+      <div class="notice hidden" id="acPwMsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Sitzung &amp; Daten</h2>
+      <div class="row">
+        <button class="secondary" id="acLogout">Abmelden</button>
+        <button class="danger" id="acWipe">Cloud-Daten löschen</button>
+      </div>
+      <p class="muted" style="font-size:12px;margin-top:10px;line-height:1.5">
+        Beim Abmelden werden Sammlung, Wunschliste und Notizen von diesem Gerät entfernt (sie bleiben im Konto).
+        „Cloud-Daten löschen“ entfernt sie aus dem Konto; die Daten auf diesem Gerät bleiben erhalten.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="foot">POKETA · lokal gespeichert · keine offizielle Pokémon-Verbindung</footer>
+</div>
+
+<div class="boot" id="boot"><div><div class="spin"></div>Lade …</div></div>
+
+<!-- ═══════ ANMELDUNG ═══════ -->
+<div class="auth" id="auth" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="logo">◉</div>
+      <div><div class="brand">POKETA</div><div class="sub">Dein Karten-Konto</div></div>
+    </div>
+
+    <div class="auth-tabs" id="authTabs">
+      <button type="button" data-mode="login" class="active">Anmelden</button>
+      <button type="button" data-mode="register">Registrieren</button>
+    </div>
+
+    <h2 id="authTitle">Willkommen zurück</h2>
+    <p class="lead" id="authLead">Melde dich an, um deine Sammlung auf jedem Gerät zu nutzen.</p>
+    <div class="auth-msg hidden" id="authMsg" role="alert"></div>
+
+    <button type="button" class="g-btn" id="authGoogle">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.5 28.6a14.5 14.5 0 0 1 0-9.2l-7.9-6.1a24 24 0 0 0 0 21.4l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.1 1.4-4.9 2.3-8.2 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+      Mit Google fortfahren
+    </button>
+    <div class="auth-or" id="authOr"><span>oder mit E-Mail</span></div>
+
+    <form id="authForm" novalidate>
+      <label id="authNameWrap" class="hidden">Name (optional)
+        <input id="authName" class="field" maxlength="60" autocomplete="name">
+      </label>
+      <label id="authMailWrap">E-Mail
+        <input id="authEmail" class="field" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
+      </label>
+      <label id="authPwWrap"><span id="authPwLbl">Passwort</span>
+        <div class="pw">
+          <input id="authPw" class="field" type="password" autocomplete="current-password">
+          <button type="button" class="ghost" id="authPwToggle">Zeigen</button>
+        </div>
+      </label>
+      <div class="meter hidden" id="authMeter" data-s="0"><div class="bars"><i></i><i></i><i></i><i></i></div><span id="authMeterTxt"></span></div>
+      <button type="submit" id="authSubmit">Anmelden</button>
+    </form>
+
+    <div class="auth-links">
+      <button type="button" class="link" id="authForgot">Passwort vergessen?</button>
+      <button type="button" class="link hidden" id="authBack">← Zur Anmeldung</button>
+    </div>
+    <div class="auth-links hidden" id="authLocalWrap">
+      <button type="button" class="link" id="authLocal">Lokal ohne Konto fortfahren</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+/* ── Design-Beispiel-Daten (keine Live-Rankings) ── */
+/* Home cards – IDs matched to TCGdex (live prices on load) */
+const homeCards = {
+  popular: [
+    {id:'sv03-125', name:'Glurak ex', set:'Obsidianflammen', img:'https://images.pokemontcg.io/sv3/125_hires.png', rank:1},
+    {id:'sv08-247', name:'Pikachu ex', set:'Stürmische Funken', img:'https://images.pokemontcg.io/sv8/247_hires.png', rank:2},
+    {id:'swsh7-215', name:'Nachtara VMAX', set:'Evolving Skies', img:'https://images.pokemontcg.io/swsh7/215_hires.png', rank:3},
+    {id:'base1-4', name:'Glurak', set:'Base Set', img:'https://images.pokemontcg.io/base1/4_hires.png', rank:4},
+    {id:'sv03.5-151', name:'Mew ex', set:'151', img:'https://images.pokemontcg.io/sv3pt5/151_hires.png', rank:5}
+  ],
+  risers: [
+    {id:'sv03.5-151', name:'Mew ex', set:'151', img:'https://images.pokemontcg.io/sv3pt5/151_hires.png'},
+    {id:'sv08-247', name:'Pikachu ex', set:'Stürmische Funken', img:'https://images.pokemontcg.io/sv8/247_hires.png'},
+    {id:'sv03-125', name:'Glurak ex', set:'Obsidianflammen', img:'https://images.pokemontcg.io/sv3/125_hires.png'},
+    {id:'swsh7-215', name:'Nachtara VMAX', set:'Evolving Skies', img:'https://images.pokemontcg.io/swsh7/215_hires.png'}
+  ],
+  news: [
+    {id:'sv08-247', name:'Pikachu ex', set:'Stürmische Funken', img:'https://images.pokemontcg.io/sv8/247_hires.png'},
+    {id:'sv03-125', name:'Glurak ex', set:'Obsidianflammen', img:'https://images.pokemontcg.io/sv3/125_hires.png'},
+    {id:'sv03.5-151', name:'Mew ex', set:'151', img:'https://images.pokemontcg.io/sv3pt5/151_hires.png'},
+    {id:'swsh7-215', name:'Nachtara VMAX', set:'Evolving Skies', img:'https://images.pokemontcg.io/swsh7/215_hires.png'}
+  ],
+  searched: [
+    {id:'base1-4', name:'Glurak', set:'Base Set', img:'https://images.pokemontcg.io/base1/4_hires.png'},
+    {id:'base1-58', name:'Pikachu', set:'Base Set', img:'https://images.pokemontcg.io/base1/58_hires.png'},
+    {id:'base1-10', name:'Mewtu', set:'Base Set', img:'https://images.pokemontcg.io/base1/10_hires.png'},
+    {id:'base1-44', name:'Bisasam', set:'Base Set', img:'https://images.pokemontcg.io/base1/44_hires.png'}
+  ]
+};
+
+const demo = [
+  {id:'sv3-125',name:'Glurak ex',localId:'125',set:{name:'Obsidianflammen'},image:'https://assets.tcgdex.net/de/sv/sv3/125'},
+  {id:'swsh3-136',name:'Glurak',localId:'136',set:{name:'Flammende Finsternis'},image:'https://assets.tcgdex.net/de/swsh/swsh3/136'},
+  {id:'sv2-203',name:'Nachtara ex',localId:'203',set:{name:'Entwicklungen in Paldea'},image:'https://assets.tcgdex.net/de/sv/sv2/203'},
+  {id:'swsh7-215',name:'Nachtara VMAX',localId:'215',set:{name:'Evolving Skies'},image:'https://assets.tcgdex.net/en/swsh/swsh7/215'},
+  {id:'sv08-247',name:'Pikachu ex',localId:'247',set:{name:'Surging Sparks'},image:'https://images.pokemontcg.io/sv8/247_hires.png'}
+];
+
+let cards=JSON.parse(localStorage.getItem('poketa_cards')||'[]');
+let wishes=JSON.parse(localStorage.getItem('poketa_wishes')||'[]');
+let current=[];
+
+const money=n=>Number(n||0).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function cardImage(c){if(!c.image)return'';return c.image.endsWith('/high.webp')||c.image.includes('_hires')?c.image:c.image+'/high.webp'}
+
+function save(){localStorage.setItem('poketa_cards',JSON.stringify(cards));localStorage.setItem('poketa_wishes',JSON.stringify(wishes));update();if(window.Sync)Sync.dirty()}
+/* Schnittstelle zum Konto-Sync */
+function snapshotData(){return {cards,wishes,notes:localStorage.getItem('poketa_grading_notes')||''}}
+function applyData(d){
+  cards=Array.isArray(d.cards)?d.cards:[];
+  wishes=Array.isArray(d.wishes)?d.wishes:[];
+  localStorage.setItem('poketa_cards',JSON.stringify(cards));
+  localStorage.setItem('poketa_wishes',JSON.stringify(wishes));
+  localStorage.setItem('poketa_grading_notes',d.notes||'');
+  if(window.gradingNotes)gradingNotes.value=d.notes||'';
+  update();renderCollection();renderWishes();
+}
+function show(id){
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===id));
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===id));
+  if(id==='collection')renderCollection();
+  if(id==='wishlist')renderWishes();
+  if(id==='settings')loadCmSettings();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.view)));
+
+function update(){
+  let buy=cards.reduce((s,c)=>s+Number(c.buy||0),0),val=cards.reduce((s,c)=>s+Number(c.value||0),0);
+  statCount.textContent=cards.length;
+  statBuy.textContent=money(buy).replace(/\s/g,'');
+  statValue.textContent=money(val).replace(/\s/g,'');
+  statProfit.textContent=money(val-buy).replace(/\s/g,'');
+  statProfit.style.color=val-buy>=0?'var(--green)':'var(--red)';
+  recent.innerHTML=cards.length
+    ? `<div class="h-scroll">${cards.slice(-5).reverse().map(c=>`
+        <div class="tile" onclick="show('collection')">
+          <img src="${safe(c.image)}" onerror="this.style.opacity=.3">
+          <div class="meta"><div class="name">${safe(c.name)}</div><div class="set">${safe(c.set||'')}</div>
+          <div class="price-row"><span class="price">${money(c.value)}</span></div></div>
+        </div>`).join('')}</div>`
+    : '<div class="empty">Noch keine Karten in deiner Sammlung.</div>';
+}
+
+/* Render horizontal tile rows */
+function fmtEUR(v){
+  if(v==null || isNaN(v) || v<=0) return '—';
+  return Number(v).toLocaleString('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2});
+}
+
+function tileHTML(c, ranked){
+  const rankCls = ranked && c.rank ? ` r${c.rank}` : '';
+  const rankBadge = ranked && c.rank ? `<div class="rank-badge">${c.rank}</div>` : '';
+  const price = c.livePrice != null ? fmtEUR(c.livePrice) : 'lädt…';
+  const lowLine = c.liveLow != null ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">ab ${fmtEUR(c.liveLow)}</div>` : '';
+  const change = c.liveChange != null
+    ? `<span class="change ${c.liveChange>=0?'up':'down'}">${c.liveChange>=0?'+':''}${c.liveChange}%</span>`
+    : `<span class="change" style="color:var(--muted);background:transparent">CM</span>`;
+  return `<div class="tile${rankCls}" onclick="searchPopular('${safe(c.name)}')">
+    ${rankBadge}
+    <img src="${safe(c.img)}" onerror="this.style.opacity=.35" alt="${safe(c.name)}" loading="eager">
+    <div class="meta">
+      <div class="name">${safe(c.name)}</div>
+      <div class="set">${safe(c.set)}</div>
+      <div class="price-row">
+        <div><span class="price" data-id="${safe(c.id)}">${price}</span>${lowLine}</div>
+        ${change}
+      </div>
+    </div>
+  </div>`;
+}
+
+async function fetchCardPrice(id){
+  try{
+    const r = await fetch(`https://api.tcgdex.net/v2/en/cards/${id}`);
+    if(!r.ok) return null;
+    const d = await r.json();
+    const cm = (d.pricing && d.pricing.cardmarket) || {};
+    const trend = Number(cm.trend || cm.avg7 || cm.avg || 0);
+    const low = Number(cm.low || 0);
+    const avg30 = Number(cm.avg30 || 0);
+    let change = null;
+    if(trend>0 && avg30>0){
+      change = Math.round(((trend - avg30) / avg30) * 100);
+    }
+    return {
+      price: trend>0 ? trend : (low>0 ? low : null),
+      low: low>0 ? low : null,
+      trend: trend>0 ? trend : null,
+      change,
+      name: d.name,
+      pricing: d.pricing || null
+    };
+  }catch(e){ return null; }
+}
+
+async function renderHome(){
+  // paint skeleton first
+  popularScroll.innerHTML = homeCards.popular.map(c=>tileHTML(c,true)).join('');
+  risersScroll.innerHTML = homeCards.risers.map(c=>tileHTML(c,false)).join('');
+  newScroll.innerHTML = homeCards.news.map(c=>tileHTML(c,false)).join('');
+  searchedScroll.innerHTML = homeCards.searched.map(c=>tileHTML(c,false)).join('');
+
+  // unique IDs to fetch once
+  const all = [...homeCards.popular, ...homeCards.risers, ...homeCards.news, ...homeCards.searched];
+  const ids = [...new Set(all.map(c=>c.id))];
+  const cache = {};
+  await Promise.all(ids.map(async id=>{
+    cache[id] = await fetchCardPrice(id);
+  }));
+
+  // apply prices
+  function enrich(list){
+    return list.map(c=>{
+      const p = cache[c.id];
+      return {
+        ...c,
+        livePrice: p && p.price,
+        liveLow: p && p.low,
+        liveChange: p && p.change
+      };
+    });
+  }
+  popularScroll.innerHTML = enrich(homeCards.popular).map(c=>tileHTML(c,true)).join('');
+  risersScroll.innerHTML = enrich(homeCards.risers).map(c=>tileHTML(c,false)).join('');
+  newScroll.innerHTML = enrich(homeCards.news).map(c=>tileHTML(c,false)).join('');
+  searchedScroll.innerHTML = enrich(homeCards.searched).map(c=>tileHTML(c,false)).join('');
+
+  // update featured with first popular card price
+  const top = cache['sv03-125'];
+  if(top && top.price){
+    const el = document.querySelector('.hero-card .price');
+    const ch = document.querySelector('.hero-card .change');
+    if(el) el.textContent = fmtEUR(top.price);
+    if(ch && top.change!=null){
+      ch.textContent = (top.change>=0?'▲ +':'▼ ') + top.change + ' % vs. 30-Tage-Ø';
+      ch.style.color = top.change>=0 ? 'var(--green)' : 'var(--red)';
+    }
+  }
+}
+
+function searchPopular(name){
+  document.getElementById('q').value=name;
+  show('search');
+  search();
+}
+
+/* Search */
+async function search(){
+  let q=document.getElementById('q').value.trim(), lang=document.getElementById('lang').value;
+  if(!q){searchStatus.textContent='Namen oder Nummer eingeben.';return}
+  searchBtn.disabled=true; searchStatus.textContent='Suche läuft…'; detail.classList.add('hidden'); results.innerHTML='';
+  try{
+    // 1) Name-Suche über API-Filter (leicht)
+    let r = await fetch(`https://api.tcgdex.net/v2/${lang}/cards?name=${encodeURIComponent(q)}`);
+    let matches = [];
+    if(r.ok){
+      const data = await r.json();
+      matches = Array.isArray(data) ? data : [];
+    }
+    // 2) Falls zu wenig Treffer: volle Liste filtern (Fallback, max 1x)
+    if(matches.length < 3){
+      try{
+        const r2 = await fetch(`https://api.tcgdex.net/v2/${lang}/cards`);
+        if(r2.ok){
+          const all = await r2.json();
+          const ql = q.toLowerCase();
+          const extra = (Array.isArray(all)?all:[]).filter(c =>
+            (c.name||'').toLowerCase().includes(ql) || String(c.localId||'')===q || String(c.id||'').includes(q)
+          );
+          const seen = new Set(matches.map(c=>c.id));
+          extra.forEach(c=>{ if(!seen.has(c.id)) matches.push(c); });
+        }
+      }catch(_){}
+    }
+    matches = matches.slice(0, 40);
+    if(!matches.length) throw Error('no');
+    current = matches;
+    renderResults(matches, lang);
+    searchStatus.textContent = `${matches.length} Treffer · ${lang.toUpperCase()} · Preise in den Details`;
+  }catch(e){
+    const m = demo.filter(c => c.name.toLowerCase().includes(q.toLowerCase()) || c.localId===q);
+    current = m;
+    renderResults(m, lang);
+    searchStatus.textContent = m.length ? 'API kurz offline – Beispielkarten.' : 'Keine Treffer. Anderen Namen versuchen.';
+  }finally{
+    searchBtn.disabled = false;
+  }
+}
+
+function renderResults(arr,lang){
+  results.innerHTML=arr.length?arr.map((c,i)=>`
+    <div class="tile" style="flex:none;width:100%" onclick="openDetail(${i},'${lang}')">
+      <img src="${safe(cardImage(c)||c.image||'')}"
+           onerror="this.onerror=null;this.src='https://images.pokemontcg.io/${(c.id||'').replace(/-/g,'/')}_hires.png'"
+           alt="${safe(c.name)}">
+      <div class="meta">
+        <div class="name">${safe(c.name)}</div>
+        <div class="set">${safe(c.set?.name||c.set||'')}</div>
+        <div class="price-row"><span class="price">Nr. ${safe(c.localId||'–')}</span></div>
+      </div>
+    </div>`).join(''):'<div class="empty">Keine Treffer.</div>';
+}
+
+let pendingCard=null, pendingLang='de';
+function pushPriceSnapshot(key,cm){
+  let hist=JSON.parse(localStorage.getItem('poketa_price_history')||'{}');
+  if(!hist[key])hist[key]=[];
+  let today=new Date().toISOString().slice(0,10), last=hist[key][hist[key].length-1];
+  if(last&&last.date===today) last.cm=cm||last.cm;
+  else hist[key].push({date:today,cm:cm||null});
+  hist[key]=hist[key].slice(-365);
+  localStorage.setItem('poketa_price_history',JSON.stringify(hist));
+}
+function historyMarkup(key){
+  let hist=JSON.parse(localStorage.getItem('poketa_price_history')||'{}')[key]||[];
+  if(hist.length<2) return '<div class="notice">Preisverlauf startet mit der ersten Aktualisierung.</div>';
+  let vals=hist.map(x=>Number(x.cm||0)).filter(x=>x>0);
+  if(vals.length<2) return '<div class="notice">Noch zu wenig Datenpunkte.</div>';
+  let max=Math.max(...vals),min=Math.min(...vals),range=max-min||1;
+  let pts=hist.map((x,i)=>x.cm?`${(i/(hist.length-1))*100},${88-((x.cm-min)/range)*72}`:null).filter(Boolean).join(' ');
+  return `<div style="margin:10px 0;padding:12px;background:#0a1220;border-radius:12px;border:1px solid var(--line)">
+    <b style="font-size:13px">Preisverlauf</b>
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:90px;margin-top:8px">
+      <polyline points="${pts}" fill="none" stroke="#3dd9f5" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+    </svg></div>`;
+}
+
+/* ── Optional external Cardmarket API (key in localStorage) ── */
+
+/* TCGdex set-id → Cardmarket Suchkürzel (Collector-Number-Stil) */
+const CM_SET_CODE = {
+  'base1':'BS','base2':'JU','base3':'FO','base4':'B2','base5':'TR',
+  'swsh1':'SSH','swsh2':'RCL','swsh3':'DAA','swsh4':'CPA','swsh5':'VIV',
+  'swsh6':'SHF','swsh7':'EVS','swsh8':'CRE','swsh9':'BST','swsh10':'ASR',
+  'swsh11':'BRS','swsh12':'LOR','swsh12pt5':'PGO','swsh35':'CEL',
+  'sv1':'SVI','sv2':'PAL','sv3':'OBF','sv3pt5':'MEW','sv4':'PAR',
+  'sv5':'TEF','sv6':'TWM','sv7':'SCR','sv8':'SSP','sv8pt5':'PRE',
+  'sv01':'SVI','sv02':'PAL','sv03':'OBF','sv03.5':'MEW','sv04':'PAR',
+  'sv05':'TEF','sv06':'TWM','sv07':'SCR','sv08':'SSP',
+  'xy12':'EVO','sm12':'CEC','sm115':'CIF','swsh45':'SHF'
+};
+function cmSetCode(c){
+  const sid = (c?.set?.id || c?.id || '').toString();
+  // id often "swsh7-215" or set.id "swsh7"
+  const setId = (c?.set?.id || sid.split('-')[0] || '').toLowerCase();
+  if(CM_SET_CODE[setId]) return CM_SET_CODE[setId];
+  // sv03-125 style
+  const m = sid.match(/^([a-z]+\d+(?:pt5)?)/i);
+  if(m && CM_SET_CODE[m[1].toLowerCase()]) return CM_SET_CODE[m[1].toLowerCase()];
+  return '';
+}
+function cardmarketProductUrl(c){
+  const cm = c?.pricing?.cardmarket || {};
+  const idProduct = cm.idProduct
+    || (c?.variants_detailed||[]).map(v=>v?.thirdParty?.cardmarket).find(Boolean)
+    || null;
+  // Immer englische Namen für Cardmarket
+  let name = (c?.enName || c?.name || '')
+    .replace(/-/g,' ')
+    .replace(/\[.*?\]/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+  // DE→EN Notfall-Map für häufige Namen
+  const de2en = {
+    'Glurak':'Charizard','Bisasam':'Bulbasaur','Schiggy':'Squirtle','Glumanda':'Charmander',
+    'Nachtara':'Umbreon','Psiana':'Espeon','Aquana':'Vaporeon','Blitza':'Jolteon','Flamara':'Flareon',
+    'Folipurba':'Leafeon','Glaziola':'Glaceon','Mewtu':'Mewtwo'
+  };
+  Object.keys(de2en).forEach(de=>{
+    if(name.includes(de)) name = name.replace(de, de2en[de]);
+  });
+  const num = String(c?.localId || '').replace(/^0+/, '');
+  const code = cmSetCode(c);
+  // Cardmarket-Hilfe: "Charizard bs4" = Name + Setcode+Nummer ohne Leerzeichen
+  let q;
+  if(name && code && num){
+    q = name + ' ' + code.toLowerCase() + num;
+  } else if(name && num){
+    q = name + ' ' + num;
+  } else {
+    q = name || String(idProduct||'Pokemon');
+  }
+  // Englische CM-Suche, Kategorie Singles implizit über Pokemon-Pfad
+  return `https://www.cardmarket.com/en/Pokemon/Products/Search?searchString=${encodeURIComponent(q)}`;
+}
+
+function getCmConfig(){
+  return {
+    key: localStorage.getItem('poketa_cm_key')||'',
+    base: (localStorage.getItem('poketa_cm_base')||'https://api.api.sh/cardmarket/v1/').replace(/\/?$/, '/')
+  };
+}
+
+function buildCmUrl(base, idProduct){
+  // API.SH: /cardmarket/v1/product?id=...&game=pokemon
+  // Legacy cardmarketapi: /api/v1/card/{id}
+  if(/api\.sh/i.test(base)){
+    const root = base.replace(/\/$/, '').replace(/\/product$/i, '');
+    return root + '/product?id=' + encodeURIComponent(idProduct) + '&game=pokemon';
+  }
+  return (base.endsWith('/') ? base : base + '/') + idProduct;
+}
+
+/** Fragt die externe API über den Netlify-Proxy ab (kein CORS). Fallback: direkter Aufruf. */
+async function cmRequest(url, key){
+  try{
+    const pr = await fetch('/.netlify/functions/cm?url=' + encodeURIComponent(url), {
+      headers: { 'x-poketa-key': key }
+    });
+    const w = await pr.json();            // schlägt fehl, wenn die Function nicht existiert (HTML/404)
+    if(w && (w.error || typeof w.status === 'number')){
+      return { via:'proxy', status:w.status||0, ok:!!w.ok, text:w.body||'', error:w.error||'' };
+    }
+  }catch(_){ /* Function nicht vorhanden → direkt versuchen */ }
+  const r = await fetch(url, { headers: { 'x-api-key': key, 'Accept': 'application/json' } });
+  return { via:'direkt', status:r.status, ok:r.ok, text:await r.text(), error:'' };
+}
+
+async function fetchExternalCardmarket(idProduct){
+  const {key, base} = getCmConfig();
+  if(!key || !idProduct) return null;
+  const url = buildCmUrl(base, idProduct);
+  try{
+    const r = await cmRequest(url, key);
+    if(r.error) throw new Error(r.error);
+    if(!r.ok) throw new Error(r.status + ' ' + r.text.slice(0, 120));
+    return JSON.parse(r.text);
+  }catch(e){
+    console.warn('CM external', e);
+    return { __error: String(e.message || e) };
+  }
+}
+
+/** Normalize external API payload → {low, trend, avg30, listingsByCond, raw} */
+function normalizeExternalCM(data){
+  if(!data) return null;
+  const prices = data.prices || data.data || data;
+  const listings = data.listings || data.offers || [];
+  const byCond = {};
+  listings.forEach(L=>{
+    const cond = (L.cond || L.condition || 'NM').toUpperCase();
+    const price = Number(L.price || L.priceEUR || 0);
+    if(!(price>0)) return;
+    if(!byCond[cond] || price < byCond[cond]) byCond[cond] = price;
+  });
+  return {
+    low: Number(prices.from || prices.en_nm_from || prices.low || 0) || null,
+    trend: Number(prices.trend || 0) || null,
+    avg5: Number(prices.avg5 || prices.nm5_avg || 0) || null,
+    avg30: Number(prices.avg30 || 0) || null,
+    available: prices.available,
+    listingsByCond: byCond,
+    raw: data
+  };
+}
+
+const COND_MAP = {
+  'Near Mint': ['NM', 'MINT', 'NEAR MINT'],
+  'Excellent': ['EX', 'EXCELLENT', 'LP', 'LIGHT PLAYED'],
+  'Good': ['GD', 'GOOD', 'MP', 'MODERATELY PLAYED'],
+  'Played': ['PL', 'PLAYED', 'HP', 'HEAVILY PLAYED'],
+  'Poor': ['PO', 'POOR', 'DMG', 'DAMAGED']
+};
+
+function externalPriceForCondition(ext, condition){
+  if(!ext) return 0;
+  const keys = COND_MAP[condition] || ['NM'];
+  for(const k of keys){
+    if(ext.listingsByCond[k] > 0) return ext.listingsByCond[k];
+  }
+  // fallback guide
+  if(condition === 'Near Mint') return ext.trend || ext.low || ext.avg5 || 0;
+  if(condition === 'Excellent') return ext.low || ext.trend || 0;
+  return ext.low || 0;
+}
+
+let pendingExternalCM = null;
+
+function marketMarkup(c){
+  const cm = c.pricing?.cardmarket || {};
+  const tcg = c.pricing?.tcgplayer || {};
+  const idProduct = cm.idProduct || (c.variants_detailed||[]).map(v=>v.thirdParty?.cardmarket).find(Boolean);
+  const rows = [];
+  const add = (l,v,cur) => { if(typeof v==='number' && v>0) rows.push({l,v,cur}); };
+  // Cardmarket guide (EUR)
+  add('CM Low', cm.low, '€');
+  add('CM Trend', cm.trend, '€');
+  add('CM Ø 1 Tag', cm.avg1, '€');
+  add('CM Ø 7 Tage', cm.avg7, '€');
+  add('CM Ø 30 Tage', cm.avg30, '€');
+  add('CM Ø gesamt', cm.avg, '€');
+  add('CM Low Holo', cm['low-holo'], '€');
+  add('CM Trend Holo', cm['trend-holo'], '€');
+  add('CM Ø7 Holo', cm['avg7-holo'], '€');
+  // TCGPlayer (USD)
+  const holo = tcg.holofoil || {};
+  const normal = tcg.normal || {};
+  add('TCG Market', holo.marketPrice || normal.marketPrice, '$');
+  add('TCG Low', holo.lowPrice || normal.lowPrice, '$');
+  add('TCG Mid', holo.midPrice || normal.midPrice, '$');
+  const updated = cm.updated ? new Date(cm.updated).toLocaleString('de-DE') : '–';
+  const cmDirect = cardmarketProductUrl(c);
+  const cmUrl = cmDirect;
+
+  if(!rows.length){
+    return `<div class="empty">Keine Cardmarket-/TCGPlayer-Preise hinterlegt.</div>
+      <p style="margin-top:8px"><a href="${cmUrl}" target="_blank" rel="noopener" style="color:var(--b)">Auf Cardmarket suchen ↗</a></p>`;
+  }
+  return `
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px">
+    <a href="${cmDirect}" target="_blank" rel="noopener" style="color:var(--b);font-weight:700;font-size:13px">Cardmarket Produkt ↗</a>
+    ${idProduct?`<span class="muted" style="font-size:11px">idProduct ${idProduct}</span>`:''}
+    <button type="button" class="secondary" style="padding:6px 10px;font-size:12px" onclick="refreshDetailPrices()">↻ Preise neu laden</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin:8px 0">
+    ${rows.map(x=>`<div style="background:#0a1220;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center">
+      <div style="font-size:10px;color:var(--muted)">${x.l}</div>
+      <div style="font-size:15px;font-weight:800;color:var(--b)">${Number(x.v).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} ${x.cur}</div>
+    </div>`).join('')}
+  </div>
+  <p class="muted" style="font-size:11px;margin-top:6px">
+    <b>Cardmarket Price Guide (EUR)</b> — Low = günstigstes gelistetes Angebot, Trend = Markttendenz, Ø = Durchschnitt.<br>
+    Datenquelle: TCGdex ← Cardmarket · Stand: ${updated}. Keine Verkaufsgarantie.
+  </p>`;
+}
+
+
+async function enrichWithExternalCM(){
+  const box = document.getElementById('externalCmBox');
+  const {key} = getCmConfig();
+  if(!key){
+    if(box) box.innerHTML = '';
+    return;
+  }
+  const cm = pendingCard?.pricing?.cardmarket || {};
+  const idProduct = cm.idProduct || (pendingCard?.variants_detailed||[]).map(v=>v.thirdParty?.cardmarket).find(Boolean);
+  if(!idProduct){
+    if(box) box.innerHTML = '<p class="muted" style="font-size:12px">Keine Cardmarket-idProduct für diese Karte.</p>';
+    return;
+  }
+  if(box) box.innerHTML = '<p class="muted" style="font-size:12px">Lade Live-Daten (API.SH)…</p>';
+  const raw = await fetchExternalCardmarket(idProduct);
+  if(!raw || raw.__error){
+    if(box) box.innerHTML = `<p class="muted" style="font-size:12px;color:var(--red)">API-Fehler: ${safe(raw?.__error||'unbekannt')}. Key/URL prüfen oder CORS.</p>`;
+    return;
+  }
+  // API.SH product shape
+  const pg = raw.price_guide || raw.prices || raw.priceGuide || {};
+  const low = pg.low ?? pg.from ?? pg.en_nm_from;
+  const trend = pg.trend;
+  const avg = pg.avg;
+  const avg1 = pg.avg_1d ?? pg.avg1;
+  const avg7 = pg.avg_7d ?? pg.avg7;
+  const avg30 = pg.avg_30d ?? pg.avg30;
+  const listings = raw.listings || raw.offers || [];
+  const name = raw.name || '';
+  const searchUrl = raw.search_url || '';
+  let listHtml = '';
+  if(Array.isArray(listings) && listings.length){
+    listHtml = '<div style="margin-top:8px"><b style="font-size:12px">Live-Angebote (Auszug)</b>' +
+      listings.slice(0,6).map(L=>{
+        const price = L.price ?? L.price_eur ?? L.priceEUR;
+        const cond = L.cond || L.condition || '';
+        const lang = L.lang || L.language || '';
+        const country = L.country || L.seller_country || '';
+        return `<div class="muted" style="font-size:12px;margin-top:4px">${money(price)} · ${safe(cond)} · ${safe(lang)} · ${safe(country)}</div>`;
+      }).join('') + '</div>';
+  }
+  if(box){
+    box.innerHTML = `
+      <div class="panel" style="margin-top:10px;padding:12px">
+        <div class="row" style="justify-content:space-between;margin-bottom:8px">
+          <b style="font-size:13px">API.SH / Cardmarket Live</b>
+          <span class="muted" style="font-size:11px">id ${safe(idProduct)}</span>
+        </div>
+        ${name?`<p class="muted" style="font-size:12px;margin-bottom:8px">${safe(name)}</p>`:''}
+        <div class="price-grid">
+          <div class="price-box"><span>Live Low</span><b>${money(low)}</b></div>
+          <div class="price-box"><span>Live Trend</span><b>${money(trend)}</b></div>
+          <div class="price-box"><span>Live Ø</span><b>${money(avg)}</b></div>
+          <div class="price-box"><span>Ø 7T</span><b>${money(avg7)}</b></div>
+          <div class="price-box"><span>Ø 30T</span><b>${money(avg30)}</b></div>
+          <div class="price-box"><span>Ø 1T</span><b>${money(avg1)}</b></div>
+        </div>
+        ${listHtml}
+        ${searchUrl?`<p style="margin-top:8px"><a href="${safe(searchUrl)}" target="_blank" rel="noopener" style="color:var(--b);font-size:12px;font-weight:700">Cardmarket-Suche (API) ↗</a></p>`:''}
+        <p class="muted" style="font-size:11px;margin-top:8px">Quelle: API.SH · keine Verkaufsgarantie</p>
+      </div>`;
+  }
+  // Zustand-Dropdown: günstigsten bekannten Wert setzen wenn NM
+  try{
+    const vi = document.getElementById('valueInput');
+    if(vi && (trend || low)){
+      // nicht überschreiben wenn User schon editiert – nur Hinweis in condPriceHint
+      const hint = document.getElementById('condPriceHint');
+      if(hint) hint.textContent = `API.SH Live: Low ${money(low)} · Trend ${money(trend)}. Zustand wählen passt den Referenzpreis an.`;
+    }
+  }catch(e){}
+}
+
+async function refreshDetailPrices(){
+  if(!pendingCard || !pendingCard.id) return;
+  const hint = document.getElementById('condPriceHint');
+  if(hint) hint.textContent = 'Lade Cardmarket-Preise…';
+  try{
+    const r = await fetch(`https://api.tcgdex.net/v2/${pendingLang||'en'}/cards/${pendingCard.id}`);
+    if(!r.ok) throw Error('fail');
+    const fresh = await r.json();
+    pendingCard = {...pendingCard, ...fresh, pricing: fresh.pricing || pendingCard.pricing};
+    // re-render detail prices section only by reopening
+    const idx = current.findIndex(x=>x.id===pendingCard.id);
+    if(idx>=0){ current[idx]=pendingCard; openDetail(idx, pendingLang||'en'); }
+    else {
+      // force partial update
+      if(hint) hint.textContent = 'Preise aktualisiert.';
+      onConditionChange();
+    }
+  }catch(e){
+    if(hint) hint.textContent = 'Preis-Update fehlgeschlagen – TCGdex nicht erreichbar.';
+  }
+}
+
+function priceForCondition(cm, condition){
+  if(!cm) return 0;
+  const low = Number(cm.low || 0);
+  const trend = Number(cm.trend || cm.avg || cm.avg7 || 0);
+  const avg30 = Number(cm.avg30 || 0);
+  const base = trend > 0 ? trend : (avg30 > 0 ? avg30 : low);
+  if(base <= 0 && low <= 0) return 0;
+
+  // Cardmarket-Guide hat keine echten Zustandspreise.
+  // Praxis: NM ≈ Trend, schlechtere Zustände → Richtung Low.
+  let v;
+  switch(condition){
+    case 'Near Mint':
+      v = trend > 0 ? trend : base;
+      break;
+    case 'Excellent':
+      v = low > 0 && trend > 0 ? low + (trend - low) * 0.72 : base * 0.85;
+      break;
+    case 'Good':
+      v = low > 0 && trend > 0 ? low + (trend - low) * 0.35 : base * 0.65;
+      break;
+    case 'Played':
+      v = low > 0 ? low * 1.05 : base * 0.45;
+      break;
+    case 'Poor':
+      v = low > 0 ? low * 0.85 : base * 0.3;
+      break;
+    default:
+      v = base;
+  }
+  if(low > 0 && condition !== 'Poor') v = Math.max(v, low);
+  return Math.round(v * 100) / 100;
+}
+
+function onConditionChange(){
+  const sel = document.getElementById('conditionInput');
+  const valInput = document.getElementById('valueInput');
+  if(!sel || !valInput || !pendingCard) return;
+  const cm = pendingCard.pricing?.cardmarket || {};
+  let p = 0;
+  let source = '';
+  if(pendingExternalCM){
+    p = externalPriceForCondition(pendingExternalCM, sel.value);
+    source = 'Live-Angebot / API';
+  }
+  if(!(p > 0)){
+    p = priceForCondition(cm, sel.value);
+    source = 'TCGdex Price Guide (Low/Trend)';
+  }
+  if(p > 0) valInput.value = p;
+  const hint = document.getElementById('condPriceHint');
+  if(hint){
+    hint.textContent = p > 0
+      ? `Vorschlag für „${sel.value}“: ${Number(p).toFixed(2)} € · ${source}`
+      : 'Kein Cardmarket-Preis verfügbar.';
+  }
+}
+
+
+async function openDetail(i,lang){
+  let c=current[i]; detail.classList.remove('hidden'); detail.innerHTML='<p class="muted">Lade…</p>';
+  try{let r=await fetch(`https://api.tcgdex.net/v2/${lang}/cards/${c.id}`); if(r.ok)c=await r.json()}catch(e){}
+  // Englische Bezeichnung für Cardmarket-Link (Glurak → Charizard)
+  try{
+    if(c.id){
+      const re = await fetch(`https://api.tcgdex.net/v2/en/cards/${c.id}`);
+      if(re.ok){
+        const en = await re.json();
+        c.enName = en.name || c.name;
+        c.enSet = en.set?.name || c.set?.name;
+        if(en.pricing) c.pricing = c.pricing || en.pricing;
+        if(!c.pricing?.cardmarket?.idProduct && en.pricing?.cardmarket?.idProduct){
+          c.pricing = en.pricing;
+        }
+      }
+    }
+  }catch(e){}
+  pendingCard=c; pendingLang=lang;
+  let img=cardImage(c)||c.image||'';
+  let p=c.pricing?.cardmarket||{};
+  let suggested=Number(p.trend||p.avg||p.avg7||p.low||0);
+  let key=`${lang}:${c.id}`;
+  pushPriceSnapshot(key,suggested);
+  detail.innerHTML=`
+    <div class="row" style="align-items:flex-start">
+      <img class="detail-img" src="${safe(img)}"
+           onerror="this.onerror=null;this.src='https://images.pokemontcg.io/${(c.id||'').replace(/-/g,'/')}_hires.png'">
+      <div class="grow">
+        <h2 style="font-size:18px;margin-bottom:4px">${safe(c.name)}</h2>
+        <p class="muted" style="font-size:13px">${safe(c.set?.name||'')} · Nr. ${safe(c.localId||'–')}</p>
+        <p style="font-size:13px;margin-top:4px">${safe(c.rarity||'')}</p>
+        <p style="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+          <a href="${cardmarketProductUrl(c)}" target="_blank" rel="noopener" style="color:var(--b);font-size:13px;font-weight:700">Cardmarket öffnen ↗</a>
+          ${(c.pricing?.cardmarket?.idProduct)?`<span class="muted" style="font-size:11px">ID ${c.pricing.cardmarket.idProduct}</span>`:''}
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:12px"><b style="font-size:14px">Preise</b>${marketMarkup(c)}</div>
+    ${historyMarkup(key)}
+    <div class="row" style="margin-top:12px">
+      <input id="buyInput" class="field" type="number" min="0" step=".01" placeholder="Kaufpreis €" style="width:110px">
+      <input id="valueInput" class="field" type="number" min="0" step=".01" value="${suggested||''}" placeholder="Wert €" style="width:110px">
+      <select id="conditionInput" class="field" onchange="onConditionChange()">
+        <option value="Near Mint">Near Mint</option>
+        <option value="Excellent">Excellent</option>
+        <option value="Good">Good</option>
+        <option value="Played">Played</option>
+        <option value="Poor">Poor</option>
+      </select>
+      <button onclick="addPendingCard()">＋ Sammlung</button>
+      <button class="secondary" onclick="addWishFromDetail('${safe(c.name)}')">♡</button>
+    </div>
+    <div id="externalCmBox"></div>
+    <p id="condPriceHint" class="muted" style="font-size:12px;margin-top:8px">Zustand wählen → Referenzpreis wird an den günstigsten passenden Cardmarket-Wert angepasst.</p>`;
+  detail.scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(onConditionChange, 0);
+  enrichWithExternalCM();
+}
+function addPendingCard(){
+  if(!pendingCard)return;
+  let c=pendingCard;
+  cards.push({id:c.id,lang:pendingLang,name:c.name,localId:c.localId,set:c.set?.name||'',
+    image:cardImage(c)||c.image||'',buy:Number(buyInput.value||0),
+    value:Number(valueInput.value||c.pricing?.cardmarket?.trend||0),
+    condition:conditionInput.value,updated:new Date().toISOString()});
+  save(); alert('Hinzugefügt!');
+}
+function addWishFromDetail(n){wishName.value=n;show('wishlist')}
+
+function renderCollection(){
+  let q=collectionFilter.value.toLowerCase();
+  collectionList.innerHTML=cards.length
+    ? cards.map((c,i)=>({c,i})).filter(x=>(x.c.name||'').toLowerCase().includes(q)).map(({c,i})=>`
+      <div class="item">
+        <img src="${safe(c.image)}" onerror="this.style.opacity=.3">
+        <div class="grow"><b>${safe(c.name)}</b><br><small>${safe(c.set)} · ${money(c.buy)} → ${money(c.value)}</small></div>
+        <button class="ghost" onclick="removeCard(${i})">✕</button>
+      </div>`).join('')
+    : '<div class="empty">Sammlung leer.</div>';
+}
+async function refreshCollectionPrices(){
+  if(!cards.length){refreshStatus.textContent='Leer.';return}
+  refreshPrices.disabled=true; refreshStatus.textContent='Aktualisiere…';
+  let ok=0;
+  for(let c of cards){
+    try{
+      let r=await fetch(`https://api.tcgdex.net/v2/${c.lang||'de'}/cards/${c.id}`);
+      if(!r.ok)continue;
+      let f=await r.json(), p=f.pricing?.cardmarket||{};
+      let v=Number(p.trend||p.avg||0);
+      if(v>0){c.value=v;ok++}
+      c.updated=new Date().toISOString();
+      pushPriceSnapshot(`${c.lang||'de'}:${c.id}`,v);
+    }catch(e){}
+  }
+  save();renderCollection(); refreshPrices.disabled=false;
+  refreshStatus.textContent=`${ok} Preise aktualisiert.`;
+}
+document.getElementById('refreshPrices').addEventListener('click',refreshCollectionPrices);
+function removeCard(i){cards.splice(i,1);save();renderCollection()}
+collectionFilter.addEventListener('input',renderCollection);
+
+function renderWishes(){
+  wishList.innerHTML=wishes.length
+    ? wishes.map((w,i)=>`<div class="item"><div class="grow"><b>${safe(w.name)}</b><br><small>Ziel ${money(w.price)}</small></div>
+        <button class="ghost" onclick="removeWish(${i})">✕</button></div>`).join('')
+    : '<div class="empty">Keine Wünsche.</div>';
+}
+addWish.addEventListener('click',()=>{
+  let n=wishName.value.trim(); if(!n)return;
+  wishes.push({name:n,price:Number(wishPrice.value||0)}); wishName.value='';wishPrice.value='';save();renderWishes();
+});
+function removeWish(i){wishes.splice(i,1);save();renderWishes()}
+
+photo.addEventListener('change',()=>{
+  let f=photo.files[0]; if(!f)return;
+  photoPreview.innerHTML=`<img src="${URL.createObjectURL(f)}" style="max-width:100%;max-height:360px;border-radius:12px">`;
+});
+function saveNotes(){localStorage.setItem('poketa_grading_notes',gradingNotes.value);if(window.Sync)Sync.dirty();alert('Gespeichert')}
+function exportData(){
+  let a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify({cards,wishes},null,2)],{type:'application/json'}));
+  a.download='poketa.json'; a.click();
+}
+document.getElementById('searchBtn').addEventListener('click',search);
+q.addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+gradingNotes.value=localStorage.getItem('poketa_grading_notes')||'';
+
+
+function saveCmSettings(){
+  localStorage.setItem('poketa_cm_key', (document.getElementById('cmApiKey')||{}).value || '');
+  localStorage.setItem('poketa_cm_base', (document.getElementById('cmApiBase')||{}).value || '');
+  const st = document.getElementById('cmSettingsStatus');
+  if(st) st.textContent = (localStorage.getItem('poketa_cm_key')||'').length
+    ? 'Gespeichert. Key aktiv – öffne eine Karte in der Suche für Live-Preise.'
+    : 'Gespeichert (kein Key) – es bleibt beim TCGdex-Guide.';
+}
+function clearCmSettings(){
+  localStorage.removeItem('poketa_cm_key');
+  localStorage.removeItem('poketa_cm_base');
+  const a=document.getElementById('cmApiKey'), b=document.getElementById('cmApiBase');
+  if(a) a.value=''; if(b) b.value='';
+  const st = document.getElementById('cmSettingsStatus');
+  if(st) st.textContent = 'Key gelöscht. Es gilt wieder nur TCGdex.';
+}
+async function testCmKey(){
+  const st = document.getElementById('cmSettingsStatus');
+  const keyIn = (document.getElementById('cmApiKey')||{}).value || getCmConfig().key;
+  let baseIn = ((document.getElementById('cmApiBase')||{}).value || getCmConfig().base || '').replace(/\/?$/, '/');
+  if(!keyIn){ if(st) st.textContent = 'Bitte zuerst einen Key eintragen.'; return; }
+  if(st) st.textContent = 'Teste API…';
+  const url = buildCmUrl(baseIn, 281494);
+  try{
+    const r = await cmRequest(url, keyIn);
+    if(r.error){
+      if(st) st.textContent = `Fehler (${r.via}): ${r.error}`;
+      return;
+    }
+    if(!r.ok){
+      if(st) st.textContent = `Fehler ${r.status} (${r.via}) bei ${url}: ${r.text.slice(0,140)}`;
+      return;
+    }
+    let name = '';
+    try{ name = JSON.parse(r.text).name || ''; }catch(_){}
+    if(st) st.textContent = `OK (${r.via}) – API antwortet${name?': '+name:''}. Key speichern, dann Karte öffnen.`;
+  }catch(e){
+    if(st) st.textContent = 'Netzwerk/CORS (direkter Aufruf, Proxy nicht erreichbar): ' + (e.message||e);
+  }
+}
+function loadCmSettings(){
+  const a=document.getElementById('cmApiKey'), b=document.getElementById('cmApiBase');
+  if(a) a.value = localStorage.getItem('poketa_cm_key')||'';
+  if(b) b.value = localStorage.getItem('poketa_cm_base')||'';
+}
+
+loadCmSettings();
+renderHome(); update(); renderCollection(); renderWishes();
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   POKETA – Konto, Anmeldung & Sync
+   Netlify Identity (GoTrue) wird direkt per fetch angesprochen – keine Bibliothek nötig.
+   ═══════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+
+/* false = App wie früher ohne Anmeldung nutzbar */
+const AUTH_REQUIRED = false;
+
+const ID = '/.netlify/identity';
+const SYNC_URL = '/.netlify/functions/sync';
+const K = {auth:'poketa_auth', owner:'poketa_owner', dirty:'poketa_dirty', base:'poketa_sync_base', last:'poketa_sync_last'};
+const JSON_H = {'Content-Type':'application/json'};
+const $ = id => document.getElementById(id);
+
+const ls = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+
+/* ── Hilfen ─────────────────────────────────────────────── */
+function toast(msg, type){
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type||'');
+  t.textContent = msg;
+  $('toasts').appendChild(t);
+  setTimeout(()=>t.remove(), 4500);
+}
+
+class ApiError extends Error{
+  constructor(msg, status){ super(msg); this.status = status; }
+}
+
+function deText(j, status){
+  const t = String((j && (j.error_description || j.msg || j.message || j.error)) || '');
+  if(status === 0) return 'Keine Verbindung zum Anmeldedienst.';
+  if(/not confirmed|confirm/i.test(t)) return 'Bitte bestätige zuerst deine E-Mail-Adresse (Link in der Mail).';
+  if(/invalid.?grant|invalid.?login|no user found|invalid.*password|credentials/i.test(t)) return 'E-Mail oder Passwort stimmt nicht.';
+  if(/already|registered|exists/i.test(t)) return 'Mit dieser E-Mail gibt es schon ein Konto.';
+  if(/signup.*(disabled|not allowed)|signups? .*disabled/i.test(t)) return 'Die Registrierung ist derzeit deaktiviert.';
+  if(/password.*(short|least|weak)|weak/i.test(t)) return 'Das Passwort ist zu kurz oder zu einfach.';
+  if(/rate|too many|limit/i.test(t)) return 'Zu viele Versuche – bitte kurz warten.';
+  if(/expired|invalid.*token|token/i.test(t)) return 'Der Link ist abgelaufen oder ungültig. Bitte fordere einen neuen an.';
+  return t || ('Fehler ' + status);
+}
+
+async function idFetch(path, opt, token){
+  opt = opt || {};
+  const headers = Object.assign({}, opt.headers || {});
+  if(token) headers.Authorization = 'Bearer ' + token;
+  let r;
+  try{ r = await fetch(ID + path, Object.assign({}, opt, {headers})); }
+  catch(e){ throw new ApiError(deText(null, 0), 0); }
+  const txt = await r.text();
+  let j = null;
+  try{ j = txt ? JSON.parse(txt) : null; }catch(e){}
+  if(!r.ok) throw new ApiError(deText(j, r.status), r.status);
+  return j;
+}
+
+/* ── Passwort-Stärke ────────────────────────────────────── */
+const WEAK = /^(12345678|123456789|password|passwort|11111111|qwertzui|qwerty12)/i;
+function pwScore(p){
+  if(!p) return 0;
+  let s = 0;
+  if(p.length >= 8) s++;
+  if(p.length >= 12) s++;
+  if(/[a-z]/.test(p) && /[A-Z]/.test(p)) s++;
+  if(/\d/.test(p) || /[^A-Za-z0-9]/.test(p)) s++;
+  if(p.length < 8) s = Math.min(s, 1);
+  if(WEAK.test(p)) s = Math.min(s, 1);
+  return Math.max(1, Math.min(4, s));   // nicht leer = mindestens „Zu schwach“
+}
+const pwOk = p => p.length >= 8 && pwScore(p) >= 2;
+const PW_LABEL = ['', 'Zu schwach', 'Okay', 'Gut', 'Stark'];
+function wireMeter(input, meter, label){
+  input.addEventListener('input', ()=>{
+    const s = pwScore(input.value);
+    meter.dataset.s = s;
+    label.textContent = input.value ? PW_LABEL[s] : '';
+  });
+}
+
+/* ── Sitzung ────────────────────────────────────────────── */
+let session = null;   // {access_token, refresh_token, expires_at, user}
+let settings = null;  // Identity-Einstellungen (null = Dienst nicht erreichbar)
+
+function loadSession(){ try{ return JSON.parse(ls.get(K.auth) || 'null'); }catch(e){ return null; } }
+function saveSession(){ if(session) ls.set(K.auth, JSON.stringify(session)); else ls.del(K.auth); }
+function toSession(t, user){
+  return {
+    access_token: t.access_token,
+    refresh_token: t.refresh_token || (session && session.refresh_token) || '',
+    expires_at: Date.now() + (Number(t.expires_in) || 3600) * 1000,
+    user: user || (session && session.user) || null
+  };
+}
+const tokenReq = params => idFetch('/token', {
+  method: 'POST',
+  headers: {'Content-Type':'application/x-www-form-urlencoded'},
+  body: new URLSearchParams(params).toString()
+});
+
+/* Gültiges Token (bei Bedarf erneuert). null = Sitzung abgelaufen, wirft bei fehlender Verbindung. */
+async function accessToken(){
+  if(!session) return null;
+  if(Date.now() < session.expires_at - 60000) return session.access_token;
+  try{
+    const t = await tokenReq({grant_type:'refresh_token', refresh_token: session.refresh_token});
+    session = toSession(t); saveSession();
+    return session.access_token;
+  }catch(e){
+    if(e.status === 0) throw e;
+    session = null; saveSession();
+    return null;
+  }
+}
+
+async function fromTokens(t){
+  const user = await idFetch('/user', {}, t.access_token);
+  session = toSession(t, user); saveSession();
+  return user;
+}
+async function login(email, pw){
+  const t = await tokenReq({grant_type:'password', username: email, password: pw});
+  return fromTokens(t);
+}
+function sessionLost(){
+  Sync.stop();
+  session = null; saveSession();
+  showAuth('login', {t:'err', m:'Deine Sitzung ist abgelaufen. Bitte melde dich neu an.'});
+}
+
+/* ── Sync ───────────────────────────────────────────────── */
+function mergeData(local, remote){
+  const sig = c => [c.id, c.lang, c.condition, c.buy].join('|');
+  const wsig = w => (String(w.name).toLowerCase()) + '|' + w.price;
+  const union = (a, b, f) => {      // Multi-Menge: je Signatur die größere Anzahl behalten
+    const out = a.slice(), have = {}, need = {};
+    a.forEach(x => { const s = f(x); have[s] = (have[s] || 0) + 1; });
+    b.forEach(x => { const s = f(x); need[s] = (need[s] || 0) + 1; if(need[s] > (have[s] || 0)) out.push(x); });
+    return out;
+  };
+  const ra = String(remote.notes || ''), lb = String(local.notes || '');
+  const notes = !lb || ra.includes(lb) ? ra : (!ra || lb.includes(ra) ? lb : ra + '\n\n' + lb);
+  return {
+    cards: union(remote.cards || [], local.cards || [], sig),
+    wishes: union(remote.wishes || [], local.wishes || [], wsig),
+    notes
+  };
+}
+
+async function callSync(method, token, body){
+  const r = await fetch(SYNC_URL, {
+    method,
+    headers: Object.assign({Authorization: 'Bearer ' + token}, body ? JSON_H : {}),
+    body: body ? JSON.stringify(body) : undefined
+  });
+  let j = null;
+  try{ j = await r.json(); }catch(e){}
+  return {status: r.status, j};
+}
+
+const Sync = {
+  rev: 0, timer: null, running: false, active: false,
+  base: null, last: null, counts: null, lastPull: 0,
+
+  isDirty(){ return ls.get(K.dirty) === '1'; },
+
+  setState(s, txt){
+    this.state = s; this.stateText = txt;
+    $('syncPill').dataset.s = s;
+    $('syncTxt').textContent = txt;
+    updateAccountUi();
+  },
+
+  dirty(){
+    ls.set(K.dirty, '1'); this.rev++;
+    if(!session || !this.active) return;
+    this.setState('busy', 'Änderungen …');
+    clearTimeout(this.timer);
+    this.timer = setTimeout(()=>this.push(), 1500);
+  },
+
+  stop(){ this.active = false; clearTimeout(this.timer); },
+
+  markSynced(){
+    this.last = new Date();
+    ls.set(K.last, this.last.toISOString());
+    const d = window.snapshotData();
+    this.counts = {cards: d.cards.length, wishes: d.wishes.length};
+    this.setState('ok', 'Synchronisiert');
+  },
+
+  adopt(remote){
+    window.applyData(remote);
+    this.base = remote.updatedAt || null;
+    if(this.base) ls.set(K.base, this.base); else ls.del(K.base);
+    ls.del(K.dirty);
+    this.markSynced();
+  },
+
+  async pull(){
+    const tok = await accessToken();
+    if(!tok){ sessionLost(); throw new Error('Sitzung abgelaufen'); }
+    const {status, j} = await callSync('GET', tok);
+    if(status === 200){ this.lastPull = Date.now(); return j.data || null; }
+    if(status === 401){ sessionLost(); throw new Error('Sitzung abgelaufen'); }
+    throw new Error((j && j.error) || ('Fehler ' + status));
+  },
+
+  async push(){
+    if(!session) return false;
+    if(this.running){ clearTimeout(this.timer); this.timer = setTimeout(()=>this.push(), 800); return false; }
+    this.running = true;
+    const myRev = this.rev;
+    this.setState('busy', 'Speichere …');
+    try{
+      for(let tries = 0; tries < 3; tries++){
+        const tok = await accessToken();
+        if(!tok){ sessionLost(); return false; }
+        const body = Object.assign({}, window.snapshotData(), {baseUpdatedAt: this.base});
+        const {status, j} = await callSync('PUT', tok, body);
+        if(status === 200){
+          this.base = j.updatedAt; ls.set(K.base, this.base);
+          if(this.rev === myRev) ls.del(K.dirty);
+          else { clearTimeout(this.timer); this.timer = setTimeout(()=>this.push(), 300); }
+          this.markSynced();
+          return true;
+        }
+        if(status === 409 && j && j.data){
+          window.applyData(mergeData(window.snapshotData(), j.data));
+          this.base = j.data.updatedAt;
+          continue;
+        }
+        if(status === 401){ sessionLost(); return false; }
+        throw new Error((j && j.error) || ('Fehler ' + status));
+      }
+      throw new Error('Konflikt');
+    }catch(e){
+      this.setState('err', navigator.onLine ? 'Sync-Fehler' : 'Offline – wird nachgeholt');
+      return false;
+    }finally{
+      this.running = false;
+    }
+  },
+
+  async start(){
+    this.active = false;
+    this.base = ls.get(K.base) || null;
+    const lastIso = ls.get(K.last); if(lastIso) this.last = new Date(lastIso);
+    const uid = session.user.id, owner = ls.get(K.owner);
+
+    // Daten eines anderen Kontos auf diesem Gerät: nie übernehmen
+    if(owner && owner !== uid){
+      window.applyData({cards:[], wishes:[], notes:''});
+      ls.del(K.dirty); ls.del(K.base); ls.del(K.last);
+      this.base = null; this.last = null;
+    }
+
+    this.setState('busy', 'Verbinde …');
+    try{
+      const remote = await this.pull();
+      const local = window.snapshotData();
+      const localEmpty = !local.cards.length && !local.wishes.length && !String(local.notes || '').trim();
+      const first = !owner;                       // erste Anmeldung auf diesem Gerät
+
+      if(!remote){
+        this.base = null; ls.del(K.base);
+        if(localEmpty) this.markSynced();
+        else {
+          this.active = true;
+          await this.push();
+          if(first) toast('Deine bisherigen Browser-Daten wurden in dein Konto übernommen.', 'ok');
+        }
+      }else if(owner === uid){
+        if(this.isDirty()){ this.base = remote.updatedAt; this.active = true; await this.push(); }
+        else this.adopt(remote);
+      }else if(localEmpty){
+        this.adopt(remote);
+      }else{
+        window.applyData(mergeData(local, remote));
+        this.base = remote.updatedAt;
+        this.active = true;
+        await this.push();
+        toast('Deine lokalen Daten wurden mit deinem Konto zusammengeführt.', 'ok');
+      }
+      ls.set(K.owner, uid);
+    }catch(e){
+      if(session) this.setState('err', navigator.onLine ? 'Sync nicht verfügbar' : 'Offline');
+    }
+    this.active = !!session;
+  },
+
+  async manual(){
+    if(!session) return;
+    this.setState('busy', 'Synchronisiere …');
+    try{
+      if(this.isDirty()){ const ok = await this.push(); toast(ok ? 'Synchronisiert.' : 'Synchronisierung fehlgeschlagen.', ok ? 'ok' : 'err'); return; }
+      const remote = await this.pull();
+      if(remote) this.adopt(remote); else this.markSynced();
+      toast('Synchronisiert.', 'ok');
+    }catch(e){
+      this.setState('err', 'Sync-Fehler');
+      toast('Synchronisierung fehlgeschlagen.', 'err');
+    }
+  },
+
+  async refreshIfStale(){
+    if(!session || !this.active || this.running || this.isDirty()) return;
+    if(Date.now() - this.lastPull < 60000) return;
+    try{
+      const remote = await this.pull();
+      if(remote && remote.updatedAt !== this.base) this.adopt(remote);
+      else this.markSynced();
+    }catch(e){}
+  },
+
+  async flush(){
+    if(!this.isDirty()) return true;
+    clearTimeout(this.timer);
+    return this.push();
+  },
+
+  async wipeCloud(){
+    const tok = await accessToken();
+    if(!tok) return false;
+    const {status} = await callSync('DELETE', tok);
+    if(status === 200){
+      this.base = null; ls.del(K.base);
+      ls.set(K.dirty, '1');            // lokale Daten bleiben und werden beim nächsten Sync wieder hochgeladen
+      this.counts = null;
+      this.setState('idle', 'Cloud leer');
+      return true;
+    }
+    return false;
+  }
+};
+window.Sync = Sync;
+
+/* ── Anmelde-Oberfläche ─────────────────────────────────── */
+let mode = 'login';
+let busy = false;
+const googleOn = () => !!(settings && settings.external && settings.external.google);
+
+function setMsg(text, type){
+  const m = $('authMsg');
+  if(!text){ m.classList.add('hidden'); m.textContent = ''; return; }
+  m.textContent = text;
+  m.className = 'auth-msg ' + (type || '');
+}
+function setBusy(b){
+  busy = b;
+  $('authSubmit').disabled = b;
+  $('authGoogle').disabled = b;
+}
+
+function setMode(m){
+  mode = m;
+  const reg = m === 'register', log = m === 'login', forg = m === 'forgot', reset = m === 'reset';
+  const social = (log || reg) && googleOn();
+  document.querySelectorAll('#authTabs button').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+  $('authTabs').classList.toggle('hidden', forg || reset);
+  document.querySelector('#authTabs [data-mode=register]').classList.toggle('hidden', !!(settings && settings.disable_signup));
+  $('authTitle').textContent = reg ? 'Konto erstellen' : forg ? 'Passwort zurücksetzen' : reset ? 'Neues Passwort festlegen' : 'Willkommen zurück';
+  $('authLead').textContent = reg ? 'Kostenlos – deine Sammlung wird gesichert und ist auf jedem Gerät da.'
+    : forg ? 'Wir senden dir einen Link zum Zurücksetzen per E-Mail.'
+    : reset ? 'Wähle ein neues Passwort für dein Konto.'
+    : 'Melde dich an, um deine Sammlung auf jedem Gerät zu nutzen.';
+  $('authGoogle').classList.toggle('hidden', !social);
+  $('authOr').classList.toggle('hidden', !social);
+  $('authNameWrap').classList.toggle('hidden', !reg);
+  $('authMailWrap').classList.toggle('hidden', reset);
+  $('authPwWrap').classList.toggle('hidden', forg);
+  $('authPwLbl').textContent = reset ? 'Neues Passwort' : 'Passwort';
+  $('authPw').autocomplete = (reg || reset) ? 'new-password' : 'current-password';
+  $('authMeter').classList.toggle('hidden', !(reg || reset));
+  $('authSubmit').textContent = reg ? 'Konto erstellen' : forg ? 'Link senden' : reset ? 'Passwort speichern' : 'Anmelden';
+  $('authForgot').classList.toggle('hidden', !log);
+  $('authBack').classList.toggle('hidden', !forg);
+  $('authPw').type = 'password'; $('authPwToggle').textContent = 'Zeigen';
+  setMsg('');
+}
+
+function showAuth(m, notice){
+  document.body.classList.add('locked', 'auth-open');
+  $('topRight').classList.add('hidden');
+  setMode(m || 'login');
+  if(notice) setMsg(notice.m, notice.t);
+  $('authLocalWrap').classList.toggle('hidden', !!settings);
+  if(!settings && !notice) setMsg('Der Anmeldedienst ist gerade nicht erreichbar. Läuft die Seite auf Netlify mit aktiviertem Identity?', 'err');
+  if(window.matchMedia && matchMedia('(pointer:fine)').matches){
+    setTimeout(()=>{ const f = mode === 'reset' ? $('authPw') : $('authEmail'); if(f) f.focus(); }, 60);
+  }
+}
+
+function userName(u){
+  const md = (u && u.user_metadata) || {};
+  return md.full_name || md.name || ((u && u.email) || '').split('@')[0] || 'Konto';
+}
+function initials(n){
+  const p = String(n).trim().split(/\s+/).filter(Boolean);
+  return ((p[0] || '?')[0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
+}
+function providerName(u){
+  const p = u && u.app_metadata && u.app_metadata.provider;
+  return p === 'google' ? 'Google' : (p && p !== 'email' ? p : 'E-Mail & Passwort');
+}
+function setUserUi(u){
+  const n = userName(u);
+  $('avatarBtn').textContent = initials(n);
+  $('menuName').textContent = n;
+  $('menuMail').textContent = u.email || '';
+  updateAccountUi();
+}
+function updateAccountUi(){
+  if(!session || !session.user) return;
+  const u = session.user;
+  $('acMail').textContent = u.email || '–';
+  $('acProvider').textContent = providerName(u);
+  if(document.activeElement !== $('acName')) $('acName').value = (u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || '';
+  $('acSyncState').textContent = Sync.stateText || '–';
+  $('acSyncTime').textContent = Sync.last ? Sync.last.toLocaleString('de-DE', {dateStyle:'medium', timeStyle:'short'}) : '–';
+  $('acSyncCount').textContent = Sync.counts ? `${Sync.counts.cards} Karten · ${Sync.counts.wishes} Wünsche` : '–';
+  $('acPwPanel').classList.toggle('hidden', providerName(u) === 'Google');
+}
+
+async function enter(notice){
+  setUserUi(session.user);
+  document.body.classList.remove('locked', 'auth-open');
+  $('topRight').classList.remove('hidden');
+  if(notice) toast(notice.m, notice.t);
+  Sync.start();
+  // Profil im Hintergrund auffrischen (z. B. Namensänderung auf anderem Gerät)
+  try{
+    const tok = await accessToken();
+    if(tok){ const u = await idFetch('/user', {}, tok); session.user = u; saveSession(); setUserUi(u); }
+  }catch(e){}
+}
+
+async function logout(){
+  if(Sync.isDirty()){
+    const ok = await Sync.flush();
+    if(!ok && !confirm('Es gibt noch nicht synchronisierte Änderungen. Wenn du dich jetzt abmeldest, gehen sie verloren. Trotzdem abmelden?')) return;
+  }
+  try{ if(session) await idFetch('/logout', {method:'POST'}, session.access_token); }catch(e){}
+  ['poketa_cards','poketa_wishes','poketa_grading_notes', K.owner, K.dirty, K.base, K.last, K.auth].forEach(ls.del);
+  location.reload();
+}
+
+/* ── Bedienung verdrahten ───────────────────────────────── */
+function wire(){
+  document.querySelectorAll('#authTabs button').forEach(b => b.addEventListener('click', ()=>setMode(b.dataset.mode)));
+  $('authForgot').addEventListener('click', ()=>setMode('forgot'));
+  $('authBack').addEventListener('click', ()=>setMode('login'));
+  $('authPwToggle').addEventListener('click', ()=>{
+    const show = $('authPw').type === 'password';
+    $('authPw').type = show ? 'text' : 'password';
+    $('authPwToggle').textContent = show ? 'Verbergen' : 'Zeigen';
+  });
+  $('authGoogle').addEventListener('click', ()=>{ location.href = ID + '/authorize?provider=google'; });
+  $('authLocal').addEventListener('click', ()=>{
+    document.body.classList.remove('locked', 'auth-open');
+  });
+  wireMeter($('authPw'), $('authMeter'), $('authMeterTxt'));
+  wireMeter($('acPw1'), $('acMeter'), $('acMeterTxt'));
+
+  $('authForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if(busy) return;
+    const email = $('authEmail').value.trim(), pw = $('authPw').value, name = $('authName').value.trim();
+    setMsg('');
+    if(mode !== 'reset' && !/^\S+@\S+\.\S+$/.test(email)) return setMsg('Bitte gib eine gültige E-Mail-Adresse ein.', 'err');
+    if(mode === 'login' && !pw) return setMsg('Bitte gib dein Passwort ein.', 'err');
+    if((mode === 'register' || mode === 'reset') && !pwOk(pw)) return setMsg('Das Passwort braucht mindestens 8 Zeichen und darf nicht zu einfach sein.', 'err');
+    setBusy(true);
+    try{
+      if(mode === 'login'){
+        await login(email, pw);
+        await enter();
+      }else if(mode === 'register'){
+        const res = await idFetch('/signup', {method:'POST', headers:JSON_H,
+          body: JSON.stringify({email, password: pw, data: name ? {full_name: name} : {}})});
+        if(res && res.confirmed_at){ await login(email, pw); await enter(); }
+        else{
+          setMode('login');
+          $('authEmail').value = email; $('authPw').value = '';
+          setMsg('Fast geschafft: Wir haben dir eine Bestätigungs-Mail an ' + email + ' geschickt. Klicke auf den Link darin und melde dich danach an.', 'ok');
+        }
+      }else if(mode === 'forgot'){
+        await idFetch('/recover', {method:'POST', headers:JSON_H, body: JSON.stringify({email})});
+        setMode('login');
+        $('authEmail').value = email;
+        setMsg('Falls es ein Konto mit ' + email + ' gibt, ist eine E-Mail zum Zurücksetzen unterwegs.', 'ok');
+      }else if(mode === 'reset'){
+        const u = await idFetch('/user', {method:'PUT', headers:JSON_H, body: JSON.stringify({password: pw})}, session && session.access_token);
+        session.user = u; saveSession();
+        $('authPw').value = '';
+        await enter({t:'ok', m:'Neues Passwort gespeichert.'});
+      }
+    }catch(err){
+      setMsg(err.message, 'err');
+    }finally{
+      setBusy(false);
+    }
+  });
+
+  /* Avatar-Menü */
+  const menu = $('acctMenu'), btn = $('avatarBtn');
+  const closeMenu = () => { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', !open);
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', e => { if(!menu.contains(e.target)) closeMenu(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenu(); });
+  $('menuAccount').addEventListener('click', ()=>{ closeMenu(); updateAccountUi(); show('account'); });
+  $('menuSync').addEventListener('click', ()=>{ closeMenu(); Sync.manual(); });
+  $('menuLogout').addEventListener('click', ()=>{ closeMenu(); logout(); });
+  $('syncPill').addEventListener('click', ()=>{ updateAccountUi(); show('account'); });
+
+  /* Konto-Seite */
+  $('acNameSave').addEventListener('click', async ()=>{
+    const name = $('acName').value.trim();
+    try{
+      const tok = await accessToken();
+      const u = await idFetch('/user', {method:'PUT', headers:JSON_H, body: JSON.stringify({data:{full_name: name}})}, tok);
+      session.user = u; saveSession(); setUserUi(u);
+      toast('Name gespeichert.', 'ok');
+    }catch(e){ toast(e.message, 'err'); }
+  });
+  $('acPwSave').addEventListener('click', async ()=>{
+    const p1 = $('acPw1').value, p2 = $('acPw2').value, msg = $('acPwMsg');
+    const say = (t, ok) => { msg.textContent = t; msg.classList.remove('hidden'); msg.style.borderColor = ok ? 'rgba(61,255,168,.4)' : 'rgba(255,92,122,.45)'; };
+    if(!pwOk(p1)) return say('Mindestens 8 Zeichen und nicht zu einfach.', false);
+    if(p1 !== p2) return say('Die beiden Passwörter sind nicht gleich.', false);
+    try{
+      const tok = await accessToken();
+      await idFetch('/user', {method:'PUT', headers:JSON_H, body: JSON.stringify({password: p1})}, tok);
+      $('acPw1').value = ''; $('acPw2').value = ''; $('acMeter').dataset.s = 0; $('acMeterTxt').textContent = '';
+      say('Passwort geändert.', true);
+    }catch(e){ say(e.message, false); }
+  });
+  $('acSyncNow').addEventListener('click', ()=>Sync.manual());
+  $('acLogout').addEventListener('click', logout);
+  $('acWipe').addEventListener('click', async ()=>{
+    if(!confirm('Alle Daten in deinem Konto löschen? Die Daten auf diesem Gerät bleiben erhalten und werden beim nächsten Sync wieder hochgeladen, sofern du sie nicht auch hier entfernst.')) return;
+    try{ toast(await Sync.wipeCloud() ? 'Cloud-Daten gelöscht.' : 'Löschen fehlgeschlagen.', 'ok'); }
+    catch(e){ toast('Löschen fehlgeschlagen.', 'err'); }
+  });
+
+  /* Link (Bestätigung, Passwort-Reset, Google) in einen schon offenen Tab eingefügt */
+  window.addEventListener('hashchange', ()=>{ if(parseHash()) location.reload(); });
+
+  /* Verbindung & Sichtbarkeit */
+  window.addEventListener('online', ()=>{ if(Sync.active && Sync.isDirty()) Sync.push(); });
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible') Sync.refreshIfStale(); });
+}
+
+/* ── Start ──────────────────────────────────────────────── */
+function parseHash(){
+  const h = location.hash.replace(/^#/, '');
+  if(!h || h.indexOf('=') < 0) return null;
+  const o = {};
+  new URLSearchParams(h).forEach((v, k) => { o[k] = v; });
+  return (o.access_token || o.confirmation_token || o.recovery_token || o.email_change_token || o.invite_token || o.error) ? o : null;
+}
+
+async function init(){
+  wire();
+  try{ settings = await idFetch('/settings'); }catch(e){ settings = null; }
+
+  const h = parseHash();
+  if(h) history.replaceState(null, '', location.pathname + location.search);
+  session = loadSession();
+
+  let notice = null, reset = false;
+  try{
+    if(h && h.error){
+      notice = {t:'err', m: h.error_description || h.error};
+    }else if(h && h.access_token){
+      await fromTokens({access_token: h.access_token, refresh_token: h.refresh_token, expires_in: h.expires_in});
+    }else if(h && h.confirmation_token){
+      await fromTokens(await idFetch('/verify', {method:'POST', headers:JSON_H, body: JSON.stringify({token: h.confirmation_token, type:'signup'})}));
+      notice = {t:'ok', m:'E-Mail bestätigt – willkommen bei POKETA!'};
+    }else if(h && h.recovery_token){
+      await fromTokens(await idFetch('/verify', {method:'POST', headers:JSON_H, body: JSON.stringify({token: h.recovery_token, type:'recovery'})}));
+      reset = true;
+    }else if(h && h.email_change_token){
+      await fromTokens(await idFetch('/verify', {method:'POST', headers:JSON_H, body: JSON.stringify({token: h.email_change_token, type:'email_change'})}));
+      notice = {t:'ok', m:'Neue E-Mail-Adresse bestätigt.'};
+    }else if(h && h.invite_token){
+      notice = {t:'err', m:'Einladungen werden hier nicht unterstützt. Bitte registriere dich normal.'};
+    }
+  }catch(e){
+    notice = {t:'err', m: e.message};
+  }
+
+  if(reset && session){ showAuth('reset'); return; }
+
+  if(session && session.user){
+    try{
+      if(!await accessToken()) notice = {t:'err', m:'Deine Sitzung ist abgelaufen. Bitte melde dich neu an.'};
+    }catch(e){ /* offline: mit zwischengespeicherter Sitzung weiterarbeiten */ }
+    if(session){ await enter(notice); return; }
+  }
+
+  if(!AUTH_REQUIRED){ document.body.classList.remove('locked', 'auth-open'); return; }
+  showAuth('login', notice);
+}
+
+init();
+})();
+</script>
+</body>
+</html>
