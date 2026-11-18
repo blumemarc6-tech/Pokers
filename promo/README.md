@@ -2,6 +2,7 @@
 
 | Datei | Inhalt | Länge |
 |---|---|---|
+| `poketa-video-hart-shadowless.mp4` | **Stärkster Einstieg:** „3.489 € 😳 für diese Karte?!“ ab dem ersten Bild → 290 € → Shadowless | ~11 s |
 | `poketa-video-kurz-shadowless.mp4` | Base-Set-Glurak: Unbegrenzt 290 € → Shadowless 3.489 € | ~10 s |
 | `poketa-video-kurz-kartenwert.mp4` | Nachtara VMAX: 1.902 € + Preisverlauf | ~10 s |
 | `poketa-video-kurz-sprache.mp4` | Glurak-ex 151: Deutsch 323 € vs. Japanisch 306 € | ~10 s |
