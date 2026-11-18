@@ -19,7 +19,9 @@ export function buildWorker(files){
   const routes = {
     '/': ['text/html; charset=utf-8', files.html],
     '/index.html': ['text/html; charset=utf-8', files.html],
-    '/config.js': ['application/javascript; charset=utf-8', files.config]
+    '/config.js': ['application/javascript; charset=utf-8', files.config],
+    '/datenschutz': ['text/html; charset=utf-8', files.privacy],
+    '/datenschutz.html': ['text/html; charset=utf-8', files.privacy]
   };
   return `// Automatisch erzeugt von scripts/deploy-cloudflare.mjs – nicht von Hand bearbeiten
 const ROUTES = ${JSON.stringify(routes)};
@@ -56,7 +58,8 @@ if(import.meta.url === `file://${process.argv[1]}`){
   const account = process.env.CLOUDFLARE_ACCOUNT_ID || (await cf('/accounts'))[0].id;
   const worker = buildWorker({
     html: await readFile(path.join(ROOT, 'index.html'), 'utf8'),
-    config: await readFile(path.join(ROOT, 'config.js'), 'utf8')
+    config: await readFile(path.join(ROOT, 'config.js'), 'utf8'),
+    privacy: await readFile(path.join(ROOT, 'datenschutz.html'), 'utf8')
   });
   const form = new FormData();
   form.append('manifest', '{}');
