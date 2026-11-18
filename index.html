@@ -246,86 +246,104 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
 /* ═══════ Startseite: Hero ═══════ */
 .hero{
-  position:relative;overflow:hidden;border-radius:24px;padding:22px 20px;margin:4px 0 12px;
-  display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:center;
+  position:relative;overflow:hidden;border-radius:26px;padding:34px 34px 30px;margin:4px 0 14px;
+  display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:center;
   background:
-    radial-gradient(ellipse 70% 90% at 85% 40%, rgba(139,111,255,.35), transparent 60%),
-    radial-gradient(ellipse 60% 70% at 10% 100%, rgba(61,217,245,.18), transparent 60%),
-    linear-gradient(160deg,#121b33,#0b1122);
-  border:1px solid rgba(139,111,255,.3);
+    radial-gradient(ellipse 55% 80% at 82% 45%, rgba(139,111,255,.22), transparent 65%),
+    linear-gradient(155deg,#16213c 0%,#111a31 45%,#0d1426 100%);
+  border:1px solid rgba(120,150,230,.22);
 }
-.hero>div{min-width:0}
-.hero h1{font-size:28px;line-height:1.1;font-weight:900;letter-spacing:-.5px}
-.hero h1 em{font-style:normal;background:linear-gradient(90deg,#c4b5ff,var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero .lead{color:#b5c2dc;font-size:13px;margin:8px 0 14px;max-width:420px}
-.hero-search{display:flex;gap:6px;background:rgba(7,11,20,.7);border:1px solid var(--line);border-radius:14px;padding:5px}
-.hero-search input{flex:1;min-width:0;background:transparent;border:0;color:var(--txt);padding:8px 10px;font-size:16px}
-.hero-search input:focus{outline:none}
-.hero-search button{padding:9px 14px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.chip{background:rgba(255,255,255,.06);border:1px solid var(--line);color:#cdd7ee;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600;box-shadow:none}
-.chip:hover{background:rgba(139,111,255,.22);box-shadow:none}
-.hero-stage{position:relative;height:230px;perspective:900px}
+.hero::before{ /* dezenter Lichtkeil */
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.035) 42.2%,rgba(255,255,255,.035) 62%,transparent 62.2%);
+}
+.hero>div{min-width:0;position:relative}
+.live-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+  background:rgba(61,255,168,.08);border:1px solid rgba(61,255,168,.32);color:#5dffb6;
+  font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:20px}
+.live-pill .stand{letter-spacing:.6px}
+.hero h1{font-size:clamp(32px,4.3vw,48px);line-height:1.08;font-weight:900;letter-spacing:-1.5px}
+.hero h1 em{font-style:normal;display:inline-block;padding-bottom:.06em;
+  background:linear-gradient(90deg,#f0866a 0%,#d77aa8 32%,#9a6bff 62%,#7d8bff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{color:#b9c5de;font-size:15px;line-height:1.55;margin:16px 0 22px;max-width:470px}
+.hero-search{display:flex;gap:12px;max-width:520px}
+.hero-search input{flex:1;min-width:0;background:#090f1d;border:1px solid var(--line);border-radius:12px;color:var(--txt);padding:13px 16px;font-size:16px}
+.hero-search input:focus{outline:none;border-color:var(--a)}
+.hero-search button{padding:12px 22px;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{background:rgba(255,255,255,.04);border:1px solid var(--line);color:#d9e2f5;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700;box-shadow:none}
+.chip:hover{background:rgba(139,111,255,.2);box-shadow:none}
+.hero-stage{position:relative;height:330px;perspective:1000px}
 .holo{
-  position:absolute;top:50%;left:50%;width:128px;aspect-ratio:63/88;border-radius:9px;overflow:hidden;cursor:pointer;
-  background:#0a1220;box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);
+  position:absolute;top:50%;left:50%;width:150px;aspect-ratio:63/88;border-radius:10px;overflow:hidden;cursor:pointer;
+  background:#0a1220;box-shadow:0 22px 50px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.1);
   transform-style:preserve-3d;transition:box-shadow .3s;
-  animation:floaty 6s ease-in-out infinite;
+  animation:floaty 7s ease-in-out infinite;
 }
 .holo img{width:100%;height:100%;object-fit:cover;display:block}
 .holo::after{
-  content:'';position:absolute;inset:0;pointer-events:none;mix-blend-mode:color-dodge;opacity:.55;
-  background:
-    linear-gradient(115deg,transparent 20%,rgba(255,120,220,.55) 36%,rgba(120,220,255,.55) 46%,rgba(140,255,170,.5) 56%,rgba(255,240,120,.45) 64%,transparent 80%);
-  background-size:250% 250%;animation:shine 5s linear infinite;
+  content:'';position:absolute;inset:0;pointer-events:none;mix-blend-mode:color-dodge;opacity:.4;
+  background:linear-gradient(115deg,transparent 22%,rgba(255,120,220,.5) 38%,rgba(120,220,255,.5) 48%,rgba(140,255,170,.45) 56%,rgba(255,240,120,.4) 64%,transparent 78%);
+  background-size:250% 250%;animation:shine 6s linear infinite;
 }
-.holo::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at var(--mx,50%) var(--my,30%),rgba(255,255,255,.35),transparent 45%);mix-blend-mode:overlay}
-.holo.h1{--r:-14deg;--x:-118%;z-index:1;animation-delay:-1.5s}
-.holo.h2{--r:0deg;--x:-50%;z-index:3;width:146px}
-.holo.h3{--r:14deg;--x:18%;z-index:2;animation-delay:-3s}
-.holo{transform:translate(var(--x),-50%) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
-.holo:hover{box-shadow:0 22px 50px rgba(139,111,255,.45),0 0 0 1px rgba(255,255,255,.18)}
+.holo::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at var(--mx,50%) var(--my,30%),rgba(255,255,255,.3),transparent 45%);mix-blend-mode:overlay}
+.holo .tag{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:22px 8px 9px;text-align:center;
+  background:linear-gradient(180deg,transparent,rgba(6,10,20,.92) 55%);color:var(--b);font-weight:900;font-size:14px}
+.holo.h1{--r:-12deg;--x:-112%;--y:-44%;z-index:1;animation-delay:-2s}
+.holo.h2{--r:0deg;--x:-50%;--y:-56%;z-index:3;width:178px}
+.holo.h3{--r:12deg;--x:12%;--y:-44%;z-index:2;animation-delay:-4s}
+.holo{transform:translate(var(--x),var(--y,-50%)) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
+.holo:hover{box-shadow:0 26px 60px rgba(139,111,255,.4),0 0 0 1px rgba(255,255,255,.2)}
 @keyframes floaty{
-  0%,100%{transform:translate(var(--x),-50%) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
-  50%{transform:translate(var(--x),calc(-50% - 10px)) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
+  0%,100%{transform:translate(var(--x),var(--y,-50%)) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
+  50%{transform:translate(var(--x),calc(var(--y,-50%) - 10px)) rotate(var(--r)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
 }
 @keyframes shine{0%{background-position:0% 0%}100%{background-position:250% 250%}}
 
-/* Ticker */
-.ticker{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:rgba(10,16,32,.8);margin:0 0 6px;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
-.ticker-track{display:flex;gap:26px;width:max-content;padding:10px 0;animation:tick 60s linear infinite}
-.ticker:hover .ticker-track{animation-play-state:paused}
-.tk{display:flex;gap:7px;align-items:baseline;white-space:nowrap;font-size:12px;cursor:pointer}
-.tk b{font-weight:700;color:#dbe4f7}
-.tk .p{color:var(--b);font-weight:800}
-.tk .up{color:var(--green);font-weight:700}.tk .down{color:var(--red);font-weight:700}
-.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.6s ease-in-out infinite}
-@keyframes tick{to{transform:translateX(-50%)}}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.35}}
 
+/* Ticker */
+.ticker{position:relative;overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 0 14px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.ticker-track{display:flex;gap:44px;width:max-content;padding:13px 0;animation:tick 70s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.tk{display:flex;gap:10px;align-items:baseline;white-space:nowrap;font-size:14px;cursor:pointer}
+.tk b{font-weight:800;color:#eef2fc}
+.tk .p{color:var(--b);font-weight:800}
+.tk .up{color:var(--green);font-weight:800}.tk .down{color:var(--red);font-weight:800}
+@keyframes tick{to{transform:translateX(-50%)}}
+
 /* Karte des Tages */
-.daily{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:16px;border-radius:20px;margin:14px 0 6px;
-  background:linear-gradient(135deg,rgba(255,201,74,.12),rgba(139,111,255,.12) 50%,rgba(61,217,245,.06));border:1px solid rgba(255,201,74,.28)}
-.daily .holo{position:relative;top:auto;left:auto;transform:none;animation:none;width:150px}
-.daily .label{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--gold)}
-.daily h3{font-size:20px;font-weight:900;margin-top:2px}
-.daily .set{font-size:12px;color:var(--muted)}
-.daily .big{font-size:26px;font-weight:900;color:var(--b);margin-top:6px}
+.daily{display:grid;grid-template-columns:auto 1fr;gap:30px;padding:26px 26px 26px 26px;border-radius:26px;margin:16px 0 8px;
+  background:linear-gradient(150deg,#1a2140,#121a32 60%,#0f1629);border:1px solid rgba(139,111,255,.32)}
+.daily-card{width:220px;border-radius:12px;padding:3px;cursor:pointer;align-self:start;
+  background:linear-gradient(135deg,#ff6b9a,#ffd36b,#6bffb8,#6bc8ff,#b36bff,#ff6b9a);background-size:300% 300%;animation:rim 8s linear infinite;
+  box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.daily-card img{display:block;width:100%;aspect-ratio:63/88;object-fit:cover;border-radius:9px;background:#0a1220}
+@keyframes rim{to{background-position:300% 300%}}
+.daily .label{font-size:12px;font-weight:800;letter-spacing:2.4px;color:var(--gold)}
+.daily h3{font-size:30px;font-weight:900;margin-top:6px;letter-spacing:-.5px}
+.daily .set{font-size:15px;color:var(--muted);margin-top:2px}
 .daily-info{min-width:0}
+.btn-gold{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:800;font-size:15px;color:#2a1600;
+  background:linear-gradient(120deg,#ffc94a,#ff9a3c);padding:12px 18px;border-radius:12px}
+.btn-gold:hover{filter:brightness(1.06)}
 
 /* Preis-Elemente */
 .chg{font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap}
 .chg.up{background:rgba(61,255,168,.15);color:var(--green)}
 .chg.down{background:rgba(255,92,122,.15);color:var(--red)}
 .chg.flat{background:rgba(139,155,184,.12);color:var(--muted)}
-.cm-btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:800;font-size:13px;color:#06101e;
-  background:linear-gradient(125deg,#5ee6ff,#3dd9f5);padding:10px 14px;border-radius:12px}
-.cm-btn:hover{filter:brightness(1.08)}
+.cm-btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:800;font-size:14px;color:#2a1600;
+  background:linear-gradient(120deg,#ffc94a,#ff9a3c);padding:11px 16px;border-radius:12px}
+.cm-btn:hover{filter:brightness(1.06)}
 .cm-mini{font-size:11px;font-weight:800;color:var(--b);text-decoration:none;padding:2px 6px;border:1px solid rgba(61,217,245,.35);border-radius:6px;white-space:nowrap}
 .cm-mini:hover{background:rgba(61,217,245,.12)}
 .tile .spark{display:block;width:100%;height:26px;margin-top:6px}
 .tile .bottom{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px}
+.tile.r4 .rank-badge{background:linear-gradient(145deg,#8b6fff,#6a54e0)}
 .price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin:10px 0}
 .price-box{background:#0a1220;border:1px solid var(--line);border-radius:10px;padding:9px 10px;text-align:center}
 .price-box span{display:block;font-size:10px;color:var(--muted)}
@@ -336,31 +354,39 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .variant-row select{flex:1;min-width:180px}
 
 /* Graph */
-.chart-box{margin:12px 0;padding:12px;background:#0a1220;border:1px solid var(--line);border-radius:14px}
-.chart-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-.chart-head b{font-size:13px}
-.ranges{display:flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:3px}
-.ranges button{background:transparent;color:var(--muted);padding:5px 9px;font-size:12px;border-radius:7px;box-shadow:none}
-.ranges button:hover{box-shadow:none;transform:none}
-.ranges button.on{background:rgba(139,111,255,.3);color:#fff}
-.chart{position:relative;height:180px;touch-action:pan-y}
+.chart-box{margin:18px 0 4px;padding:20px 22px 16px;background:#0b1121;border:1px solid var(--line);border-radius:18px}
+.chart-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.chart-head .lbl{font-size:13px;color:var(--muted)}
+.chart-head .now{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:2px}
+.chart-head .now b{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.chart-head .rc{font-size:15px;font-weight:800}
+.chart-head .rc.up{color:var(--green)}.chart-head .rc.down{color:var(--red)}.chart-head .rc.flat{color:var(--muted)}
+.ranges{display:flex;gap:3px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:4px}
+.ranges button{background:transparent;color:var(--muted);padding:7px 13px;font-size:14px;border-radius:9px;box-shadow:none}
+.ranges button:hover{box-shadow:none;transform:none;color:#fff}
+.ranges button.on{background:rgba(139,111,255,.32);color:#fff}
+.chart{position:relative;height:240px;touch-action:pan-y}
 .chart svg{display:block;width:100%;height:100%;overflow:visible}
-.chart .tip{position:absolute;top:0;pointer-events:none;background:rgba(12,18,36,.95);border:1px solid var(--line);border-radius:9px;padding:6px 8px;font-size:11px;white-space:nowrap;transform:translateX(-50%);opacity:0;transition:opacity .12s}
+.chart .tip{position:absolute;top:0;pointer-events:none;background:rgba(12,18,36,.96);border:1px solid var(--line);border-radius:9px;padding:6px 9px;font-size:11px;white-space:nowrap;transform:translateX(-50%);opacity:0;transition:opacity .12s}
 .chart .tip b{display:block;font-size:13px;color:var(--b)}
-.chart-foot{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:6px}
-.chart-foot i{display:inline-block;width:16px;height:0;border-top:2px solid var(--b);vertical-align:middle;margin-right:4px}
-.chart-foot i.est{border-top-style:dashed;border-color:#8b9bb8}
+.chart-foot{display:flex;gap:8px 18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px;align-items:center}
+.chart-foot i{display:inline-block;width:18px;height:0;border-top:3px solid var(--b);vertical-align:middle;margin-right:6px;border-radius:2px}
+.chart-foot i.est{border-top-style:dashed;border-color:var(--a)}
 
-@media(max-width:640px){
-  .hero{grid-template-columns:1fr;padding:18px 16px}
-  .hero h1{font-size:24px}
-  .hero-stage{height:200px;order:-1}
-  .holo{width:108px}.holo.h2{width:124px}
-  .daily{grid-template-columns:1fr}
-  .daily .holo{width:130px;margin:0 auto}
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;padding:22px 18px}
+  .hero-stage{height:250px;order:-1}
+  .holo{width:116px}.holo.h2{width:138px}
+  .hero-search button{padding:12px 16px}
+  .daily{grid-template-columns:1fr;padding:18px;gap:18px}
+  .daily-card{width:170px;margin:0 auto}
+  .daily h3{font-size:24px}
+  .chart-box{padding:14px 12px 12px}
+  .chart{height:200px}
+  .chart-head .now b{font-size:24px}
 }
 @media(prefers-reduced-motion:reduce){
-  .holo,.holo::after,.ticker-track,.live-dot{animation:none!important}
+  .holo,.holo::after,.ticker-track,.daily-card{animation:none!important}
   .ticker{overflow-x:auto}
 }
 
@@ -469,7 +495,7 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
   <div class="logo">◉</div>
   <div>
     <div class="brand">POKETA</div>
-    <div class="sub">v1.1 · Card Hub</div>
+    <div class="sub">v1.2 · Card Hub · Cardmarket Live</div>
   </div>
   <div class="top-right hidden" id="topRight">
     <div class="sync-pill" id="syncPill" data-s="idle" title="Synchronisierung"><i></i><span id="syncTxt">–</span></div>
@@ -501,8 +527,9 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
   <!-- Hero -->
   <div class="hero">
     <div>
-      <h1>Deine Karten.<br><em>Live-Preise von Cardmarket.</em></h1>
-      <p class="lead">Offizieller Cardmarket-Price-Guide, Preisverlauf für jede Karte und direkte Links zum Produkt.</p>
+      <div class="live-pill"><span class="live-dot"></span>Cardmarket Live<span class="stand" id="heroStand"></span></div>
+      <h1>Dein Kartenmarkt.<br><em>Live &amp; im Verlauf.</em></h1>
+      <p class="lead">Aktuelle Cardmarket-Preise, Preisverlauf der letzten Monate und ein Klick direkt zur Karte auf Cardmarket.</p>
       <form class="hero-search" id="heroSearch">
         <input id="heroQ" placeholder="Karte suchen, z. B. Glurak" autocomplete="off" enterkeyhint="search" aria-label="Karte suchen">
         <button type="submit">Suchen</button>
@@ -513,7 +540,7 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
   </div>
 
   <!-- Ticker -->
-  <div class="ticker" id="ticker" aria-label="Live-Preise"><div class="ticker-track" id="tickerTrack"><span class="tk"><span class="live-dot"></span><b>Live-Preise werden geladen …</b></span></div></div>
+  <div class="ticker" id="ticker" aria-label="Live-Preise"><div class="ticker-track" id="tickerTrack"><span class="tk"><b>Live-Preise werden geladen …</b></span></div></div>
 
   <!-- Stats -->
   <div class="stats-row">
@@ -525,6 +552,9 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
 
   <!-- Karte des Tages -->
   <div class="daily" id="daily"><div class="muted">Karte des Tages wird geladen …</div></div>
+
+  <div class="sec-head"><h2>🔥 Beliebteste Karten</h2><span class="more" onclick="searchPopular('ex')">Alle →</span></div>
+  <div class="h-scroll" id="popularScroll"></div>
 
   <div class="sec-head"><h2>⚡ Größte Bewegungen</h2><span class="muted" style="font-size:11px">Trend vs. 30-Tage-Ø</span></div>
   <div class="h-scroll" id="moversScroll"></div>
@@ -1073,29 +1103,41 @@ function priceSeries(cm, hist){
     if(pos(v) && t < first - DAY / 2) est.push({t, v, e: true});
   });
   if(est.length && real.length) est.push({...real[0], e: true});
-  return {real, est, since: hist && hist.length ? hist[0][0] : null};
+  return {real, est, days: (hist || []).length, since: hist && hist.length ? hist[0][0] : null};
 }
 
 /* ── Interaktiver Graph ── */
 const RANGES = {'1M':30, '3M':91, '6M':182, '1J':365};
 let _chartN = 0;
-function chartHTML(title){
-  return `<div class="chart-box">
-    <div class="chart-head"><b>${safe(title || 'Preisverlauf')}</b>
-      <div class="ranges">${Object.keys(RANGES).map(r => `<button type="button" data-r="${r}"${r === '1M' ? ' class="on"' : ''}>${r}</button>`).join('')}</div>
+const pctTxt = p => (p > 0 ? '+' : '') + p.toLocaleString('de-DE', {maximumFractionDigits: 1}) + '%';
+function chartHTML(range){
+  range = range || '1M';
+  return `<div class="chart-box" data-range="${range}">
+    <div class="chart-head">
+      <div><div class="lbl">Cardmarket Trend</div><div class="now"><b class="cv">–</b><span class="rc"></span></div></div>
+      <div class="ranges">${Object.keys(RANGES).map(r => `<button type="button" data-r="${r}"${r === range ? ' class="on"' : ''}>${r}</button>`).join('')}</div>
     </div>
     <div class="chart"></div><div class="chart-foot"></div></div>`;
 }
 function mountChart(box, series){
   if(!box) return;
-  box._series = series; box._range = box._range || '1M';
+  box._series = series; box._range = box._range || box.dataset.range || '1M';
   box.querySelectorAll('.ranges button').forEach(b => {
+    b.classList.toggle('on', b.dataset.r === box._range);
     b.onclick = e => { e.stopPropagation(); box._range = b.dataset.r; box.querySelectorAll('.ranges button').forEach(x => x.classList.toggle('on', x === b)); drawChart(box); };
   });
   drawChart(box);
 }
-const fmtAxis = v => v >= 1000 ? Math.round(v).toLocaleString('de-DE') + ' €' : v.toLocaleString('de-DE', {minimumFractionDigits: v < 10 ? 2 : 0, maximumFractionDigits: v < 10 ? 2 : 0}) + ' €';
-const fmtDate = t => new Date(t).toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'2-digit'});
+const fmtAxis = v => v >= 100 ? Math.round(v).toLocaleString('de-DE') + ' €' : v.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €';
+const fmtDay = t => new Date(t).toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit'});
+function niceTicks(lo, hi, n){
+  const raw = (hi - lo) / (n - 1), mag = Math.pow(10, Math.floor(Math.log10(raw || 1)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw) || raw;
+  const a = Math.floor(lo / step) * step, out = [];
+  for(let v = a; v <= hi + step * .001 && out.length < 8; v += step) out.push(+v.toFixed(6));
+  if(out[out.length - 1] < hi) out.push(+(out[out.length - 1] + step).toFixed(6));
+  return out;
+}
 function drawChart(box){
   const s = box._series, el = box.querySelector('.chart'), foot = box.querySelector('.chart-foot');
   if(!s || !el) return;
@@ -1103,48 +1145,59 @@ function drawChart(box){
   const tEnd = all.length ? all[all.length - 1].t : Date.now();
   const from = tEnd - RANGES[box._range] * DAY;
   const pts = all.filter(p => p.t >= from - DAY / 2);
-  const hasEst = pts.some(p => p.e);
-  foot.innerHTML = `<span><i></i>Cardmarket-Trend (täglich gespeichert)</span>`
-    + (hasEst ? `<span><i class="est"></i>Schätzung aus Ø 30/7/1 Tage</span>` : '')
-    + `<span>${s.since ? 'Aufzeichnung seit ' + new Date(s.since).toLocaleDateString('de-DE') : 'Aufzeichnung startet heute'}</span>`;
-  if(pts.length < 2){ el.innerHTML = '<div class="empty" style="padding:40px 10px;font-size:12px">Noch zu wenig Daten für diesen Zeitraum.</div>'; return; }
-  const W = el.clientWidth || 320, H = el.clientHeight || 180, pl = 48, pr = 10, pt = 12, pb = 22;
+  const realDays = s.real.length;
+  foot.innerHTML = `<span><i></i>täglich gespeichert (${s.days} ${s.days === 1 ? 'Tag' : 'Tage'})</span>`
+    + (s.est.length ? `<span><i class="est"></i>aus Cardmarket-Ø (30/7/1 Tage) abgeleitet</span>` : '')
+    + `<span>Der Verlauf wächst automatisch jeden Tag.</span>`;
+  const cur = s.real.length ? s.real[s.real.length - 1].v : (pts.length ? pts[pts.length - 1].v : null);
+  box.querySelector('.cv').textContent = cur ? fmtEUR(cur) : '–';
+  const rc = box.querySelector('.rc');
+  if(pts.length >= 2 && cur){
+    const p = Math.round((cur - pts[0].v) / pts[0].v * 1000) / 10;
+    rc.className = 'rc ' + (p > 0.05 ? 'up' : p < -0.05 ? 'down' : 'flat');
+    rc.textContent = `${p > 0.05 ? '▲' : p < -0.05 ? '▼' : '■'} ${pctTxt(p)} · ${box._range}`;
+  }else rc.textContent = '';
+  if(pts.length < 2){ el.innerHTML = '<div class="empty" style="padding:50px 10px;font-size:12px">Noch zu wenig Daten für diesen Zeitraum.</div>'; return; }
+  const W = el.clientWidth || 320, H = el.clientHeight || 220, small = W < 420;
+  const pr = 8, pt = 10, pb = 26;
   const t0 = pts[0].t, t1 = pts[pts.length - 1].t;
   let lo = Math.min(...pts.map(p => p.v)), hi = Math.max(...pts.map(p => p.v));
   if(hi - lo < hi * 0.04){ lo -= hi * 0.03; hi += hi * 0.03; }
-  const padv = (hi - lo) * 0.1; lo = Math.max(0, lo - padv); hi += padv;
+  const ticks = niceTicks(Math.max(0, lo - (hi - lo) * .08), hi + (hi - lo) * .08, small ? 4 : 5);
+  lo = ticks[0]; hi = ticks[ticks.length - 1];
+  const pl = Math.max(...ticks.map(v => fmtAxis(v).length)) * 6.6 + 12;
   const X = t => pl + (t - t0) / ((t1 - t0) || 1) * (W - pl - pr);
   const Y = v => pt + (1 - (v - lo) / ((hi - lo) || 1)) * (H - pt - pb);
   const path = arr => arr.map((p, i) => (i ? 'L' : 'M') + X(p.t).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
-  const estPts = pts.filter(p => p.e);
-  const realPts = pts.filter(p => !p.e);
-  const up = pts[pts.length - 1].v >= pts[0].v, col = up ? '#3dffa8' : '#ff5c7a', gid = 'g' + (++_chartN);
-  const grid = [0, .5, 1].map(f => { const v = lo + (hi - lo) * (1 - f), y = pt + f * (H - pt - pb);
-    return `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="rgba(139,155,184,.13)"/><text x="${pl - 6}" y="${y + 3}" text-anchor="end" font-size="10" fill="#8b9bb8">${fmtAxis(v)}</text>`; }).join('');
+  const estPts = pts.filter(p => p.e), realPts = pts.filter(p => !p.e);
+  const line = pts.filter((p, i) => !(p.e && pts.some((q, j) => j !== i && !q.e && q.t === p.t)));
+  const gid = 'g' + (++_chartN);
+  const grid = ticks.map(v => { const y = Y(v);
+    return `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="rgba(139,155,184,.12)"/><text x="${pl - 12}" y="${y + 4}" text-anchor="end" font-size="12" fill="#8b9bb8">${fmtAxis(v)}</text>`; }).join('');
+  const nx = small ? 3 : 5;
+  const xl = Array.from({length: nx}, (_, i) => { const t = t0 + (t1 - t0) * i / (nx - 1);
+    return `<text x="${X(t)}" y="${H - 4}" font-size="12" fill="#8b9bb8" text-anchor="${i === 0 ? 'start' : i === nx - 1 ? 'end' : 'middle'}">${fmtDay(t)}</text>`; }).join('');
   el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Preisverlauf">
-    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".28"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3dd9f5" stop-opacity=".3"/><stop offset="1" stop-color="#3dd9f5" stop-opacity=".02"/></linearGradient></defs>
     ${grid}
-    ${realPts.length > 1 ? `<path d="${path(realPts)} L${X(realPts[realPts.length - 1].t)} ${H - pb} L${X(realPts[0].t)} ${H - pb} Z" fill="url(#${gid})"/>` : ''}
-    ${estPts.length > 1 ? `<path d="${path(estPts)}" fill="none" stroke="#8b9bb8" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round"/>` : ''}
-    ${realPts.length > 1 ? `<path d="${path(realPts)}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
-    ${realPts.length === 1 ? `<circle cx="${X(realPts[0].t)}" cy="${Y(realPts[0].v)}" r="3.5" fill="${col}"/>` : ''}
-    <text x="${pl}" y="${H - 5}" font-size="10" fill="#8b9bb8">${fmtDate(t0)}</text>
-    <text x="${W - pr}" y="${H - 5}" font-size="10" fill="#8b9bb8" text-anchor="end">${fmtDate(t1)}</text>
+    <path d="${path(line)} L${X(line[line.length - 1].t)} ${H - pb} L${X(line[0].t)} ${H - pb} Z" fill="url(#${gid})"/>
+    ${estPts.length > 1 ? `<path d="${path(estPts)}" fill="none" stroke="#8b6fff" stroke-width="3" stroke-dasharray="9 7" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
+    ${realPts.length > 1 ? `<path d="${path(realPts)}" fill="none" stroke="#3dd9f5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
+    ${realPts.length === 1 ? `<circle cx="${X(realPts[0].t)}" cy="${Y(realPts[0].v)}" r="4" fill="#3dd9f5"/>` : ''}
+    ${xl}
     <line class="cx" y1="${pt}" y2="${H - pb}" stroke="rgba(255,255,255,.25)" stroke-dasharray="3 3" visibility="hidden"/>
-    <circle class="cd" r="4.5" fill="${col}" stroke="#070b14" stroke-width="2" visibility="hidden"/>
+    <circle class="cd" r="5" fill="#3dd9f5" stroke="#0b1121" stroke-width="2" visibility="hidden"/>
   </svg><div class="tip"></div>`;
   const svg = el.querySelector('svg'), tip = el.querySelector('.tip'), cx = svg.querySelector('.cx'), cd = svg.querySelector('.cd');
-  const uniq = pts.filter((p, i) => !(p.e && pts.some((q, j) => j !== i && !q.e && q.t === p.t)));
   const move = e => {
     const r = el.getBoundingClientRect(), mx = (e.clientX - r.left) * (W / r.width);
-    let best = uniq[0]; uniq.forEach(p => { if(Math.abs(X(p.t) - mx) < Math.abs(X(best.t) - mx)) best = p; });
+    let best = line[0]; line.forEach(p => { if(Math.abs(X(p.t) - mx) < Math.abs(X(best.t) - mx)) best = p; });
     const x = X(best.t), y = Y(best.v);
     cx.setAttribute('x1', x); cx.setAttribute('x2', x); cx.setAttribute('visibility', 'visible');
     cd.setAttribute('cx', x); cd.setAttribute('cy', y); cd.setAttribute('visibility', 'visible');
-    cd.setAttribute('fill', best.e ? '#8b9bb8' : col);
-    tip.innerHTML = `<b>${fmtEUR(best.v)}</b>${new Date(best.t).toLocaleDateString('de-DE', {day:'2-digit', month:'short', year:'numeric'})}${best.e ? ' · Schätzung' : ''}`;
-    const px = x * (r.width / W);
-    tip.style.left = Math.min(Math.max(px, 60), r.width - 60) + 'px'; tip.style.opacity = 1;
+    cd.setAttribute('fill', best.e ? '#8b6fff' : '#3dd9f5');
+    tip.innerHTML = `<b>${fmtEUR(best.v)}</b>${new Date(best.t).toLocaleDateString('de-DE', {day:'2-digit', month:'short', year:'numeric'})}${best.e ? ' · abgeleitet' : ''}`;
+    tip.style.left = Math.min(Math.max(x * (r.width / W), 60), r.width - 60) + 'px'; tip.style.opacity = 1;
   };
   const leave = () => { tip.style.opacity = 0; cx.setAttribute('visibility', 'hidden'); cd.setAttribute('visibility', 'hidden'); };
   el.onpointermove = move; el.onpointerdown = move; el.onpointerleave = leave;
@@ -1164,18 +1217,23 @@ function sparkSVG(series){
 
 /* ═══════ Startseite ═══════ */
 const HOME = {
-  hero: ['me02.5-284', 'me02-125', 'me02.5-276'],
+  hero: ['sv03.5-199', 'me02-125', 'me02.5-284'],
+  popular: ['sv03.5-199', 'sv08.5-161', 'swsh7-215', 'me02-125', 'me02.5-276', 'me02.5-284', 'sv08-247', 'sv03.5-151'],
   mega: ['me02-125', 'me02.5-276', 'me02.5-284', 'me05-116', 'me01-188', 'me04-116', 'me02.5-290', 'me03-124'],
-  classics: ['base1-4', 'swsh7-215', 'base1-10', 'sv03.5-151', 'base1-58', 'sv08-247', 'sv03-125', 'base1-44'],
-  chips: ['Glurak', 'Pikachu', 'Mega-Gengar', 'Nachtara', 'Mewtu', 'Lucario']
+  classics: ['base1-4', 'base1-10', 'base1-58', 'base1-44', 'sv03-125', 'sv03-223'],
+  daily: ['sv08.5-161', 'me02-125', 'sv03.5-199', 'swsh7-215', 'me02.5-284', 'base1-4', 'me02.5-276', 'me05-116', 'sv08-247', 'me01-188'],
+  chips: [['🔥', 'Glurak'], ['🌙', 'Nachtara'], ['⚡', 'Pikachu'], ['👻', 'Gengar'], ['✨', 'Mew']]
 };
+const RARITY_SHORT = {'Selten, besondere Illustration':'SIR', 'Illustration selten':'IR', 'Seltene Illustration':'IR', 'Hyperselten':'HR',
+  'Ultra Selten':'UR', 'Doppelselten':'RR', 'Versteckt Selten':'Secret', 'Selten, Holo':'Holo', 'Mega-Hyper-Selten':'MHR'};
 const homeItems = {};
 
 function homeItem(id, c, hist){
   const v = cmVariants(c)[0] || {};
   const cm = v.cm || c?.pricing?.cardmarket || null;
   return {
-    id, name: c?.name || id, set: c?.set?.name || '', img: c?.image ? c.image + '/high.webp' : guessImg(id, 'de'),
+    id, name: c?.name || id, set: c?.set?.name || '', rarity: c?.rarity || '',
+    img: c?.image ? c.image + '/high.webp' : guessImg(id, 'de'),
     idProduct: v.idProduct || null, cm, price: cmMain(cm), chg: cmChange(cm),
     series: priceSeries(cm, (hist || {})[v.idProduct]), card: c
   };
@@ -1183,7 +1241,7 @@ function homeItem(id, c, hist){
 
 function tileHTML(it, opts){
   opts = opts || {};
-  return `<div class="tile" onclick="openCard('${safe(it.id)}','de')">
+  return `<div class="tile${opts.rank ? ' r' + Math.min(opts.rank, 4) : ''}" onclick="openCard('${safe(it.id)}','de')">
     ${opts.rank ? `<div class="rank-badge">${opts.rank}</div>` : ''}
     <img src="${safe(it.img)}" onerror="imgFallback(this)" alt="${safe(it.name)}" loading="lazy">
     <div class="meta">
@@ -1199,7 +1257,8 @@ function tileHTML(it, opts){
 
 function holoHTML(it, cls){
   return `<div class="holo ${cls || ''}" onclick="openCard('${safe(it.id)}','de')" title="${safe(it.name)}">
-    <img src="${safe(it.img)}" onerror="imgFallback(this)" alt="${safe(it.name)}"></div>`;
+    <img src="${safe(it.img)}" onerror="imgFallback(this)" alt="${safe(it.name)}">
+    ${it.price ? `<div class="tag">${fmtEUR(it.price)}</div>` : ''}</div>`;
 }
 function wireHolo(root){
   if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -1216,37 +1275,35 @@ function wireHolo(root){
 }
 
 function dailyPick(){
-  const pool = [...new Set([...HOME.mega, ...HOME.classics])];
   const d = Math.floor((Date.now() + 36e5) / DAY);      // wechselt täglich
-  return pool[d % pool.length];
+  return HOME.daily[d % HOME.daily.length];
 }
 
 function renderDaily(it){
   const box = document.getElementById('daily');
+  const r = RARITY_SHORT[it.rarity] || it.rarity;
   box.innerHTML = `
-    <div>${holoHTML(it)}</div>
+    <div class="daily-card" onclick="openCard('${safe(it.id)}','de')"><img src="${safe(it.img)}" onerror="imgFallback(this)" alt="${safe(it.name)}"></div>
     <div class="daily-info">
       <div class="label">★ KARTE DES TAGES</div>
       <h3>${safe(it.name)}</h3>
-      <div class="set">${safe(it.set)}</div>
-      <div class="row" style="margin-top:4px;gap:10px"><span class="big">${fmtEUR(it.price)}</span>${chgHTML(it.chg)}</div>
-      <div class="row" style="margin-top:8px">
-        <a class="cm-btn" href="${cmLink(it.idProduct, it.card)}" target="_blank" rel="noopener">Diese Karte auf Cardmarket ↗</a>
+      <div class="set">${safe(it.set)}${r ? ' · ' + safe(r) : ''}</div>
+      <div class="row" style="margin-top:16px;gap:10px">
+        <a class="btn-gold" href="${cmLink(it.idProduct, it.card)}" target="_blank" rel="noopener">Auf Cardmarket ansehen ↗</a>
         <button type="button" class="secondary" onclick="openCard('${safe(it.id)}','de')">Details</button>
       </div>
-      ${chartHTML('Preisverlauf')}
+      ${chartHTML('3M')}
     </div>`;
-  wireHolo(box);
   mountChart(box.querySelector('.chart-box'), it.series);
 }
 
 function renderTicker(items){
   const list = items.filter(it => it.price);
   if(!list.length) return;
-  const one = list.map(it => `<span class="tk" onclick="openCard('${safe(it.id)}','de')"><span class="live-dot"></span><b>${safe(it.name)}</b><span class="p">${fmtEUR(it.price)}</span>${it.chg == null ? '' : `<span class="${it.chg >= 0 ? 'up' : 'down'}">${it.chg >= 0 ? '▲' : '▼'} ${Math.abs(it.chg).toLocaleString('de-DE', {maximumFractionDigits:1})} %</span>`}</span>`).join('');
+  const one = list.map(it => `<span class="tk" onclick="openCard('${safe(it.id)}','de')"><b>${safe(it.name)}</b><span class="p">${fmtEUR(it.price)}</span>${it.chg == null ? '' : `<span class="${it.chg >= 0 ? 'up' : 'down'}">${it.chg >= 0 ? '▲' : '▼'} ${pctTxt(it.chg)}</span>`}</span>`).join('');
   const track = document.getElementById('tickerTrack');
   track.innerHTML = one + one;
-  track.style.animationDuration = Math.max(30, list.length * 4) + 's';
+  track.style.animationDuration = Math.max(35, list.length * 5) + 's';
 }
 
 async function pool(list, n, fn){
@@ -1256,31 +1313,34 @@ async function pool(list, n, fn){
 }
 
 async function renderHome(){
-  // Sofort: Hero, Chips, Platzhalter-Kacheln
-  heroChips.innerHTML = HOME.chips.map(n => `<button type="button" class="chip" onclick="searchPopular('${safe(n)}')">${safe(n)}</button>`).join('');
+  heroChips.innerHTML = HOME.chips.map(([e, n]) => `<button type="button" class="chip" onclick="searchPopular('${safe(n)}')">${e} ${safe(n)}</button>`).join('');
   const ph = id => ({id, name: '…', set: '', img: guessImg(id, 'de'), loading: true});
   heroStage.innerHTML = HOME.hero.map((id, i) => holoHTML(ph(id), 'h' + (i + 1))).join('');
   wireHolo(heroStage);
+  popularScroll.innerHTML = HOME.popular.map((id, i) => tileHTML(ph(id), {rank: i + 1})).join('');
   megaScroll.innerHTML = HOME.mega.map(id => tileHTML(ph(id))).join('');
   classicScroll.innerHTML = HOME.classics.map(id => tileHTML(ph(id))).join('');
   moversScroll.innerHTML = HOME.mega.slice(0, 4).map(id => tileHTML(ph(id))).join('');
 
-  const ids = [...new Set([...HOME.hero, ...HOME.mega, ...HOME.classics])];
+  const ids = [...new Set([...HOME.hero, ...HOME.popular, ...HOME.mega, ...HOME.classics, ...HOME.daily])];
   const cards = {};
   await pool(ids, 6, async id => { cards[id] = await tcgCard(id, 'de'); });
   const prods = ids.map(id => (cmVariants(cards[id])[0] || {}).idProduct).filter(Boolean);
   const hist = await PriceHist.load(prods);
   ids.forEach(id => homeItems[id] = homeItem(id, cards[id], hist));
+  const items = ids.map(id => homeItems[id]);
 
+  const stand = Math.max(...items.map(it => Date.parse(it.cm?.updated || '') || 0));
+  if(stand > 0) heroStand.textContent = ' · Stand ' + new Date(stand).toLocaleString('de-DE', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
   heroStage.innerHTML = HOME.hero.map((id, i) => holoHTML(homeItems[id], 'h' + (i + 1))).join('');
   wireHolo(heroStage);
+  popularScroll.innerHTML = HOME.popular.map((id, i) => tileHTML(homeItems[id], {rank: i + 1})).join('');
   megaScroll.innerHTML = HOME.mega.map(id => tileHTML(homeItems[id])).join('');
   classicScroll.innerHTML = HOME.classics.map(id => tileHTML(homeItems[id])).join('');
-  const movers = ids.map(id => homeItems[id]).filter(it => it.chg != null && it.price)
-    .sort((a, b) => Math.abs(b.chg) - Math.abs(a.chg)).slice(0, 8);
-  moversScroll.innerHTML = movers.length ? movers.map((it, i) => tileHTML(it, {rank: i + 1})).join('')
+  const movers = items.filter(it => it.chg != null && it.price).sort((a, b) => Math.abs(b.chg) - Math.abs(a.chg)).slice(0, 8);
+  moversScroll.innerHTML = movers.length ? movers.map(it => tileHTML(it)).join('')
     : '<div class="empty" style="flex:1">Preise gerade nicht erreichbar.</div>';
-  renderTicker(ids.map(id => homeItems[id]));
+  renderTicker(HOME.popular.concat(HOME.mega).filter((x, i, a) => a.indexOf(x) === i).map(id => homeItems[id]));
   renderDaily(homeItems[dailyPick()]);
 }
 
@@ -1658,7 +1718,7 @@ async function openCard(id, lang, fresh){
       </div>
     </div>
     <div id="priceArea"></div>
-    ${chartHTML('Preisverlauf · Cardmarket')}
+    ${chartHTML('3M')}
     <div class="row" style="margin-top:12px">
       <input id="buyInput" class="field" type="number" min="0" step=".01" placeholder="Kaufpreis €" style="width:110px">
       <input id="valueInput" class="field" type="number" min="0" step=".01" placeholder="Wert €" style="width:110px">
