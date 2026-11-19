@@ -1,0 +1,12 @@
+{
+  "name": "poketa",
+  "private": true,
+  "description": "POKETA – Card Hub: Konto-Sync, Cardmarket-Preise und Preisverlauf (Cloudflare Pages + Supabase)",
+  "type": "module",
+  "scripts": {
+    "test": "node test/snapshot.test.mjs",
+    "test:db": "bash test/schema.test.sh",
+    "snapshot": "node scripts/price-snapshot.mjs",
+    "deploy": "node scripts/deploy-cloudflare.mjs poketa main"
+  }
+}
