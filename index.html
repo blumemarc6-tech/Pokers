@@ -409,6 +409,24 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   .ticker{overflow-x:auto}
 }
 
+/* Ankaufs-Rechner */
+.deal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.deal-grid .lbl{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.deal-results{display:grid;gap:6px;margin-top:10px}
+.deal-results .dr{display:flex;gap:10px;align-items:center;padding:8px;background:#0a1220;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.deal-results .dr:hover{border-color:rgba(139,111,255,.5)}
+.deal-results img{width:40px;height:56px;object-fit:contain}
+.deal-item select{max-width:150px;padding:6px 8px;font-size:12px}
+.deal-item .qty{width:56px;padding:6px 8px}
+.deal-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.deal-sum .box{background:#0a1220;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.deal-sum .box span{display:block;font-size:11px;color:var(--muted)}
+.deal-sum .box b{font-size:20px}
+.deal-sum .verdict{grid-column:1/-1;padding:14px;border-radius:14px;font-weight:800;text-align:center;font-size:16px}
+.deal-sum .verdict.go{background:rgba(61,255,168,.12);border:1px solid rgba(61,255,168,.45);color:var(--green)}
+.deal-sum .verdict.maybe{background:rgba(255,201,74,.12);border:1px solid rgba(255,201,74,.45);color:var(--gold)}
+.deal-sum .verdict.no{background:rgba(255,92,122,.12);border:1px solid rgba(255,92,122,.45);color:var(--red)}
+
 /* ═══════ Konto / Anmeldung ═══════ */
 body.locked{overflow:hidden}
 body.locked .wrap{display:none}
@@ -540,6 +558,7 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
   <button data-view="wishlist">♡ Wunschliste</button>
   <button data-view="scanner">▧ Scanner</button>
   <button data-view="grading">✧ Grading</button>
+  <button data-view="deal">💰 Ankauf</button>
   <button data-view="settings">⚙ Preise</button>
 </nav>
 
@@ -736,6 +755,32 @@ button.danger{background:rgba(255,92,122,.15);border:1px solid rgba(255,92,122,.
   </div>
 </section>
 
+
+<!-- ═══════ ANKAUF-RECHNER ═══════ -->
+<section class="view" id="deal">
+  <div class="panel">
+    <h2>💰 Ankaufs-Rechner</h2>
+    <p class="muted" style="font-size:13px;margin-bottom:12px">Lohnt sich ein Angebot (z. B. Kleinanzeigen-Konvolut)? Karten hinzufügen, Preis eintragen – POKETA rechnet mit echten Cardmarket-Preisen.</p>
+    <div class="deal-grid">
+      <label class="lbl">Preis, den der Verkäufer will (€)<input id="dealAsk" class="field" type="number" min="0" step="0.5" placeholder="z. B. 80"></label>
+      <label class="lbl">Verkaufsgebühr (%)<input id="dealFee" class="field" type="number" min="0" step="0.5" value="5"></label>
+      <label class="lbl">Versand pro verkaufter Karte (€)<input id="dealShip" class="field" type="number" min="0" step="0.05" value="1.25"></label>
+      <label class="lbl">Rechnen mit<select id="dealBasis" class="field"><option value="trend">Trend (realistisch)</option><option value="low">Ab-Preis (vorsichtig)</option></select></label>
+    </div>
+    <div class="row" style="margin-top:12px;position:relative">
+      <input id="dealQ" class="field search" placeholder="Karte hinzufügen, z. B. Glurak" autocomplete="off">
+      <select id="dealLang" class="field"><option value="de">DE</option><option value="en">EN</option><option value="ja">JP</option></select>
+      <button id="dealSearch">Suchen</button>
+    </div>
+    <div id="dealResults" class="deal-results"></div>
+  </div>
+  <div class="panel">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Karten im Angebot</h2><button class="ghost" id="dealClear" style="padding:6px 10px;font-size:12px">Alle entfernen</button></div>
+    <div id="dealList" class="list" style="margin-top:10px"></div>
+  </div>
+  <div class="panel deal-sum" id="dealSum"></div>
+  <p class="muted" style="font-size:11px;margin:4px 4px 20px">Schätzung auf Basis des Cardmarket-Price-Guides. Zustand, Fälschungen und Nachfrage selbst prüfen. Gebühr und Versand an deine Plattform anpassen. Keine Gewinngarantie.</p>
+</section>
 
 <section class="view" id="settings">
   <div class="panel">
@@ -1887,6 +1932,93 @@ async function switchCardLang(target){
       <img src="${safe(x.image ? x.image + '/low.webp' : guessImg(x.id, target === 'ja' ? 'ja' : 'en'))}" onerror="imgFallback(this)" loading="lazy" alt="">
       <div>${safe(x.name)}</div><div class="muted">${safe(x.id)}</div></div>`).join('')}</div>`;
 }
+
+/* ═══════ Ankaufs-Rechner ═══════ */
+const DEAL_KEY = 'poketa_deal';
+let deal = (() => { try{ return JSON.parse(localStorage.getItem(DEAL_KEY) || 'null') || {items: []}; }catch(e){ return {items: []}; } })();
+const dealSave = () => { try{ localStorage.setItem(DEAL_KEY, JSON.stringify(deal)); }catch(e){} };
+const COND_F = {'Near Mint': 1, 'Excellent': .8, 'Good': .6, 'Played': .45, 'Poor': .25};
+
+async function dealSearch(){
+  const q = dealQ.value.trim(), lang = dealLang.value; if(!q) return;
+  dealResults.innerHTML = '<p class="muted" style="font-size:12px">Suche …</p>';
+  const r = await getJSON(`${TCG}/${lang}/cards?name=${encodeURIComponent(q)}`);
+  const list = Array.isArray(r) ? r.slice(0, 12) : [];
+  dealResults.innerHTML = list.length ? list.map(c => `<div class="dr" onclick="dealAdd('${safe(c.id)}','${lang}')">
+      <img src="${safe(c.image ? c.image + '/low.webp' : guessImg(c.id, lang))}" onerror="imgFallback(this)" loading="lazy" alt="">
+      <div><b style="font-size:13px">${safe(c.name)}</b><br><small class="muted">${safe(c.id)}</small></div></div>`).join('')
+    : '<p class="muted" style="font-size:12px">Keine Treffer.</p>';
+}
+
+async function dealAdd(id, lang){
+  dealResults.innerHTML = '<p class="muted" style="font-size:12px">Lade Preis …</p>';
+  const c = await tcgCard(id, lang);
+  if(!c){ dealResults.innerHTML = '<p class="muted">Karte nicht ladbar.</p>'; return; }
+  const vars = cmVariants(c);
+  deal.items.push({id, lang, name: c.name, set: c.set?.name || '', img: c.image ? c.image + '/low.webp' : guessImg(id, lang),
+    variants: vars.map(v => ({label: v.label, idProduct: v.idProduct, trend: cmVal(v.cm, 'trend') || cmMain(v.cm) || 0, low: cmVal(v.cm, 'low') || 0})),
+    v: 0, cond: 'Near Mint', qty: 1});
+  dealSave(); dealResults.innerHTML = ''; dealQ.value = ''; dealRender();
+}
+
+function dealRender(){
+  dealList.innerHTML = deal.items.length ? deal.items.map((it, i) => {
+    const v = it.variants[it.v] || {};
+    return `<div class="item deal-item">
+      <img src="${safe(it.img)}" onerror="imgFallback(this)" alt="">
+      <div class="grow"><span class="flag">${(LANGS[it.lang] || {}).flag || ''}</span><b>${safe(it.name)}</b><br><small>${safe(it.set)} · Trend ${fmtEUR(v.trend)} · ab ${fmtEUR(v.low)}</small>
+        <div class="row" style="margin-top:6px;gap:6px">
+          ${it.variants.length > 1 ? `<select class="field" onchange="dealSet(${i},'v',+this.value)">${it.variants.map((x, k) => `<option value="${k}"${k === it.v ? ' selected' : ''}>${safe(x.label)}</option>`).join('')}</select>` : ''}
+          <select class="field" onchange="dealSet(${i},'cond',this.value)">${Object.keys(COND_F).map(k => `<option${k === it.cond ? ' selected' : ''}>${k}</option>`).join('')}</select>
+          <input class="field qty" type="number" min="1" value="${it.qty}" onchange="dealSet(${i},'qty',Math.max(1,+this.value||1))" aria-label="Anzahl">
+        </div></div>
+      <button class="ghost" onclick="dealSet(${i},'del')" aria-label="Entfernen">✕</button></div>`;
+  }).join('') : '<div class="empty">Noch keine Karten. Oben suchen und hinzufügen.</div>';
+  dealCalc();
+}
+
+function dealSet(i, k, val){
+  if(k === 'del') deal.items.splice(i, 1); else deal.items[i][k] = val;
+  dealSave(); dealRender();
+}
+
+function dealCalc(){
+  const ask = Math.max(0, +dealAsk.value || 0), fee = Math.max(0, +dealFee.value || 0) / 100, ship = Math.max(0, +dealShip.value || 0);
+  const basis = dealBasis.value;
+  deal.ask = dealAsk.value; deal.fee = dealFee.value; deal.ship = dealShip.value; deal.basis = basis; dealSave();
+  let market = 0, net = 0, n = 0, cheap = 0;
+  deal.items.forEach(it => {
+    const v = it.variants[it.v] || {}, unit = (basis === 'low' ? (v.low || v.trend) : v.trend) * (COND_F[it.cond] || 1);
+    market += unit * it.qty; n += it.qty;
+    const per = unit * (1 - fee) - ship;          // was pro Karte nach Gebühr + Versand übrig bleibt
+    if(per > 0) net += per * it.qty; else cheap += it.qty;
+  });
+  const profit = net - ask, roi = ask > 0 ? profit / ask * 100 : null;
+  let verdict = '', cls = '';
+  if(!deal.items.length){ dealSum.innerHTML = ''; return; }
+  if(!ask) { verdict = 'Preis des Verkäufers eintragen, dann sage ich dir, ob es sich lohnt.'; cls = 'maybe'; }
+  else if(roi >= 30){ verdict = `✅ Lohnt sich: ca. ${fmtEUR(profit)} Gewinn (${Math.round(roi)} %)`; cls = 'go'; }
+  else if(roi >= 10){ verdict = `🟡 Knapp: ca. ${fmtEUR(profit)} Gewinn (${Math.round(roi)} %) – runterhandeln!`; cls = 'maybe'; }
+  else { verdict = `⛔ Lohnt sich nicht: ${profit >= 0 ? 'nur ' + fmtEUR(profit) + ' Gewinn' : fmtEUR(-profit) + ' Verlust'}`; cls = 'no'; }
+  const maxPay = net / 1.3;   // bei 30 % Rendite
+  dealSum.innerHTML = `
+    <div class="box"><span>Karten</span><b>${n}</b></div>
+    <div class="box"><span>Marktwert (${basis === 'low' ? 'Ab-Preis' : 'Trend'}, nach Zustand)</span><b style="color:var(--b)">${fmtEUR(market)}</b></div>
+    <div class="box"><span>Erlös nach Gebühr + Versand</span><b>${fmtEUR(net)}</b></div>
+    <div class="box"><span>Gewinn</span><b style="color:${profit >= 0 ? 'var(--green)' : 'var(--red)'}">${ask ? fmtEUR(profit) : '–'}</b></div>
+    <div class="verdict ${cls}">${verdict}</div>
+    <div class="box" style="grid-column:1/-1"><span>Höchstens zahlen für 30 % Gewinn</span><b style="color:var(--gold)">${fmtEUR(maxPay)}</b>
+      ${cheap ? `<span style="margin-top:6px">${cheap} Karte(n) lohnen sich einzeln nicht (Gebühr + Versand höher als Preis) – als Bulk verkaufen.</span>` : ''}</div>`;
+}
+
+(function dealInit(){
+  if(deal.ask) dealAsk.value = deal.ask; if(deal.fee) dealFee.value = deal.fee; if(deal.ship) dealShip.value = deal.ship; if(deal.basis) dealBasis.value = deal.basis;
+  [dealAsk, dealFee, dealShip, dealBasis].forEach(e => e.addEventListener('input', dealCalc));
+  dealSearch && document.getElementById('dealSearch').addEventListener('click', dealSearch);
+  dealQ.addEventListener('keydown', e => { if(e.key === 'Enter') dealSearch(); });
+  dealClear.addEventListener('click', () => { if(confirm('Alle Karten aus dem Rechner entfernen?')){ deal.items = []; dealSave(); dealRender(); } });
+  dealRender();
+})();
 
 function addPendingCard(){
   if(!pendingCard) return;
