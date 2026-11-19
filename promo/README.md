@@ -2,6 +2,7 @@
 
 | Datei | Inhalt | Länge |
 |---|---|---|
+| `poketa-video-pov-shadowless.mp4` | **POV-Trend-Format:** „POV: du checkst endlich, was deine alte Glurak-Karte wert ist 😳🙏“ + Wort-für-Wort-Untertitel → 290 € → Shadowless → 3.489 € → „Kommentier CHECK 👇“ | ~12 s |
 | `poketa-video-hart-shadowless.mp4` | **Stärkster Einstieg:** „3.489 € 😳 für diese Karte?!“ ab dem ersten Bild → 290 € → Shadowless | ~11 s |
 | `poketa-video-kurz-shadowless.mp4` | Base-Set-Glurak: Unbegrenzt 290 € → Shadowless 3.489 € | ~10 s |
 | `poketa-video-kurz-kartenwert.mp4` | Nachtara VMAX: 1.902 € + Preisverlauf | ~10 s |
@@ -24,3 +25,7 @@ Deutsch oder Japanisch – was ist mehr wert? 🇩🇪🇯🇵 Schreib's in die 
 #pokemonkarten #glurak #japanesepokemon #pokemon151 #pokemontcg #cardmarket
 
 Instagram: gleicher Text, „Link in Bio“. YouTube Shorts: Titel + Link https://poketa.pages.dev in der Beschreibung.
+
+**POV-Video (TikTok):**
+Ich hab sie jahrelang im Ordner liegen lassen 😭 Kommentier „CHECK“ und ich sag dir, was deine Karte wert ist 👇
+#pokemonkarten #shadowless #glurak #charizard #baseset #pov #pokemontcg #pokemonsammler
