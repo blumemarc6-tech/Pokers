@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>POKETA Studio</title>
+<meta name="theme-color" content="#070b14">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<style>
+:root{--bg:#070b14;--card:#0f1628;--card2:#141e34;--line:rgba(100,140,220,.18);--txt:#f0f4ff;--muted:#8b9bb8;--a:#8b6fff;--b:#3dd9f5;--gold:#ffc94a;--green:#3dffa8;--red:#ff5c7a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;color:var(--txt);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:var(--bg);
+  background-image:radial-gradient(ellipse 90% 60% at 15% -5%,rgba(139,111,255,.25),transparent 55%),radial-gradient(ellipse 70% 50% at 95% 5%,rgba(61,217,245,.12),transparent 50%)}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:12px;padding:11px 16px;color:#fff;font-weight:700;background:linear-gradient(125deg,var(--a),#5a7fff)}
+button.secondary{background:var(--card2);border:1px solid var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 60px}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(145deg,#a78bfa,#3dd9f5);display:grid;place-items:center;font-size:20px;color:#0a1020;font-weight:900}
+.brand{font-size:20px;font-weight:900;letter-spacing:1.5px}.sub{color:var(--muted);font-size:12px}
+.top a{margin-left:auto;color:var(--b);text-decoration:none;font-weight:700;font-size:13px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+h2{font-size:15px;margin-bottom:10px}
+.step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--a);font-size:12px;margin-right:8px}
+.tpls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tpl{background:#0a1220;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:left;font-weight:600}
+.tpl b{display:block;font-size:14px}.tpl span{font-size:11px;color:var(--muted);font-weight:500}
+.tpl.on{border-color:var(--a);background:rgba(139,111,255,.18)}
+.field{background:#0a1020;color:var(--txt);border:1px solid var(--line);border-radius:11px;padding:11px 13px;min-width:0;width:100%}
+.field:focus{outline:none;border-color:var(--a)}
+.row{display:flex;gap:8px;align-items:center}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px}
+.res{background:#0a1220;border:1px solid var(--line);border-radius:10px;padding:6px;cursor:pointer;text-align:center;font-size:11px}
+.res img{width:100%;aspect-ratio:63/88;object-fit:contain;border-radius:6px;background:#070b14}
+.res:hover{border-color:var(--a)}
+.sel{display:grid;gap:8px;margin-top:10px}
+.it{display:flex;gap:10px;align-items:center;background:#0a1220;border:1px solid var(--line);border-radius:12px;padding:8px}
+.it img{width:44px;height:61px;object-fit:contain}
+.it .g{flex:1;min-width:0}.it b{font-size:13px}.it small{color:var(--muted);font-size:11px;display:block}
+.it select{margin-top:4px;padding:6px 8px;font-size:12px}
+.it .x{background:transparent;border:1px solid var(--line);color:var(--muted);padding:6px 10px}
+.it .mv{background:transparent;border:1px solid var(--line);color:var(--muted);padding:4px 8px;font-size:12px}
+label.l{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+.stage{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+canvas#cv{width:270px;height:480px;border-radius:16px;border:1px solid var(--line);background:#000;flex-shrink:0}
+.side{flex:1;min-width:220px;display:grid;gap:10px}
+.prog{height:8px;border-radius:6px;background:#0a1220;border:1px solid var(--line);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--b))}
+video#out{width:270px;border-radius:16px;border:1px solid var(--line);display:none}
+textarea.field{min-height:96px;resize:vertical;font-size:13px}
+.ok{color:var(--green);font-size:12px}.err{color:var(--red);font-size:12px}
+@media(max-width:560px){.stage{justify-content:center}canvas#cv,video#out{width:240px;height:auto;aspect-ratio:9/16}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="logo">◉</div><div><div class="brand">POKETA Studio</div><div class="sub">TikTok/Reels-Videos mit Live-Preisen</div></div><a href="/">← POKETA</a></div>
+
+  <div class="panel">
+    <h2><span class="step">1</span>Vorlage</h2>
+    <div class="tpls" id="tpls">
+      <button class="tpl on" data-t="quiz"><b>🔢 Quiz 1-2-3</b><span>3 Karten – welche ist am teuersten?</span></button>
+      <button class="tpl" data-t="duell"><b>⚔️ Duell</b><span>2 Karten – links oder rechts?</span></button>
+      <button class="tpl" data-t="ueber"><b>📈 Über/Unter</b><span>1 Karte – über oder unter X €?</span></button>
+      <button class="tpl" data-t="ranking"><b>🏆 Ranking</b><span>3–5 Karten – Top-Liste</span></button>
+    </div>
+    <p class="hint" id="tplHint"></p>
+  </div>
+
+  <div class="panel">
+    <h2><span class="step">2</span>Karten</h2>
+    <div class="row"><input id="q" class="field" placeholder="Karte suchen, z. B. Glurak" autocomplete="off" enterkeyhint="search"><button id="go">Suchen</button></div>
+    <div class="results" id="res"></div>
+    <div class="sel" id="sel"></div>
+    <p class="hint" id="need"></p>
+  </div>
+
+  <div class="panel">
+    <h2><span class="step">3</span>Texte</h2>
+    <label class="l" for="hook">Frage am Anfang</label><input id="hook" class="field">
+    <div id="ueberBox"><label class="l" for="thr">Grenze (€)</label><input id="thr" class="field" type="number" min="1" step="1"></div>
+    <label class="l" for="handle">Dein Account im Abspann</label><input id="handle" class="field" value="@poketa.app">
+  </div>
+
+  <div class="panel">
+    <h2><span class="step">4</span>Video</h2>
+    <div class="stage">
+      <canvas id="cv" width="1080" height="1920"></canvas>
+      <div class="side">
+        <button id="play" class="secondary">▶ Vorschau abspielen</button>
+        <button id="rec">🎬 Video erstellen</button>
+        <div class="prog"><i id="bar"></i></div>
+        <p class="hint" id="st">Bildschirm während der Erstellung anlassen (dauert so lange wie das Video).</p>
+        <video id="out" controls playsinline></video>
+        <button id="save" class="secondary" style="display:none">⬇️ Video speichern / teilen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2><span class="step">5</span>Caption</h2>
+    <textarea id="cap" class="field"></textarea>
+    <div class="row" style="margin-top:8px"><button id="copy" class="secondary">📋 Caption kopieren</button><span id="copied" class="ok"></span></div>
+    <p class="hint">Immer mit Caption + Hashtags posten · ein Video pro Tag · kein Video doppelt hochladen.</p>
+  </div>
+</div>
+
+<script>
+'use strict';
+const TCG = 'https://api.tcgdex.net/v2';
+const $ = id => document.getElementById(id);
+const W = 1080, H = 1920, FPS = 30;
+const GOLD = '#ffc94a', CYAN = '#3dd9f5', RED = '#ff5c7a', VIOLET = '#8b6fff';
+const TPL = {
+  quiz:    {n: [3, 3], hint: 'Genau 3 Karten. Die teuerste wird am Ende aufgelöst.'},
+  duell:   {n: [2, 2], hint: 'Genau 2 Karten: erste = links, zweite = rechts.'},
+  ueber:   {n: [1, 1], hint: '1 Karte. Die Grenze wird automatisch vorgeschlagen.'},
+  ranking: {n: [3, 5], hint: '3 bis 5 Karten. Sortiert automatisch, die teuerste kommt zuletzt.'}
+};
+let tpl = 'quiz', items = [], hookEdited = false;
+
+/* ── Daten ─────────────────────────────────────────── */
+async function getJSON(url){
+  for(let i = 0; i < 3; i++){
+    try{ const r = await fetch(url); if(r.ok) return await r.json(); if(r.status === 404) return null; }catch(e){}
+    await new Promise(r => setTimeout(r, 400 * (i + 1)));
+  }
+  return null;
+}
+const pos = v => typeof v === 'number' && v > 0;
+const priceOf = cm => cm ? (['trend','avg7','avg30','low'].map(k => cm[k]).find(pos) || ['trend-holo','avg7-holo','avg30-holo'].map(k => cm[k]).find(pos) || 0) : 0;
+const LAB = {unlimited:'Unbegrenzt', unbegrenzt:'Unbegrenzt', shadowless:'Shadowless', schattenlos:'Shadowless', '1st-edition':'1. Auflage', '1. auflage':'1. Auflage'};
+function variants(c){
+  const m = new Map(), main = c.pricing?.cardmarket;
+  (c.variants_detailed || []).forEach(v => {
+    const id = v.thirdParty?.cardmarket, cm = v.pricing?.cardmarket; if(!id || !priceOf(cm)) return;
+    const parts = [v.subtype, ...(v.stamp || [])].filter(Boolean).map(x => LAB[String(x).toLowerCase()] || x);
+    const lab = parts.join(' · ') || 'Standard';
+    if(!m.has(id)) m.set(id, {label: lab, price: priceOf(cm)}); else if(lab.length < m.get(id).label.length) m.get(id).label = lab;
+  });
+  if(main?.idProduct && priceOf(main) && !m.has(main.idProduct)) m.set(main.idProduct, {label: 'Standard', price: priceOf(main)});
+  let list = [...m.entries()].map(([id, v]) => ({id, ...v}));
+  if(main?.idProduct) list.sort((a, b) => (b.id === main.idProduct) - (a.id === main.idProduct));
+  return list.length ? list : [{id: 0, label: 'Standard', price: priceOf(main)}];
+}
+async function loadCard(id){
+  let c = await getJSON(`${TCG}/de/cards/${encodeURIComponent(id)}`);
+  if(!c || !c.pricing?.cardmarket || !c.image){
+    const en = await getJSON(`${TCG}/en/cards/${encodeURIComponent(id)}`);
+    if(en){ if(!c) c = en; else { if(!c.pricing?.cardmarket){ c.pricing = en.pricing; c.variants_detailed = en.variants_detailed; } if(!c.image) c.image = en.image; } }
+  }
+  return c;
+}
+function loadImg(src){
+  return new Promise(res => { const im = new Image(); im.crossOrigin = 'anonymous';
+    im.onload = () => res(im); im.onerror = () => { if(/\/de\//.test(src)){ const s2 = src.replace('/de/', '/en/'); const i2 = new Image(); i2.crossOrigin = 'anonymous'; i2.onload = () => res(i2); i2.onerror = () => res(null); i2.src = s2; } else res(null); };
+    im.src = src; });
+}
+
+/* ── Auswahl-Oberfläche ─────────────────────────────── */
+async function search(){
+  const q = $('q').value.trim(); if(!q) return;
+  $('res').innerHTML = '<p class="hint">Suche …</p>';
+  let r = await getJSON(`${TCG}/de/cards?name=${encodeURIComponent(q)}`);
+  if(!Array.isArray(r) || !r.length) r = await getJSON(`${TCG}/en/cards?name=${encodeURIComponent(q)}`);
+  const list = Array.isArray(r) ? r.filter(c => c.image).slice(-24).reverse() : [];
+  $('res').innerHTML = list.length ? list.map(c => `<div class="res" data-id="${c.id}"><img src="${c.image}/low.webp" loading="lazy" alt=""><div>${esc(c.name)}</div><small style="color:var(--muted)">${c.id}</small></div>`).join('') : '<p class="hint">Keine Treffer.</p>';
+  $('res').querySelectorAll('.res').forEach(e => e.onclick = () => add(e.dataset.id));
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function add(id){
+  const max = TPL[tpl].n[1];
+  if(items.length >= max){ $('need').innerHTML = `<span class="err">Diese Vorlage nimmt höchstens ${max} Karte(n). Erst eine entfernen.</span>`; return; }
+  $('need').textContent = 'Lade Karte …';
+  const c = await loadCard(id); if(!c){ $('need').innerHTML = '<span class="err">Karte nicht ladbar.</span>'; return; }
+  const img = await loadImg(c.image + '/high.webp');
+  items.push({id, name: c.name, set: c.set?.name || '', img, thumb: c.image + '/low.webp', vars: variants(c), v: 0});
+  $('res').innerHTML = ''; $('q').value = ''; refresh();
+}
+function refresh(){
+  $('sel').innerHTML = items.map((it, i) => `<div class="it"><img src="${it.thumb}" alt="">
+    <div class="g"><b>${esc(it.name)}</b><small>${esc(it.set)} · ${eur(it.vars[it.v].price)}</small>
+    ${it.vars.length > 1 ? `<select class="field" data-i="${i}">${it.vars.map((v, k) => `<option value="${k}"${k === it.v ? ' selected' : ''}>${esc(v.label)} – ${eur(v.price)}</option>`).join('')}</select>` : ''}</div>
+    ${tpl === 'duell' ? `<button class="mv" data-up="${i}">${i ? '⬆' : '⬇'}</button>` : ''}<button class="x" data-del="${i}">✕</button></div>`).join('');
+  $('sel').querySelectorAll('select').forEach(s => s.onchange = () => { items[+s.dataset.i].v = +s.value; refresh(); });
+  $('sel').querySelectorAll('[data-del]').forEach(b => b.onclick = () => { items.splice(+b.dataset.del, 1); refresh(); });
+  $('sel').querySelectorAll('[data-up]').forEach(b => b.onclick = () => { items.reverse(); refresh(); });
+  const [mn, mx] = TPL[tpl].n, ok = items.length >= mn && items.length <= mx;
+  $('need').innerHTML = ok ? '<span class="ok">✓ Bereit</span>' : `Noch ${Math.max(0, mn - items.length)} Karte(n) hinzufügen.`;
+  $('play').disabled = $('rec').disabled = !ok;
+  $('ueberBox').style.display = tpl === 'ueber' ? '' : 'none';
+  if(tpl === 'ueber' && items[0] && !$('thr').dataset.edited) $('thr').value = threshold(price(items[0]));
+  if(!hookEdited) $('hook').value = defaultHook();
+  $('cap').value = caption();
+  build(); drawAt(0);
+}
+const price = it => it.vars[it.v].price;
+const eur = v => v >= 100 ? Math.round(v).toLocaleString('de-DE') + ' €' : v.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €';
+const niceMax = v => { const s = [10, 20, 50, 100, 200, 250, 500, 1000, 1500, 2000, 2500, 3000, 5000, 10000]; return s.filter(x => x < v).pop() || Math.floor(v); };
+function threshold(p){ const s = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 3000, 5000]; return s.reduce((a, b) => Math.abs(b - p * 0.8) < Math.abs(a - p * 0.8) ? b : a); }
+function defaultHook(){
+  if(tpl === 'quiz'){ const m = Math.max(0, ...items.map(price)); return items.length ? `Eine davon ist über ${niceMax(m).toLocaleString('de-DE')} € wert` : 'Eine davon ist richtig viel wert'; }
+  if(tpl === 'duell') return 'Welche ist mehr wert?';
+  if(tpl === 'ueber') return `Über oder unter ${(+$('thr').value || 100).toLocaleString('de-DE')} €?`;
+  return `Top ${items.length || 5}: die teuersten Karten 🔥`;
+}
+function caption(){
+  const tags = new Set(['#pokemonkarten', '#pokemontcg', '#pokemonsammler', '#cardmarket']);
+  items.forEach(it => tags.add('#' + it.name.toLowerCase().replace(/-?ex$/, '').replace(/[^a-zäöüß0-9]/g, '')));
+  const q = {quiz: '1, 2 oder 3? 👀 Schreib deine Zahl in die Kommentare 👇', duell: 'Links oder rechts? 👀 Schreib\'s in die Kommentare, bevor du die Auflösung siehst 👇',
+    ueber: 'Über oder unter? 🤔 Schreib deinen Tipp, BEVOR du bis zum Ende schaust 👇', ranking: 'Welche hast du schon gezogen? 👇 Platz 1 hätte ich nie erwartet 😳'}[tpl];
+  return `${q}\n\n${[...tags].filter(t => t.length > 2).slice(0, 8).join(' ')}`;
+}
+
+/* ── Zeichnen ───────────────────────────────────────── */
+const cv = $('cv'), ctx = cv.getContext('2d');
+const small = document.createElement('canvas'); small.width = 27; small.height = 48; const sctx = small.getContext('2d');
+function bg(img){
+  ctx.fillStyle = '#070b14'; ctx.fillRect(0, 0, W, H);
+  if(img){ sctx.drawImage(img, 0, 0, 27, 48); ctx.imageSmoothingEnabled = true; ctx.globalAlpha = .55; ctx.drawImage(small, -60, -60, W + 120, H + 120); ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(6,8,14,.45)'; ctx.fillRect(0, 0, W, H); }
+  else { const g = ctx.createRadialGradient(W/2, 800, 50, W/2, 800, 900); g.addColorStop(0, 'rgba(139,111,255,.38)'); g.addColorStop(1, 'rgba(7,11,20,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
+}
+function card(img, cx, cy, w, rot = 0, glow = VIOLET){
+  if(!img) return; const h = w * img.height / img.width;
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot * Math.PI / 180);
+  ctx.shadowColor = glow; ctx.shadowBlur = 70; ctx.shadowOffsetY = 18;
+  rr(-w/2, -h/2, w, h, w * .045); ctx.fillStyle = '#000'; ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.save(); rr(-w/2, -h/2, w, h, w * .045); ctx.clip(); ctx.drawImage(img, -w/2, -h/2, w, h); ctx.restore(); ctx.restore();
+}
+function rr(x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function wrap(t, size, maxw){ ctx.font = `900 ${size}px -apple-system,"Segoe UI",system-ui,sans-serif`; const out = []; let cur = '';
+  for(const w of String(t).split(' ')){ const tt = (cur + ' ' + w).trim(); if(ctx.measureText(tt).width <= maxw) cur = tt; else { out.push(cur); cur = w; } } out.push(cur); return out; }
+function txt(t, y, size, color = '#fff', pop = 1, box = false){
+  const lines = wrap(t, size, W - 120), lh = size * 1.15;
+  ctx.save(); ctx.translate(W/2, y); ctx.scale(pop, pop); ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  lines.forEach((l, i) => { const yy = i * lh;
+    if(box){ const tw = ctx.measureText(l).width; ctx.fillStyle = '#000'; rr(-tw/2 - 26, yy - 10, tw + 52, size * 1.18, 18); ctx.fill(); ctx.fillStyle = color; ctx.fillText(l, 0, yy); }
+    else { ctx.lineJoin = 'round'; ctx.lineWidth = size * .13; ctx.strokeStyle = '#000'; ctx.strokeText(l, 0, yy); ctx.fillStyle = color; ctx.fillText(l, 0, yy); } });
+  ctx.restore(); return y + lines.length * lh;
+}
+function badge(n, x, y){ ctx.beginPath(); ctx.arc(x, y, 52, 0, 7); ctx.fillStyle = GOLD; ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = '#000'; ctx.stroke();
+  ctx.font = '900 70px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#000'; ctx.fillText(n, x, y + 3); }
+function outro(){
+  bg(null); txt('Gecheckt mit', 690, 56, '#c8d2eb'); txt('POKETA', 770, 130);
+  txt('Live-Preise von Cardmarket · kostenlos', 940, 42, '#c8d2eb');
+  ctx.font = '900 60px system-ui,sans-serif'; const t = 'poketa.pages.dev', tw = ctx.measureText(t).width;
+  ctx.fillStyle = GOLD; rr(W/2 - tw/2 - 44, 1050, tw + 88, 110, 28); ctx.fill(); ctx.fillStyle = '#281600'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(t, W/2, 1072);
+  const h = $('handle').value.trim(); if(h) txt('Folge ' + h, 1210, 52, CYAN);
+}
+
+/* ── Szenen je Vorlage ──────────────────────────────── */
+let scenes = [], total = 0;
+const pop = t => t < .18 ? .7 + .3 * (t / .18) : 1;            // Text „poppt“ rein
+function build(){
+  const S = [], hook = $('hook').value;
+  const one = (it, title, color, glow, extra) => (t, lt) => { const z = 1 + .05 * t; bg(it.img); card(it.img, W/2, 1170, 760 * z, 0, glow); txt(title, 160, 80, '#fff', pop(lt)); txt(eur(price(it)), 270, 150, color, pop(lt)); if(extra) extra(t, lt); };
+  if(tpl === 'quiz' && items.length === 3){
+    const max = Math.max(...items.map(price));
+    S.push([2.6, (t, lt) => { bg(null); const xs = [205, 540, 875]; items.forEach((it, k) => { card(it.img, xs[k], 1060, 296 * (1 + .04 * t), [5, 0, -5][k]); badge(k + 1, xs[k], 1320); });
+      const y = txt(hook, 150, 84, '#fff', pop(lt)); txt('Welche? 1, 2 oder 3?', 1520, 72, '#fff', 1, true); }]);
+    items.forEach((it, k) => S.push([price(it) === max ? 2.5 : 1.5, one(it, it.name, price(it) === max ? GOLD : CYAN, price(it) === max ? GOLD : VIOLET, () => badge(k + 1, W/2, 1700))]));
+  }
+  if(tpl === 'duell' && items.length === 2){
+    const [L, R] = items, win = price(L) >= price(R) ? 'Links' : 'Rechts';
+    const duel = (t, sz) => { card(L.img, W/2 - 235, 1080, sz * (1 + .04 * t), 4, win === 'Links' && sz < 400 ? GOLD : VIOLET); card(R.img, W/2 + 235, 1080, sz * (1 + .04 * t), -4, win === 'Rechts' && sz < 400 ? GOLD : VIOLET); };
+    S.push([2.4, (t, lt) => { bg(null); duel(t, 400); ctx.beginPath(); ctx.arc(W/2, 1080, 70, 0, 7); ctx.fillStyle = RED; ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = '#000'; ctx.stroke();
+      ctx.font = '900 80px system-ui'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('VS', W/2, 1084); txt(hook, 160, 86, '#fff', pop(lt)); txt('LINKS oder RECHTS?', 1500, 76, '#fff', 1, true); }]);
+    S.push([1.8, one(L, 'Links: ' + L.name, win === 'Links' ? GOLD : CYAN, VIOLET)]);
+    S.push([2.3, one(R, 'Rechts: ' + R.name, win === 'Rechts' ? GOLD : CYAN, win === 'Rechts' ? GOLD : VIOLET)]);
+    S.push([1.6, (t, lt) => { bg(null); duel(t, 380); txt(win + ' gewinnt!', 170, 96, GOLD, pop(lt)); txt('Hattest du recht?', 1500, 70, '#fff', 1, true); }]);
+  }
+  if(tpl === 'ueber' && items.length === 1){
+    const it = items[0], thr = +$('thr').value || 100, over = price(it) >= thr;
+    S.push([2.0, (t, lt) => { bg(it.img); card(it.img, W/2, 1110, 860 * (1 + .06 * t)); const y = txt(hook, 150, 92, '#fff', pop(lt)); }]);
+    S.push([1.6, (t, lt) => { bg(it.img); card(it.img, W/2, 1110, 900 * (1 + .05 * t)); txt(it.name + (it.set ? ' · ' + it.set : ''), 190, 50); txt('Schreib deinen Tipp in die Kommentare', 1720, 52, '#fff', 1, true); }]);
+    S.push([2.4, one(it, 'Auflösung:', GOLD, GOLD, (t, lt) => txt((over ? 'Über ' : 'Unter ') + thr.toLocaleString('de-DE') + ' €!', 460, 70, CYAN, pop(lt)))]);
+  }
+  if(tpl === 'ranking' && items.length >= 3){
+    const sorted = items.slice().sort((a, b) => price(a) - price(b)), n = sorted.length;
+    S.push([2.2, (t, lt) => { bg(null); sorted.forEach((it, k) => { const x = W/2 + (k - (n - 1) / 2) * (n > 4 ? 190 : 230); card(it.img, x, 1080, (n > 4 ? 250 : 290) * (1 + .04 * t), (k - (n - 1) / 2) * 4); }); txt(hook, 170, 84, '#fff', pop(lt)); }]);
+    sorted.forEach((it, k) => { const place = n - k; S.push([place === 1 ? 2.4 : 1.4, one(it, `#${place} ${it.name}`, place === 1 ? GOLD : CYAN, place === 1 ? GOLD : VIOLET)]); });
+    S.push([1.4, (t, lt) => { bg(sorted[n - 1].img); card(sorted[n - 1].img, W/2, 1110, 700); txt('Welche hast du schon gezogen?', 170, 80, '#fff', pop(lt)); }]);
+  }
+  if(S.length) S.push([2.3, () => outro()]);
+  scenes = S; total = S.reduce((a, s) => a + s[0], 0);
+}
+function drawAt(sec){
+  if(!scenes.length){ bg(null); txt('Vorlage wählen und Karten hinzufügen', 860, 64, '#c8d2eb'); return; }
+  let acc = 0;
+  for(const [d, fn] of scenes){ if(sec < acc + d){ fn(Math.min(1, (sec - acc) / d), sec - acc); return; } acc += d; }
+  scenes[scenes.length - 1][1](1, 9);
+}
+
+/* ── Abspielen & Aufnehmen ──────────────────────────── */
+let running = false;
+function run(onEnd){
+  running = true; const t0 = performance.now();
+  const step = now => { const s = (now - t0) / 1000; drawAt(Math.min(s, total)); $('bar').style.width = Math.min(100, s / total * 100) + '%';
+    if(s < total) requestAnimationFrame(step); else { running = false; onEnd && onEnd(); } };
+  requestAnimationFrame(step);
+}
+$('play').onclick = () => { if(!running) run(); };
+let lastBlob = null, lastName = '';
+$('rec').onclick = async () => {
+  if(running) return;
+  if(!cv.captureStream || !window.MediaRecorder){ $('st').innerHTML = '<span class="err">Dieser Browser kann keine Videos erstellen. Bitte aktuelles Safari oder Chrome nutzen.</span>'; return; }
+  const types = ['video/mp4;codecs=avc1.42E01E', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  const mime = types.find(t => MediaRecorder.isTypeSupported(t)) || '';
+  const stream = cv.captureStream(FPS), chunks = [];
+  const mr = new MediaRecorder(stream, mime ? {mimeType: mime, videoBitsPerSecond: 8e6} : {videoBitsPerSecond: 8e6});
+  mr.ondataavailable = e => e.data.size && chunks.push(e.data);
+  mr.onstop = () => {
+    const type = mr.mimeType || mime || 'video/webm', ext = /mp4/.test(type) ? 'mp4' : 'webm';
+    lastBlob = new Blob(chunks, {type}); lastName = `poketa-${tpl}-${Date.now()}.${ext}`;
+    const v = $('out'); v.src = URL.createObjectURL(lastBlob); v.style.display = 'block'; $('save').style.display = '';
+    $('st').innerHTML = `<span class="ok">✓ Fertig (${ext.toUpperCase()}, ${(lastBlob.size / 1e6).toFixed(1)} MB).</span>${ext === 'webm' ? ' <span class="err">Hinweis: WebM – falls TikTok es nicht annimmt, in CapCut öffnen und als MP4 exportieren.</span>' : ''}`;
+    $('rec').disabled = false; $('play').disabled = false;
+  };
+  $('rec').disabled = true; $('play').disabled = true; $('st').textContent = 'Erstelle Video … Bildschirm anlassen.';
+  drawAt(0); mr.start(250); setTimeout(() => run(() => setTimeout(() => mr.stop(), 300)), 150);
+};
+$('save').onclick = async () => {
+  if(!lastBlob) return;
+  const file = new File([lastBlob], lastName, {type: lastBlob.type});
+  if(navigator.canShare && navigator.canShare({files: [file]})){ try{ await navigator.share({files: [file], title: 'POKETA-Video'}); return; }catch(e){ if(e.name === 'AbortError') return; } }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(lastBlob); a.download = lastName; document.body.appendChild(a); a.click(); a.remove();
+};
+$('copy').onclick = async () => { try{ await navigator.clipboard.writeText($('cap').value); $('copied').textContent = '✓ Kopiert'; }catch(e){ $('cap').select(); document.execCommand('copy'); $('copied').textContent = '✓ Kopiert'; } setTimeout(() => $('copied').textContent = '', 2000); };
+
+/* ── Bedienung ──────────────────────────────────────── */
+$('tpls').querySelectorAll('.tpl').forEach(b => b.onclick = () => {
+  tpl = b.dataset.t; $('tpls').querySelectorAll('.tpl').forEach(x => x.classList.toggle('on', x === b));
+  $('tplHint').textContent = TPL[tpl].hint; hookEdited = false; delete $('thr').dataset.edited;
+  if(items.length > TPL[tpl].n[1]) items = items.slice(0, TPL[tpl].n[1]); refresh();
+});
+$('go').onclick = search; $('q').addEventListener('keydown', e => { if(e.key === 'Enter') search(); });
+$('hook').addEventListener('input', () => { hookEdited = true; build(); drawAt(0); });
+$('thr').addEventListener('input', () => { $('thr').dataset.edited = 1; if(!hookEdited) $('hook').value = defaultHook(); build(); drawAt(0); });
+$('handle').addEventListener('input', () => build());
+$('tplHint').textContent = TPL[tpl].hint; refresh();
+</script>
+</body>
+</html>

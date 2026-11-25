@@ -21,6 +21,8 @@ export const FILES = [
   ['/config.js', 'config.js', 'application/javascript; charset=utf-8'],
   ['/datenschutz', 'datenschutz.html', 'text/html; charset=utf-8'],
   ['/datenschutz.html', 'datenschutz.html', 'text/html; charset=utf-8'],
+  ['/studio', 'studio.html', 'text/html; charset=utf-8'],
+  ['/studio.html', 'studio.html', 'text/html; charset=utf-8'],
   ['/manifest.webmanifest', 'manifest.webmanifest', 'application/manifest+json'],
   ['/sw.js', 'sw.js', 'application/javascript; charset=utf-8'],
   ['/icons/icon.svg', 'icons/icon.svg', 'image/svg+xml'],
@@ -40,7 +42,7 @@ const SECURITY = {
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'X-Frame-Options': 'DENY'
 };
-const NO_CACHE = ['/', '/index.html', '/config.js', '/sw.js', '/manifest.webmanifest'];
+const NO_CACHE = ['/', '/index.html', '/config.js', '/sw.js', '/manifest.webmanifest', '/studio', '/studio.html'];
 const bin = {};
 export default {
   async fetch(request){
